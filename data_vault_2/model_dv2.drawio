@@ -1,0 +1,237 @@
+<mxfile host="65bd71144e">
+    <diagram id="dv2_model_1" name="Data Vault 2.0 Data Model">
+        <mxGraphModel dx="2576" dy="1634" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="950" background="#0f172a" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="Data Vault 2.0 Architecture Model" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#f8fafc;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="30" width="440" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="subtitle" value="Hubs (Blue), Links (Green), and Satellites (Red) - LOAD_DATE and RECORD_SOURCE Metadata Columns" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=13;fontStyle=2;fontColor=#94a3b8;" parent="1" vertex="1">
+                    <mxGeometry x="400" y="70" width="640" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_box" value="Data Vault 2.0 Color Legend" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=28;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#1e293b;fontColor=#f8fafc;strokeColor=#475569;strokeWidth=1;fontSize=12;rounded=1;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="30" width="280" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_hub" value="🟦  HUB_  (Blue - Core Business Concepts)" style="text;strokeColor=none;fillColor=#2563eb;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#ffffff;fontSize=11;fontStyle=1;" parent="legend_box" vertex="1">
+                    <mxGeometry y="28" width="280" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_lnk" value="🟩  LNK_  (Green - Associations &amp; Links)" style="text;strokeColor=none;fillColor=#16a34a;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#ffffff;fontSize=11;fontStyle=1;" parent="legend_box" vertex="1">
+                    <mxGeometry y="52" width="280" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="leg_sat" value="🟥  SAT_  (Red - Context Payload &amp; History)" style="text;strokeColor=none;fillColor=#dc2626;align=left;verticalAlign=middle;spacingLeft=10;fontColor=#ffffff;fontSize=11;fontStyle=1;" parent="legend_box" vertex="1">
+                    <mxGeometry y="76" width="280" height="24" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_dep" value="HUB_Department" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;fontColor=#ffffff;strokeColor=#3b82f6;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="160" width="250" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_dep_c1" value="🔑  HK_Department  [PK]" style="text;strokeColor=none;fillColor=#1e3a8a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#bfdbfe;fontSize=12;" parent="hub_dep" vertex="1">
+                    <mxGeometry y="36" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_dep_c2" value="📌  Dep_ID  [BK]" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dbeafe;fontSize=12;" parent="hub_dep" vertex="1">
+                    <mxGeometry y="72" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_dep_c3" value="⏱  LOAD_DATE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" parent="hub_dep" vertex="1">
+                    <mxGeometry y="108" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_dep_c4" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="hub_dep">
+                    <mxGeometry y="144" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_emp" value="HUB_Employee" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;fontColor=#ffffff;strokeColor=#3b82f6;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="440" y="440" width="250" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_emp_c1" value="🔑  HK_Employee  [PK]" style="text;strokeColor=none;fillColor=#1e3a8a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#bfdbfe;fontSize=12;" parent="hub_emp" vertex="1">
+                    <mxGeometry y="36" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_emp_c2" value="📌  Emp_ID  [BK]" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dbeafe;fontSize=12;" parent="hub_emp" vertex="1">
+                    <mxGeometry y="72" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_emp_c3" value="⏱  LOAD_DATE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" parent="hub_emp" vertex="1">
+                    <mxGeometry y="108" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_emp_c4" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="hub_emp">
+                    <mxGeometry y="144" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_proj" value="HUB_Project" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#1d4ed8;fontColor=#ffffff;strokeColor=#3b82f6;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="1140" y="440" width="250" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_proj_c1" value="🔑  HK_Project  [PK]" style="text;strokeColor=none;fillColor=#1e3a8a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#bfdbfe;fontSize=12;" parent="hub_proj" vertex="1">
+                    <mxGeometry y="36" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_proj_c2" value="📌  Project_ID  [BK]" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dbeafe;fontSize=12;" parent="hub_proj" vertex="1">
+                    <mxGeometry y="72" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_proj_c3" value="⏱  LOAD_DATE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" parent="hub_proj" vertex="1">
+                    <mxGeometry y="108" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="hub_proj_c4" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="hub_proj">
+                    <mxGeometry y="144" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep" value="LNK_Employee_Department" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#15803d;fontColor=#ffffff;strokeColor=#22c55e;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="850" y="160" width="270" height="216" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep_c1" value="🔑  HK_LNK_Emp_Dep  [PK]" style="text;strokeColor=none;fillColor=#14532d;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#bbf7d0;fontSize=12;" parent="lnk_emp_dep" vertex="1">
+                    <mxGeometry y="36" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep_c3" value="🔗  HK_Department  [FK]" style="text;strokeColor=none;fillColor=#166534;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dcfce7;fontSize=12;" parent="lnk_emp_dep" vertex="1">
+                    <mxGeometry y="72" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep_c2" value="🔗  HK_Employee  [FK]" style="text;strokeColor=none;fillColor=#166534;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dcfce7;fontSize=12;" parent="lnk_emp_dep" vertex="1">
+                    <mxGeometry y="108" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep_c4" value="⏱  LOAD_DATE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" parent="lnk_emp_dep" vertex="1">
+                    <mxGeometry y="144" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_dep_c5" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="lnk_emp_dep">
+                    <mxGeometry y="180" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj" value="LNK_Employee_Project" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#15803d;fontColor=#ffffff;strokeColor=#22c55e;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="790" y="440" width="270" height="216" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj_c1" value="🔑  HK_LNK_Emp_Proj  [PK]" style="text;strokeColor=none;fillColor=#14532d;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#bbf7d0;fontSize=12;" parent="lnk_emp_proj" vertex="1">
+                    <mxGeometry y="36" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj_c2" value="🔗  HK_Employee  [FK]" style="text;strokeColor=none;fillColor=#166534;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dcfce7;fontSize=12;" parent="lnk_emp_proj" vertex="1">
+                    <mxGeometry y="72" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj_c3" value="🔗  HK_Project  [FK]" style="text;strokeColor=none;fillColor=#166534;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#dcfce7;fontSize=12;" parent="lnk_emp_proj" vertex="1">
+                    <mxGeometry y="108" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj_c4" value="⏱  LOAD_DATE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" parent="lnk_emp_proj" vertex="1">
+                    <mxGeometry y="144" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="lnk_emp_proj_c5" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="lnk_emp_proj">
+                    <mxGeometry y="180" width="270" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep" value="SAT_Department" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#b91c1c;fontColor=#ffffff;strokeColor=#ef4444;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="160" width="260" height="252" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c1" value="🔑🔗  HK_Department  [PK, FK]" style="text;strokeColor=none;fillColor=#7f1d1d;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fecaca;fontSize=12;" parent="sat_dep" vertex="1">
+                    <mxGeometry y="36" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c2" value="🔑⏱  LOAD_DATE  [PK]" style="text;strokeColor=none;fillColor=#991b1b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fee2e2;fontSize=12;" parent="sat_dep" vertex="1">
+                    <mxGeometry y="72" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c3" value="⚡  HASH_DIFF" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fca5a5;fontSize=12;" parent="sat_dep" vertex="1">
+                    <mxGeometry y="108" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c4" value="     Dep_Name" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_dep" vertex="1">
+                    <mxGeometry y="144" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c5" value="     Dep_Code" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_dep" vertex="1">
+                    <mxGeometry y="180" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_dep_c6" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="sat_dep">
+                    <mxGeometry y="216" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp" value="SAT_Employee (Slow Change)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#b91c1c;fontColor=#ffffff;strokeColor=#ef4444;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="440" width="260" height="288" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c1" value="🔑🔗  HK_Employee  [PK, FK]" style="text;strokeColor=none;fillColor=#7f1d1d;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fecaca;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="36" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c2" value="🔑⏱  LOAD_DATE  [PK]" style="text;strokeColor=none;fillColor=#991b1b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fee2e2;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="72" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c3" value="⚡  HASH_DIFF" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fca5a5;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="108" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c4" value="     Name" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="144" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c5" value="     Gender" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="180" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c6" value="     Birdth_Date" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_emp" vertex="1">
+                    <mxGeometry y="216" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_emp_c7" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="sat_emp">
+                    <mxGeometry y="252" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr" value="SAT_Adress (Fast Change)" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#e11d48;fontColor=#ffffff;strokeColor=#f43f5e;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="80" y="760" width="260" height="252" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c1" value="🔑🔗  HK_Employee  [PK, FK]" style="text;strokeColor=none;fillColor=#881337;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fda4af;fontSize=12;" parent="sat_adr" vertex="1">
+                    <mxGeometry y="36" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c2" value="🔑⏱  LOAD_DATE  [PK]" style="text;strokeColor=none;fillColor=#be123c;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fecdd3;fontSize=12;" parent="sat_adr" vertex="1">
+                    <mxGeometry y="72" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c3" value="⚡  HASH_DIFF" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fb7185;fontSize=12;" parent="sat_adr" vertex="1">
+                    <mxGeometry y="108" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c4" value="     Adress" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_adr" vertex="1">
+                    <mxGeometry y="144" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c5" value="     City" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_adr" vertex="1">
+                    <mxGeometry y="180" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_adr_c6" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="sat_adr">
+                    <mxGeometry y="216" width="260" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj" value="SAT_Project" style="swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=36;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#b91c1c;fontColor=#ffffff;strokeColor=#ef4444;strokeWidth=2;fontSize=14;shadow=1;rounded=1;arcSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="1130" y="740" width="250" height="252" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c1" value="🔑🔗  HK_Project  [PK, FK]" style="text;strokeColor=none;fillColor=#7f1d1d;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fecaca;fontSize=12;" parent="sat_proj" vertex="1">
+                    <mxGeometry y="36" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c2" value="🔑⏱  LOAD_DATE  [PK]" style="text;strokeColor=none;fillColor=#991b1b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fee2e2;fontSize=12;" parent="sat_proj" vertex="1">
+                    <mxGeometry y="72" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c3" value="⚡  HASH_DIFF" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=1;fontColor=#fca5a5;fontSize=12;" parent="sat_proj" vertex="1">
+                    <mxGeometry y="108" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c4" value="     Project_Name" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_proj" vertex="1">
+                    <mxGeometry y="144" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c5" value="     Project_Code" style="text;strokeColor=none;fillColor=#0f172a;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#e2e8f0;fontSize=12;" parent="sat_proj" vertex="1">
+                    <mxGeometry y="180" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="sat_proj_c6" value="📄  RECORD_SOURCE" style="text;strokeColor=none;fillColor=#1e293b;align=left;verticalAlign=middle;spacingLeft=12;spacingRight=12;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#94a3b8;fontSize=11;" vertex="1" parent="sat_proj">
+                    <mxGeometry y="216" width="250" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_sat_dep" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#f87171;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="sat_dep_c1" target="hub_dep_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_lnk_dep_hub_dep" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#4ade80;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="lnk_emp_dep_c3" target="hub_dep_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="740" y="250"/>
+                            <mxPoint x="740" y="214"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge_lnk_dep_hub_emp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#4ade80;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="lnk_emp_dep_c2" target="hub_emp_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="740" y="286"/>
+                            <mxPoint x="740" y="494"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="edge_sat_emp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#f87171;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="sat_emp_c1" target="hub_emp_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_sat_adr" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#fb7185;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="sat_adr_c1" target="hub_emp_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_lnk_proj_hub_emp" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#4ade80;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="lnk_emp_proj_c2" target="hub_emp_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_lnk_proj_hub_proj" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#4ade80;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="lnk_emp_proj_c3" target="hub_proj_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="edge_sat_proj" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#f87171;strokeWidth=2;endArrow=classic;endSize=8;" parent="1" source="sat_proj_c1" target="hub_proj_c1" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1110" y="794"/>
+                            <mxPoint x="1110" y="680"/>
+                            <mxPoint x="1410" y="680"/>
+                            <mxPoint x="1410" y="494"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
