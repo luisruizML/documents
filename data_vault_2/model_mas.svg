@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1150 560" width="100%" height="100%" style="background-color: #0f172a; font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Title -->
+  <text x="575" y="45" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="bold">Multi-Active Satellite (MAS) Model</text>
+  <text x="575" y="75" text-anchor="middle" fill="#94a3b8" font-size="13" font-style="italic">HUB_User with Standard Satellite (SAT_User) vs. Multi-Active Satellite (SAT_User_Phone_MA)</text>
+
+  <!-- Legend Box -->
+  <g transform="translate(80, 30)">
+    <rect width="280" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text x="140" y="24" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="bold">Multi-Active Key Legend</text>
+    
+    <rect x="10" y="34" width="260" height="18" rx="4" fill="#2563eb"/>
+    <text x="140" y="47" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">🟦 HUB_ (Blue - Core Business Concept)</text>
+    
+    <rect x="10" y="56" width="260" height="18" rx="4" fill="#dc2626"/>
+    <text x="140" y="69" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">🟥 SAT_ (Red - Standard 1-to-1 Payload)</text>
+    
+    <rect x="10" y="76" width="260" height="18" rx="4" fill="#e11d48"/>
+    <text x="140" y="89" text-anchor="middle" fill="#fef08a" font-size="11" font-weight="bold">🟨🔑 MAK (Multi-Active Key Sub-Sequence PK)</text>
+  </g>
+
+  <!-- ==================== CONNECTORS / ARROWS ==================== -->
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f87171"/>
+    </marker>
+    <marker id="arrow-rose" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#fb7185"/>
+    </marker>
+  </defs>
+
+  <!-- SAT_User -> HUB_User -->
+  <path d="M 350 216 L 440 216" fill="none" stroke="#f87171" stroke-width="2.5" marker-end="url(#arrow-red)"/>
+
+  <!-- SAT_User_Phone_MA -> HUB_User -->
+  <path d="M 780 216 L 690 216" fill="none" stroke="#fb7185" stroke-width="2.5" marker-end="url(#arrow-rose)"/>
+
+
+  <!-- ==================== HUB_User ==================== -->
+  <g transform="translate(440, 180)">
+    <rect width="250" height="180" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+    <path d="M 0 0 L 250 0 L 250 36 L 0 36 Z" fill="#1d4ed8"/>
+    <text x="125" y="23" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">HUB_User</text>
+    <rect x="0" y="36" width="250" height="36" fill="#1e3a8a"/>
+    <text x="12" y="59" fill="#bfdbfe" font-size="12" font-weight="bold">🔑 HK_User [PK]</text>
+    <rect x="0" y="72" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="95" fill="#dbeafe" font-size="12" font-weight="bold">📌 User_ID [BK]</text>
+    <rect x="0" y="108" width="250" height="36" fill="#1e293b"/>
+    <text x="12" y="131" fill="#94a3b8" font-size="11">⏱ LOAD_DATE</text>
+    <rect x="0" y="144" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="167" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+
+
+  <!-- ==================== SAT_User (Standard) ==================== -->
+  <g transform="translate(80, 180)">
+    <rect width="270" height="288" rx="8" fill="#1e293b" stroke="#ef4444" stroke-width="2.5"/>
+    <path d="M 0 0 L 270 0 L 270 36 L 0 36 Z" fill="#b91c1c"/>
+    <text x="135" y="23" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="bold">SAT_User (Standard Satellite)</text>
+    <rect x="0" y="36" width="270" height="36" fill="#7f1d1d"/>
+    <text x="12" y="59" fill="#fecaca" font-size="12" font-weight="bold">🔑🔗 HK_User [PK, FK]</text>
+    <rect x="0" y="72" width="270" height="36" fill="#991b1b"/>
+    <text x="12" y="95" fill="#fee2e2" font-size="12" font-weight="bold">🔑⏱ LOAD_DATE [PK]</text>
+    <rect x="0" y="108" width="270" height="36" fill="#0f172a"/>
+    <text x="12" y="131" fill="#fca5a5" font-size="12" font-weight="bold">⚡ HASH_DIFF</text>
+    <rect x="0" y="144" width="270" height="36" fill="#1e293b"/>
+    <text x="24" y="167" fill="#e2e8f0" font-size="12">First_Name</text>
+    <rect x="0" y="180" width="270" height="36" fill="#0f172a"/>
+    <text x="24" y="203" fill="#e2e8f0" font-size="12">Last_Name</text>
+    <rect x="0" y="216" width="270" height="36" fill="#1e293b"/>
+    <text x="24" y="239" fill="#e2e8f0" font-size="12">Email</text>
+    <rect x="0" y="252" width="270" height="36" fill="#0f172a"/>
+    <text x="12" y="275" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+
+
+  <!-- ==================== SAT_User_Phone_MA (Multi-Active) ==================== -->
+  <g transform="translate(780, 180)">
+    <rect width="290" height="324" rx="8" fill="#1e293b" stroke="#f43f5e" stroke-width="2.5"/>
+    <path d="M 0 0 L 290 0 L 290 36 L 0 36 Z" fill="#e11d48"/>
+    <text x="145" y="23" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="bold">SAT_User_Phone_MA (Multi-Active)</text>
+    <rect x="0" y="36" width="290" height="36" fill="#881337"/>
+    <text x="12" y="59" fill="#fda4af" font-size="12" font-weight="bold">🔑🔗 HK_User [PK, FK]</text>
+    <rect x="0" y="72" width="290" height="36" fill="#be123c"/>
+    <text x="12" y="95" fill="#fecdd3" font-size="12" font-weight="bold">🔑⏱ LOAD_DATE [PK]</text>
+    <rect x="0" y="108" width="290" height="36" fill="#4c0519"/>
+    <text x="12" y="131" fill="#fef08a" font-size="12" font-weight="bold">🔑🟨 Phone_Type [PK, MAK]</text>
+    <rect x="0" y="144" width="290" height="36" fill="#0f172a"/>
+    <text x="12" y="167" fill="#fb7185" font-size="12" font-weight="bold">⚡ HASH_DIFF</text>
+    <rect x="0" y="180" width="290" height="36" fill="#1e293b"/>
+    <text x="24" y="203" fill="#e2e8f0" font-size="12">Phone_Number</text>
+    <rect x="0" y="216" width="290" height="36" fill="#0f172a"/>
+    <text x="24" y="239" fill="#e2e8f0" font-size="12">Country_Code</text>
+    <rect x="0" y="252" width="290" height="36" fill="#1e293b"/>
+    <text x="24" y="275" fill="#e2e8f0" font-size="12">is_active</text>
+    <rect x="0" y="288" width="290" height="36" fill="#0f172a"/>
+    <text x="12" y="311" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+</svg>

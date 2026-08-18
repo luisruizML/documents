@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1250 760" width="100%" height="100%" style="background-color: #0f172a; font-family: system-ui, -apple-system, sans-serif;">
+  <!-- Title -->
+  <text x="625" y="45" text-anchor="middle" fill="#f8fafc" font-size="22" font-weight="bold">Status Tracking Satellite (STS) Model</text>
+  <text x="625" y="75" text-anchor="middle" fill="#94a3b8" font-size="13" font-style="italic">Tracking Product-Category Relationship Status Changes over Time (CDC Systems)</text>
+
+  <!-- Legend Box -->
+  <g transform="translate(80, 30)">
+    <rect width="280" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text x="140" y="24" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="bold">Status Tracking Legend</text>
+    
+    <rect x="10" y="34" width="260" height="18" rx="4" fill="#2563eb"/>
+    <text x="140" y="47" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">🟦 HUB_ (Blue - Core Business Concepts)</text>
+    
+    <rect x="10" y="56" width="260" height="18" rx="4" fill="#16a34a"/>
+    <text x="140" y="69" text-anchor="middle" fill="#ffffff" font-size="11" font-weight="bold">🟩 LNK_ (Green - Associations &amp; Links)</text>
+    
+    <rect x="10" y="76" width="260" height="18" rx="4" fill="#9333ea"/>
+    <text x="140" y="89" text-anchor="middle" fill="#f5d0fe" font-size="11" font-weight="bold">🟪⚡ STS_ (Purple - Status Tracking Satellite)</text>
+  </g>
+
+  <!-- ==================== CONNECTORS / ARROWS ==================== -->
+  <defs>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4ade80"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c084fc"/>
+    </marker>
+  </defs>
+
+  <!-- LNK_Product_Category -> HUB_Product -->
+  <path d="M 490 252 L 330 216" fill="none" stroke="#4ade80" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <!-- LNK_Product_Category -> HUB_Category -->
+  <path d="M 770 288 L 920 216" fill="none" stroke="#4ade80" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <!-- SAT_Product_Category_STS -> LNK_Product_Category -->
+  <path d="M 630 470 L 630 396" fill="none" stroke="#c084fc" stroke-width="2.5" marker-end="url(#arrow-purple)"/>
+
+
+  <!-- ==================== HUB_Product ==================== -->
+  <g transform="translate(80, 180)">
+    <rect width="250" height="180" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+    <path d="M 0 0 L 250 0 L 250 36 L 0 36 Z" fill="#1d4ed8"/>
+    <text x="125" y="23" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">HUB_Product</text>
+    <rect x="0" y="36" width="250" height="36" fill="#1e3a8a"/>
+    <text x="12" y="59" fill="#bfdbfe" font-size="12" font-weight="bold">🔑 HK_Product [PK]</text>
+    <rect x="0" y="72" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="95" fill="#dbeafe" font-size="12" font-weight="bold">📌 Product_ID [BK]</text>
+    <rect x="0" y="108" width="250" height="36" fill="#1e293b"/>
+    <text x="12" y="131" fill="#94a3b8" font-size="11">⏱ LOAD_DATE</text>
+    <rect x="0" y="144" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="167" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+
+
+  <!-- ==================== HUB_Category ==================== -->
+  <g transform="translate(920, 180)">
+    <rect width="250" height="180" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="2.5"/>
+    <path d="M 0 0 L 250 0 L 250 36 L 0 36 Z" fill="#1d4ed8"/>
+    <text x="125" y="23" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">HUB_Category</text>
+    <rect x="0" y="36" width="250" height="36" fill="#1e3a8a"/>
+    <text x="12" y="59" fill="#bfdbfe" font-size="12" font-weight="bold">🔑 HK_Category [PK]</text>
+    <rect x="0" y="72" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="95" fill="#dbeafe" font-size="12" font-weight="bold">📌 Category_ID [BK]</text>
+    <rect x="0" y="108" width="250" height="36" fill="#1e293b"/>
+    <text x="12" y="131" fill="#94a3b8" font-size="11">⏱ LOAD_DATE</text>
+    <rect x="0" y="144" width="250" height="36" fill="#0f172a"/>
+    <text x="12" y="167" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+
+
+  <!-- ==================== LNK_Product_Category ==================== -->
+  <g transform="translate(490, 180)">
+    <rect width="280" height="216" rx="8" fill="#1e293b" stroke="#22c55e" stroke-width="2.5"/>
+    <path d="M 0 0 L 280 0 L 280 36 L 0 36 Z" fill="#15803d"/>
+    <text x="140" y="23" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">LNK_Product_Category</text>
+    <rect x="0" y="36" width="280" height="36" fill="#14532d"/>
+    <text x="12" y="59" fill="#bbf7d0" font-size="12" font-weight="bold">🔑 HK_LNK_Prod_Cat [PK]</text>
+    <rect x="0" y="72" width="280" height="36" fill="#166534"/>
+    <text x="12" y="95" fill="#dcfce7" font-size="12" font-weight="bold">🔗 HK_Product [FK]</text>
+    <rect x="0" y="108" width="280" height="36" fill="#166534"/>
+    <text x="12" y="131" fill="#dcfce7" font-size="12" font-weight="bold">🔗 HK_Category [FK]</text>
+    <rect x="0" y="144" width="280" height="36" fill="#1e293b"/>
+    <text x="12" y="167" fill="#94a3b8" font-size="11">⏱ LOAD_DATE</text>
+    <rect x="0" y="180" width="280" height="36" fill="#0f172a"/>
+    <text x="12" y="203" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+
+
+  <!-- ==================== SAT_Product_Category_STS ==================== -->
+  <g transform="translate(490, 470)">
+    <rect width="280" height="252" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+    <path d="M 0 0 L 280 0 L 280 36 L 0 36 Z" fill="#9333ea"/>
+    <text x="140" y="23" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="bold">SAT_Product_Category_STS</text>
+    <rect x="0" y="36" width="280" height="36" fill="#581c87"/>
+    <text x="12" y="59" fill="#f5d0fe" font-size="12" font-weight="bold">🔑🔗 HK_LNK_Prod_Cat [PK, FK]</text>
+    <rect x="0" y="72" width="280" height="36" fill="#6b21a8"/>
+    <text x="12" y="95" fill="#fae8ff" font-size="12" font-weight="bold">🔑⏱ LOAD_DATE [PK]</text>
+    <rect x="0" y="108" width="280" height="36" fill="#0f172a"/>
+    <text x="12" y="131" fill="#e9d5ff" font-size="12" font-weight="bold">⚡ Category_Status (ACTIVE/INACTIVE)</text>
+    <rect x="0" y="144" width="280" height="36" fill="#1e293b"/>
+    <text x="24" y="167" fill="#e2e8f0" font-size="12">Is_Current_Category (Boolean)</text>
+    <rect x="0" y="180" width="280" height="36" fill="#0f172a"/>
+    <text x="24" y="203" fill="#e2e8f0" font-size="11">CDC_Operation (INSERT/UPDATE/DELETE)</text>
+    <rect x="0" y="216" width="280" height="36" fill="#1e293b"/>
+    <text x="12" y="239" fill="#94a3b8" font-size="11">📄 RECORD_SOURCE</text>
+  </g>
+</svg>

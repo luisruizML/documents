@@ -38,7 +38,7 @@
 
 ![Data Vault 2.0 Model](./model_dv2.svg)
 
-
+---
 
 # Notes about LINKS
 
@@ -61,6 +61,8 @@ Types
 - Same-as Links
 - Explotation Links
 
+---
+
 # Notes about SATELLITES
 
 ## Basic Structure
@@ -75,7 +77,24 @@ Types
 
 
 ### Multi-Active Satellites
+This satellites are use when there are some attributes are valid/active. For example, when you have a multiple active addresses for a customer or you have multiple owners for a land at the same time.
+
+- **Draw.io Editable File**: [`model_mas.drawio`](file:///c:/Development/documents/data_vault_2/model_mas.drawio)
+
+![Multi-Active Satellite Model](./model_mas.svg)
+
 
 ### Status Tracking Satellites
+The bussiness use case for this is mostly for CDC systems
+
+- **Draw.io Editable File**: [`model_sts.drawio`](file:///c:/Development/documents/data_vault_2/model_sts.drawio)
+
+![Status Tracking Satellite Model](./model_sts.svg)
+
 
 ### Record Tracking Satellites
+This kind of Satellite is use when you need to track the changes of a record over time. For example, when you have a multiple orders for a customer and you want to track the changes of each order over time.
+
+- **Draw.io Editable File**: [`model_rts.drawio`](file:///c:/Development/documents/data_vault_2/model_rts.drawio)
+
+![Record Tracking Satellite Model](./model_rts.svg)
