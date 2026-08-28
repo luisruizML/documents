@@ -1,0 +1,294 @@
+<mxfile host="65bd71144e">
+    <diagram id="pzhUJPEqOCWok4E279Oc" name="Page-1">
+        <mxGraphModel dx="1983" dy="4107" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="4" value="" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontColor=#FFFFFF;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="2" target="3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontColor=#FFFFFF;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="2" target="5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" style="edgeStyle=orthogonalEdgeStyle;html=1;fontSize=12;fontColor=#FFFFFF;strokeWidth=4;fillColor=#d80073;strokeColor=#A50040;" edge="1" parent="1" source="2">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="780.0000000000002" y="-215.93000000000006" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="2" value="&lt;span style=&quot;font-family: &amp;quot;Atlassian Sans&amp;quot;, ui-sans-serif, -apple-system, BlinkMacSystemFont, &amp;quot;Segoe UI&amp;quot;, Ubuntu, &amp;quot;Helvetica Neue&amp;quot;, sans-serif; font-size: 12px; text-align: start;&quot;&gt;PM Public services suite&lt;/span&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=12;fontColor=#FFFFFF;labelBackgroundColor=default;" vertex="1" parent="1">
+                    <mxGeometry x="880" y="-235.93" width="210" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=4;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="3" target="31">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Taxes&lt;br&gt;MTS &lt;br&gt;(&lt;b&gt;Multi Tax Solution&lt;/b&gt;)" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1215" y="-660" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Social Services" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1215" y="-80" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="The problems we aim to solve" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="210" y="-236.87" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="Citizens lose time they can’t afford to lose" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="-427.495" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="8" target="10">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="-459.995" width="20" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="- Repeated information requests&#10;- Long queues&#10;- Fragmented services&#10;- Complex forms for even the simplest tasks" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="-451.87" width="180" height="78.75" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="Institutions operate with inefficiencies that drain capacity and morale" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="-300.87" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="8" target="15">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="&lt;div&gt;- Outdated systems&lt;/div&gt;&lt;div&gt;- Manual tasks&lt;/div&gt;&lt;div&gt;- Low visibility into their workload&lt;/div&gt;&lt;div&gt;- Large backlogs&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="-320.87" width="180" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="-323.37" width="20" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="Data is an untapped asset and a barrier instead of an enabler" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="-173.87" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="8" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="&lt;div&gt;- Siloed systems&lt;/div&gt;&lt;div&gt;- Inconsistent standards&lt;/div&gt;&lt;div&gt;- Limited data literacy prevent information from flowing across agencies&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="-198.87" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="-196.37" width="20" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="Internally, we face scaling and quality constraints rooted in our legacy ways of working" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="-54.370000000000005" width="180" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="8" target="23">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="&lt;div&gt;- Architectural fragmentation&lt;/div&gt;&lt;div&gt;- Duplicated efforts&lt;/div&gt;&lt;div&gt;- Teams aligned to clients rather than outcomes&lt;/div&gt;&lt;div&gt;- Scalability limitations&lt;/div&gt;&lt;div&gt;- Inconsistent quality&lt;/div&gt;&lt;div&gt;- Heavy dependency on custom development&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="600" y="-91.87" width="180" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="-91.87" width="20" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="60" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="33">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="61" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="34">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="35">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="63" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="36">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="40">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="69" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="41">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="42">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="71" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=12;fontColor=#FFFFFF;" edge="1" parent="1" source="31" target="39">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="The problems we aim to solve" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="1440" y="-645" width="120" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="Compliance Gap" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-1031.6925" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="High Administrative Burden" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-921.8125000000001" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="Weak Taxpayer Registry &amp;amp; Data Quality" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-810.8125000000001" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="Debt &amp;amp; Delinquency Management" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-701.5" width="180" height="31.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-1064.1925" width="20" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="&lt;div&gt;- Limited capacity&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Manual processes (OECD, SME Tax Gap Analysis).&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Informal sector participation exceeds 30–50% of the labor force, making voluntary compliance structurally difficult (ILO/IMF).&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-1056.0675" width="340" height="78.75" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="Fragmented Data Ecosystem &amp;amp; Siloed Services" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-259.9975000000002" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="Low Audit Effectiveness" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-591.1875000000001" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="Sudden Legislative Changes &amp;amp; Low Agility" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-480.2475000000002" width="180" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="Legacy IT &amp;amp; Technical Debt" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1630" y="-377.6875000000001" width="180" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-954.3125000000001" width="20" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="&lt;div&gt;- Low-income and small economies spend 100–250 hrs/y on tax compliance vs ~40 in advanced economies&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Facing disproportionate compliance burdens&lt;/div&gt;&lt;div&gt;- Burden is amplified in SIDS due to small administrations and manual processes.&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-946.1875000000001" width="340" height="78.75" as="geometry"/>
+                </mxCell>
+                <mxCell id="47" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-828.3125000000001" width="20" height="65" as="geometry"/>
+                </mxCell>
+                <mxCell id="48" value="&lt;div&gt;- Fragmented ID systems&lt;/div&gt;&lt;div&gt;- Duplicated TINs&lt;/div&gt;&lt;div&gt;- Mismatched population records (birth/death/migration)&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-835.1875000000001" width="340" height="78.75" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-707.3075000000001" width="20" height="43.12" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" value="- Weaker recovery due to small teams and manual casework (TADAT reports).&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-714.1875000000001" width="340" height="56.88" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-610.5725000000001" width="20" height="68.77" as="geometry"/>
+                </mxCell>
+                <mxCell id="52" value="&lt;div&gt;- Traditional audits are slow, costly and downstream, and rarely change long-term compliance behaviour&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Lack of integrated data across agencies weakens risk profiling and reduces audit yield.&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-611.1875000000001" width="340" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-497.75250000000005" width="20" height="65.01" as="geometry"/>
+                </mxCell>
+                <mxCell id="54" value="&lt;div&gt;- Frequently adjust tax rates and exemptions during budget cycles or crises.&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Legal updates slow and error-prone&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-496.1875000000001" width="340" height="61.88" as="geometry"/>
+                </mxCell>
+                <mxCell id="55" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-402.6875000000001" width="20" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="56" value="&lt;div&gt;- Many SIDS operate systems that are 10–20+ years old&lt;/div&gt;&lt;div&gt;- Highly customized&lt;/div&gt;&lt;div&gt;- Expensive to maintain&lt;/div&gt;&lt;div&gt;- Legacy maintenance consumes 30–50% of IT budgets.&amp;nbsp;&lt;/div&gt;&lt;div&gt;- Lack of APIs, event-driven architecture, and data standards block real-time processes and integration&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-403.1875000000001" width="340" height="96" as="geometry"/>
+                </mxCell>
+                <mxCell id="57" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;labelPosition=left;verticalLabelPosition=middle;align=right;verticalAlign=middle;labelBackgroundColor=default;fontSize=9;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="1830" y="-292.4975000000002" width="20" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="58" value="&lt;div&gt;- Tax administrations rely on manual, siloed, downstream processes with poor data exchange.&amp;nbsp;&lt;/div&gt;&lt;div&gt;- SMEs often must extract data from their business systems and re-enter it into tax systems&lt;/div&gt;&lt;div&gt;- SIDS struggle to integrate with registrars, customs, local govs, social funds, banks&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;horizontal=1;" vertex="1" parent="1">
+                    <mxGeometry x="1850" y="-294.1875000000001" width="340" height="98.38" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="Vision &lt;br&gt;Subdimensions" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="2400" y="-635.5" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" source="73" target="87">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" source="73" target="90">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" source="73" target="91">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="98" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" source="73" target="92">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="99" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#1ba1e2;strokeColor=#006EAF;" edge="1" parent="1" source="73" target="93">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="73" value="Configurable Core architecture" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="2580" y="-1097" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="104" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="1" source="74" target="100">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="1" source="74" target="101">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="106" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="1" source="74" target="102">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="107" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#60a917;strokeColor=#2D7600;" edge="1" parent="1" source="74" target="103">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="Burden decrease" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="2570" y="-606.19" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="111" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#0050ef;strokeColor=#001DBC;" edge="1" parent="1" source="75" target="108">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="112" style="edgeStyle=orthogonalEdgeStyle;html=1;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#0050ef;strokeColor=#001DBC;" edge="1" parent="1" source="75" target="109">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="113" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=2;fontSize=12;fontColor=#FFFFFF;fillColor=#0050ef;strokeColor=#001DBC;" edge="1" parent="1" source="75" target="110">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="75" value="Trusted digital identity &amp;amp; access" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="2580" y="-245.565" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="76" value="Interoperable data &amp;amp; interface ecosystem" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-1130" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="77" value="Risk-based compliance management" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-1061" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="Resilience &amp;amp; inclusivity" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-855" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" value="Responsible innovation &amp;amp; assurance" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-786" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="Engineering quality &amp;amp; scalability" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-717" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="83" value="Service &amp;amp; commercial packaging" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-648" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="Product governance &amp;amp; team structure" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-580" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="78" value="Enforcement &amp;amp; compliance" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-992" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="79" value="Policy insight and capability development" style="rounded=1;whiteSpace=wrap;html=1;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="3370" y="-923" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Modular &amp;amp; Decoupled Design&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Independent core modules are composed to create complete tax administration workflows. They communicate seamlessly through an API gateway, allowing each module to evolve independently.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2750" y="-1331.5" width="500" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="90" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Feature-Flag Approach&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Each module uses feature flags, meaning specific capabilities can be toggled on or off depending on a jurisdiction's specific needs. This allows administrations to adopt only what they need and scale safely over time without replacing the whole system.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2750" y="-1224" width="500" height="100.19" as="geometry"/>
+                </mxCell>
+                <mxCell id="91" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;The Tax Studio&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Taxes (like VAT, CIT, and PIT) are defined through configurable templates rather than hard-coded software. This turns taxation into a flexible &quot;policy capability&quot; controlled by the administration, rather than vendor-controlled software.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2750" y="-1114" width="500" height="96.12" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Unified Data Layer&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;The architecture sits on a foundational Data Layer that maintains consistent rules across core components while smoothly interacting with different data sets.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2750" y="-1003" width="500" height="88.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Highly Adaptable&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Because capabilities can be activated at different percentages (e.g., 50% of Component A, 80% of Component C) and organized uniquely, the platform naturally molds to the specific processes of any given jurisdiction.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2750" y="-900" width="500" height="97.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="100" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Configurable Workflows&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Tax administrations are not locked into predefined processes. They can design custom task flows and notifications, which gives tax officers clear visibility and control over their daily tasks.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2740" y="-786.49" width="500" height="100.19" as="geometry"/>
+                </mxCell>
+                <mxCell id="101" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Embedded Compliance&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;For taxpayers, the MTS integrates tax compliance directly into the natural systems they already use—such as payroll, accounting, and banking platforms—cutting down on repetitive data entry and manual reporting.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2740" y="-676.49" width="500" height="96.12" as="geometry"/>
+                </mxCell>
+                <mxCell id="102" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Automation &amp;amp; Prefilled Returns&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Where legislation permits, the platform automatically generates required documents and pre-fills tax returns using data pulled from other tax types and trusted third parties. It also assigns obligations automatically based on clear rules and thresholds.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2740" y="-565.49" width="500" height="88.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="103" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Transparent Communication&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;The system ensures individuals and businesses clearly understand what is required of them, when it is due, and why through timely, transparent notifications.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2740" y="-462.49" width="500" height="97.5" as="geometry"/>
+                </mxCell>
+                <mxCell id="108" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Flexible Implementation&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;The system can be deployed as a basic registration module where needed, or scaled into a full digital identity layer connecting people and businesses across tax and other public services.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2730" y="-365.87" width="500" height="96.12" as="geometry"/>
+                </mxCell>
+                <mxCell id="109" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Centralized Gateway&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;By centralizing taxpayer information, citizens and businesses can interact through a single, reliable identity rather than juggling fragmented credentials across various government systems.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2730" y="-263" width="500" height="94.87" as="geometry"/>
+                </mxCell>
+                <mxCell id="110" value="&lt;h1&gt;&lt;font style=&quot;font-size: 20px;&quot;&gt;Interoperability over Replacement&lt;/font&gt;&lt;/h1&gt;&lt;p&gt;Where a national digital identity or portal already exists, the MTS is designed to integrate with it rather than replace it. This respects existing investments while strengthening overall interoperability and reducing duplication.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;labelBackgroundColor=default;fontSize=12;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="2730" y="-162.37" width="500" height="97.5" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

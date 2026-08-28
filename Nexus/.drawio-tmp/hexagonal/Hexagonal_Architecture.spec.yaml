@@ -1,0 +1,291 @@
+meta:
+  theme: tech-blue
+  profile: default
+  canvas: auto
+  title: Hexagonal Architecture — Ports & Adapters (Nexus)
+  description: >-
+    Driving adapters enter through an inbound port into the Domain Core hexagon; the core exits through an outbound port
+    into driven adapters. The core has zero imports from any specific database, queue, or framework.
+nodes:
+  - id: d_fastapi
+    label: |-
+      FastAPI
+      (REST)
+    type: service
+    module: driving
+    size: large
+    position:
+      x: 140
+      'y': 205
+  - id: d_graphql
+    label: GraphQL / gRPC
+    type: service
+    module: driving
+    size: large
+    position:
+      x: 140
+      'y': 325
+  - id: d_cli
+    label: CLI
+    type: service
+    module: driving
+    size: large
+    position:
+      x: 140
+      'y': 445
+  - id: d_airflow
+    label: |-
+      Airflow
+      Trigger
+    type: service
+    module: driving
+    size: large
+    position:
+      x: 140
+      'y': 565
+  - id: d_a2a
+    label: |-
+      A2A Caller
+      (Agent-to-Agent)
+    type: service
+    module: driving
+    size: large
+    position:
+      x: 140
+      'y': 685
+  - id: port_in
+    label: Inbound Port
+    type: process
+    size: medium
+    position:
+      x: 420
+      'y': 445
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      strokeWidth: 2
+      fontWeight: 600
+  - id: core_hex
+    label: |-
+      Domain Core
+
+      • Erasure rules (Annex A)
+      • Survivorship logic (Annex B)
+      • DQ triage (Annex F)
+      • SLO evaluation (Annex D)
+    type: gateway
+    bounds:
+      x: 570
+      'y': 165
+      width: 420
+      height: 560
+    style:
+      fillColor: $primaryLight
+      strokeColor: $primary
+      strokeWidth: 3
+      fontWeight: 600
+      fontSize: 15
+  - id: core_note
+    label: |-
+      No imports from any specific
+      database, queue, or framework
+    type: text
+    position:
+      x: 780
+      'y': 775
+    style:
+      italic: true
+      fontColor: $textMuted
+  - id: port_out
+    label: Outbound Port
+    type: process
+    size: medium
+    position:
+      x: 1140
+      'y': 445
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      strokeWidth: 2
+      fontWeight: 600
+  - id: v_postgres
+    label: PostgreSQL
+    type: database
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 25
+  - id: v_mongo
+    label: MongoDB
+    type: database
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 145
+  - id: v_neo4j
+    label: Neo4j
+    type: database
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 265
+  - id: v_lakehouse
+    label: |-
+      Iceberg /
+      Delta Lake
+    type: database
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 385
+  - id: v_kafka
+    label: Kafka
+    type: queue
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 505
+  - id: v_s3
+    label: |-
+      S3 Object
+      Storage
+    type: database
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 625
+  - id: v_kms
+    label: KMS / Vault
+    type: service
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 745
+  - id: v_openmetadata
+    label: OpenMetadata
+    type: service
+    module: driven
+    size: large
+    position:
+      x: 1420
+      'y': 865
+edges:
+  - from: d_fastapi
+    to: port_in
+    type: primary
+    waypoints:
+      - x: 290
+        'y': 205
+      - x: 290
+        'y': 445
+  - from: d_graphql
+    to: port_in
+    type: primary
+    waypoints:
+      - x: 290
+        'y': 325
+      - x: 290
+        'y': 445
+  - from: d_cli
+    to: port_in
+    type: primary
+  - from: d_airflow
+    to: port_in
+    type: primary
+    waypoints:
+      - x: 290
+        'y': 565
+      - x: 290
+        'y': 445
+  - from: d_a2a
+    to: port_in
+    type: primary
+    waypoints:
+      - x: 290
+        'y': 685
+      - x: 290
+        'y': 445
+  - from: port_in
+    to: core_hex
+    type: primary
+  - from: core_hex
+    to: port_out
+    type: primary
+  - from: port_out
+    to: v_postgres
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 25
+  - from: port_out
+    to: v_mongo
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 145
+  - from: port_out
+    to: v_neo4j
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 265
+  - from: port_out
+    to: v_lakehouse
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 385
+  - from: port_out
+    to: v_kafka
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 505
+  - from: port_out
+    to: v_s3
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 625
+  - from: port_out
+    to: v_kms
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 745
+  - from: port_out
+    to: v_openmetadata
+    type: primary
+    waypoints:
+      - x: 1270
+        'y': 445
+      - x: 1270
+        'y': 865
+modules:
+  - id: driving
+    label: Driving Adapters (Inbound)
+    color: $secondary
+  - id: driven
+    label: Driven Adapters (Outbound)
+    color: $secondary

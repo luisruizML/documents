@@ -1,0 +1,98 @@
+meta:
+  theme: tech-blue
+  profile: default
+  canvas: auto
+  title: Infrastructure as Code Workflow — Terraform at Nexus
+  description: >-
+    One versioned HCL source of truth flows through the same plan/apply workflow regardless of which Terraform flavor
+    executes it, and lands on whichever infrastructure a given client actually runs.
+nodes:
+  - id: src
+    label: |-
+      Terraform Code (.tf)
+      Version-controlled in Git
+    type: document
+    position:
+      x: 140
+      'y': 300
+  - id: plan
+    label: |-
+      terraform plan
+      (preview the diff)
+    type: process
+    position:
+      x: 430
+      'y': 300
+  - id: apply
+    label: terraform apply
+    type: process
+    position:
+      x: 700
+      'y': 300
+    style:
+      fillColor: $primaryLight
+      strokeColor: $primary
+      strokeWidth: 2
+      fontWeight: 600
+  - id: tfc
+    label: |-
+      Terraform Cloud
+      HashiCorp-hosted SaaS
+    type: service
+    position:
+      x: 1000
+      'y': 150
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      strokeWidth: 2
+      fontWeight: 600
+  - id: tfe
+    label: |-
+      Terraform Enterprise
+      Self-hosted, client's firewall
+    type: service
+    position:
+      x: 1000
+      'y': 450
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      strokeWidth: 2
+      fontWeight: 600
+  - id: cloud_infra
+    label: |-
+      Cloud-native client
+      AWS / Azure / GCP
+    type: cloud
+    position:
+      x: 1300
+      'y': 150
+  - id: onprem_infra
+    label: |-
+      On-premise client
+      Kubernetes cluster
+    type: service
+    position:
+      x: 1300
+      'y': 450
+edges:
+  - from: src
+    to: plan
+    type: primary
+  - from: plan
+    to: apply
+    type: primary
+  - from: apply
+    to: tfc
+    type: primary
+  - from: apply
+    to: tfe
+    type: primary
+  - from: tfc
+    to: cloud_infra
+    type: primary
+  - from: tfe
+    to: onprem_infra
+    type: primary
+modules: []

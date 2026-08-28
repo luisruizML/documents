@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "title": "Infrastructure as Code Workflow — Terraform at Nexus",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 7,
+    "edges": 6,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "src",
+      "label": "Terraform Code (.tf)\nVersion-controlled in Git",
+      "type": "document"
+    },
+    {
+      "id": "plan",
+      "label": "terraform plan\n(preview the diff)",
+      "type": "process"
+    },
+    {
+      "id": "apply",
+      "label": "terraform apply",
+      "type": "process"
+    },
+    {
+      "id": "tfc",
+      "label": "Terraform Cloud\nHashiCorp-hosted SaaS",
+      "type": "service"
+    },
+    {
+      "id": "tfe",
+      "label": "Terraform Enterprise\nSelf-hosted, client's firewall",
+      "type": "service"
+    },
+    {
+      "id": "cloud_infra",
+      "label": "Cloud-native client\nAWS / Azure / GCP",
+      "type": "cloud"
+    },
+    {
+      "id": "onprem_infra",
+      "label": "On-premise client\nKubernetes cluster",
+      "type": "service"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "src",
+      "to": "plan",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "plan",
+      "to": "apply",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "apply",
+      "to": "tfc",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "apply",
+      "to": "tfe",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "tfc",
+      "to": "cloud_infra",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "tfe",
+      "to": "onprem_infra",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

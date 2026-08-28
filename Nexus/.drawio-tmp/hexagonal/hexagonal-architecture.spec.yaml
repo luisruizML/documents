@@ -1,0 +1,195 @@
+meta:
+  theme: tech-blue
+  profile: default
+  canvas: auto
+  title: "Hexagonal Architecture — Ports & Adapters (Nexus)"
+  description: "Driving adapters enter through an inbound port into the Domain Core; the core exits through an outbound port into driven adapters. The core has zero imports from any specific database, queue, or framework."
+
+modules:
+  - id: driving
+    label: "Driving Adapters (Inbound)"
+    color: $secondary
+  - id: core
+    label: "Domain Core"
+    color: $primary
+  - id: driven
+    label: "Driven Adapters (Outbound)"
+    color: $secondary
+
+nodes:
+  # Driving adapters — y=80
+  - id: d_fastapi
+    label: "FastAPI\n(REST)"
+    type: service
+    module: driving
+    position: { x: 175, y: 90 }
+  - id: d_graphql
+    label: "GraphQL / gRPC"
+    type: service
+    module: driving
+    position: { x: 435, y: 90 }
+  - id: d_cli
+    label: "CLI"
+    type: service
+    module: driving
+    position: { x: 695, y: 90 }
+  - id: d_airflow
+    label: "Airflow\nTrigger"
+    type: service
+    module: driving
+    position: { x: 955, y: 90 }
+  - id: d_a2a
+    label: "A2A Caller\n(Agent-to-Agent)"
+    type: service
+    module: driving
+    position: { x: 1215, y: 90 }
+
+  # Inbound port
+  - id: port_in
+    label: "Inbound Port"
+    type: process
+    module: core
+    size: medium
+    position: { x: 695, y: 350 }
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      fontWeight: 600
+
+  # Domain core
+  - id: core_box
+    label: "Domain Core\n\n• Erasure rules (Annex A)\n• Survivorship logic (Annex B)\n• DQ triage (Annex F)\n• SLO evaluation (Annex D)"
+    type: service
+    module: core
+    size: xl
+    position: { x: 695, y: 520 }
+    style:
+      fillColor: $primaryLight
+      strokeColor: $primary
+      strokeWidth: 3
+      fontWeight: 600
+
+  - id: core_note
+    label: "No imports from any specific\ndatabase, queue, or framework"
+    type: text
+    module: core
+    position: { x: 1080, y: 520 }
+    style:
+      italic: true
+      fontColor: $textMuted
+
+  # Outbound port
+  - id: port_out
+    label: "Outbound Port"
+    type: process
+    module: core
+    size: medium
+    position: { x: 695, y: 690 }
+    style:
+      fillColor: $accentLight
+      strokeColor: $accent
+      fontWeight: 600
+
+  # Driven adapters — y=800
+  - id: v_postgres
+    label: PostgreSQL
+    type: database
+    module: driven
+    position: { x: 100, y: 870 }
+  - id: v_mongo
+    label: MongoDB
+    type: database
+    module: driven
+    position: { x: 270, y: 870 }
+  - id: v_neo4j
+    label: Neo4j
+    type: database
+    module: driven
+    position: { x: 440, y: 870 }
+  - id: v_lakehouse
+    label: "Iceberg /\nDelta Lake"
+    type: database
+    module: driven
+    position: { x: 610, y: 870 }
+  - id: v_kafka
+    label: Kafka
+    type: queue
+    module: driven
+    position: { x: 780, y: 870 }
+  - id: v_s3
+    label: "S3 Object\nStorage"
+    type: database
+    module: driven
+    position: { x: 950, y: 870 }
+  - id: v_kms
+    label: "KMS / Vault"
+    type: service
+    module: driven
+    position: { x: 1120, y: 870 }
+  - id: v_openmetadata
+    label: OpenMetadata
+    type: service
+    module: driven
+    position: { x: 1290, y: 870 }
+
+edges:
+  - from: d_fastapi
+    to: port_in
+    type: primary
+    waypoints: [{ x: 175, y: 210 }, { x: 695, y: 210 }]
+  - from: d_graphql
+    to: port_in
+    type: primary
+    waypoints: [{ x: 435, y: 210 }, { x: 695, y: 210 }]
+  - from: d_cli
+    to: port_in
+    type: primary
+  - from: d_airflow
+    to: port_in
+    type: primary
+    waypoints: [{ x: 955, y: 210 }, { x: 695, y: 210 }]
+  - from: d_a2a
+    to: port_in
+    type: primary
+    waypoints: [{ x: 1215, y: 210 }, { x: 695, y: 210 }]
+
+  - from: port_in
+    to: core_box
+    type: primary
+
+  - from: core_box
+    to: port_out
+    type: primary
+
+  - from: port_out
+    to: v_postgres
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 100, y: 770 }]
+  - from: port_out
+    to: v_mongo
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 270, y: 770 }]
+  - from: port_out
+    to: v_neo4j
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 440, y: 770 }]
+  - from: port_out
+    to: v_lakehouse
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 610, y: 770 }]
+  - from: port_out
+    to: v_kafka
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 780, y: 770 }]
+  - from: port_out
+    to: v_s3
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 950, y: 770 }]
+  - from: port_out
+    to: v_kms
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 1120, y: 770 }]
+  - from: port_out
+    to: v_openmetadata
+    type: primary
+    waypoints: [{ x: 695, y: 770 }, { x: 1290, y: 770 }]

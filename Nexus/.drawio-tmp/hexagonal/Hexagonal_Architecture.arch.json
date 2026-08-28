@@ -1,0 +1,233 @@
+{
+  "version": 1,
+  "title": "Hexagonal Architecture — Ports & Adapters (Nexus)",
+  "type": "module-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 17,
+    "edges": 15,
+    "modules": 2
+  },
+  "nodes": [
+    {
+      "id": "d_fastapi",
+      "label": "FastAPI\n(REST)",
+      "type": "service",
+      "module": "driving",
+      "size": "large"
+    },
+    {
+      "id": "d_graphql",
+      "label": "GraphQL / gRPC",
+      "type": "service",
+      "module": "driving",
+      "size": "large"
+    },
+    {
+      "id": "d_cli",
+      "label": "CLI",
+      "type": "service",
+      "module": "driving",
+      "size": "large"
+    },
+    {
+      "id": "d_airflow",
+      "label": "Airflow\nTrigger",
+      "type": "service",
+      "module": "driving",
+      "size": "large"
+    },
+    {
+      "id": "d_a2a",
+      "label": "A2A Caller\n(Agent-to-Agent)",
+      "type": "service",
+      "module": "driving",
+      "size": "large"
+    },
+    {
+      "id": "port_in",
+      "label": "Inbound Port",
+      "type": "process",
+      "size": "medium"
+    },
+    {
+      "id": "core_hex",
+      "label": "Domain Core\n\n• Erasure rules (Annex A)\n• Survivorship logic (Annex B)\n• DQ triage (Annex F)\n• SLO evaluation (Annex D)",
+      "type": "gateway"
+    },
+    {
+      "id": "core_note",
+      "label": "No imports from any specific\ndatabase, queue, or framework",
+      "type": "text"
+    },
+    {
+      "id": "port_out",
+      "label": "Outbound Port",
+      "type": "process",
+      "size": "medium"
+    },
+    {
+      "id": "v_postgres",
+      "label": "PostgreSQL",
+      "type": "database",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_mongo",
+      "label": "MongoDB",
+      "type": "database",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_neo4j",
+      "label": "Neo4j",
+      "type": "database",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_lakehouse",
+      "label": "Iceberg /\nDelta Lake",
+      "type": "database",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_kafka",
+      "label": "Kafka",
+      "type": "queue",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_s3",
+      "label": "S3 Object\nStorage",
+      "type": "database",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_kms",
+      "label": "KMS / Vault",
+      "type": "service",
+      "module": "driven",
+      "size": "large"
+    },
+    {
+      "id": "v_openmetadata",
+      "label": "OpenMetadata",
+      "type": "service",
+      "module": "driven",
+      "size": "large"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "d_fastapi",
+      "to": "port_in",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "d_graphql",
+      "to": "port_in",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "d_cli",
+      "to": "port_in",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "d_airflow",
+      "to": "port_in",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "d_a2a",
+      "to": "port_in",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "port_in",
+      "to": "core_hex",
+      "type": "primary"
+    },
+    {
+      "id": "edge-7",
+      "from": "core_hex",
+      "to": "port_out",
+      "type": "primary"
+    },
+    {
+      "id": "edge-8",
+      "from": "port_out",
+      "to": "v_postgres",
+      "type": "primary"
+    },
+    {
+      "id": "edge-9",
+      "from": "port_out",
+      "to": "v_mongo",
+      "type": "primary"
+    },
+    {
+      "id": "edge-10",
+      "from": "port_out",
+      "to": "v_neo4j",
+      "type": "primary"
+    },
+    {
+      "id": "edge-11",
+      "from": "port_out",
+      "to": "v_lakehouse",
+      "type": "primary"
+    },
+    {
+      "id": "edge-12",
+      "from": "port_out",
+      "to": "v_kafka",
+      "type": "primary"
+    },
+    {
+      "id": "edge-13",
+      "from": "port_out",
+      "to": "v_s3",
+      "type": "primary"
+    },
+    {
+      "id": "edge-14",
+      "from": "port_out",
+      "to": "v_kms",
+      "type": "primary"
+    },
+    {
+      "id": "edge-15",
+      "from": "port_out",
+      "to": "v_openmetadata",
+      "type": "primary"
+    }
+  ],
+  "modules": [
+    {
+      "id": "driving",
+      "label": "Driving Adapters (Inbound)",
+      "color": "$secondary"
+    },
+    {
+      "id": "driven",
+      "label": "Driven Adapters (Outbound)",
+      "color": "$secondary"
+    }
+  ]
+}
