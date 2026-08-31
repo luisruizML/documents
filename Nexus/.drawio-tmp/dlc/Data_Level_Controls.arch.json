@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "title": "Data-Level Controls: Graph Traversal Access Check",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 9,
+    "edges": 7,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "userA",
+      "label": "User A\n(BI Engineer)",
+      "type": "user",
+      "size": "medium"
+    },
+    {
+      "id": "userB",
+      "label": "User B\n(BI Engineer)",
+      "type": "user",
+      "size": "medium"
+    },
+    {
+      "id": "role",
+      "label": "Role\nBI Engineer",
+      "type": "process",
+      "size": "medium"
+    },
+    {
+      "id": "dominionA",
+      "label": "Dominion\nCivil Registry",
+      "type": "process",
+      "size": "medium"
+    },
+    {
+      "id": "dominionB",
+      "label": "Dominion\nTax",
+      "type": "process",
+      "size": "medium"
+    },
+    {
+      "id": "legalHold",
+      "label": "Legal Hold\n(active)",
+      "type": "decision",
+      "size": "medium"
+    },
+    {
+      "id": "subject",
+      "label": "Subject / Data\n(this citizen's row)",
+      "type": "database",
+      "size": "large"
+    },
+    {
+      "id": "allowedTag",
+      "label": "✓ ALLOWED",
+      "type": "text"
+    },
+    {
+      "id": "blockedTag",
+      "label": "✕ BLOCKED",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "userA",
+      "to": "role",
+      "type": "primary",
+      "label": "has role"
+    },
+    {
+      "id": "edge-2",
+      "from": "userB",
+      "to": "role",
+      "type": "primary",
+      "label": "has role"
+    },
+    {
+      "id": "edge-3",
+      "from": "role",
+      "to": "dominionA",
+      "type": "primary",
+      "label": "belongs to"
+    },
+    {
+      "id": "edge-4",
+      "from": "role",
+      "to": "dominionB",
+      "type": "primary",
+      "label": "belongs to"
+    },
+    {
+      "id": "edge-5",
+      "from": "dominionA",
+      "to": "subject",
+      "type": "primary",
+      "label": "owns"
+    },
+    {
+      "id": "edge-6",
+      "from": "dominionB",
+      "to": "legalHold",
+      "type": "primary",
+      "label": "owns (attempted)"
+    },
+    {
+      "id": "edge-7",
+      "from": "legalHold",
+      "to": "subject",
+      "type": "primary",
+      "label": "path blocked"
+    }
+  ],
+  "modules": []
+}

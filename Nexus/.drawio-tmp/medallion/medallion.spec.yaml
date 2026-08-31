@@ -1,0 +1,136 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: vertical
+  canvas: auto
+  title: "Medallion Architecture at Nexus"
+  description: "Bronze/Silver/Gold layers, their access model, and the independent compute engines attached to one shared storage substrate."
+
+nodes:
+  - id: gold
+    label: "Gold — Curated\n\nDominion & Role filtered\nAccess: Consumption APIs,\nReporting, Certified Consumers"
+    type: service
+    size: xl
+    position:
+      x: 320
+      y: 120
+    style:
+      fillColor: "#D4AF37"
+      strokeColor: "#D4AF37"
+      fontColor: "#1B1B1B"
+      fontSize: 13
+      fontWeight: 600
+
+  - id: silver
+    label: "Silver — Cleaned\n\nDLC-filtered by Dominion & Role\nAccess: BI Engineers,\nML Engineers"
+    type: service
+    size: xl
+    position:
+      x: 320
+      y: 320
+    style:
+      fillColor: "#B0B7C6"
+      strokeColor: "#B0B7C6"
+      fontColor: "#1B1B1B"
+      fontSize: 13
+      fontWeight: 600
+
+  - id: bronze
+    label: "Bronze — Raw\n\nEncrypted · Append-only\nAccess: Architects, Data\nEngineers, Data Scientists"
+    type: service
+    size: xl
+    position:
+      x: 320
+      y: 520
+    style:
+      fillColor: "#8C5A2B"
+      strokeColor: "#8C5A2B"
+      fontColor: "#FFFFFF"
+      fontSize: 13
+      fontWeight: 600
+
+  - id: gold_compute
+    label: "FastAPI Serving\n(low-latency)"
+    type: process
+    size: large
+    position:
+      x: 650
+      y: 120
+    style:
+      fillColor: "#45E3CD"
+      strokeColor: "#45E3CD"
+      fontColor: "#0B1B3A"
+      fontSize: 12
+      fontWeight: 600
+
+  - id: silver_compute
+    label: "Spark / dbt\n(scheduled batch)"
+    type: process
+    size: large
+    position:
+      x: 650
+      y: 320
+    style:
+      fillColor: "#45E3CD"
+      strokeColor: "#45E3CD"
+      fontColor: "#0B1B3A"
+      fontSize: 12
+      fontWeight: 600
+
+  - id: bronze_compute
+    label: "Kafka Ingestion\n(streaming)"
+    type: process
+    size: large
+    position:
+      x: 650
+      y: 520
+    style:
+      fillColor: "#45E3CD"
+      strokeColor: "#45E3CD"
+      fontColor: "#0B1B3A"
+      fontSize: 12
+      fontWeight: 600
+
+  - id: storage
+    label: "Shared\nStorage\nSubstrate\n\nIceberg / Delta\non Object\nStorage"
+    type: database
+    bounds:
+      x: -260
+      y: 60
+      width: 160
+      height: 520
+    style:
+      fillColor: "#1F2A44"
+      strokeColor: "#1F2A44"
+      fontColor: "#FFFFFF"
+      fontSize: 13
+      fontWeight: 600
+      align: center
+      verticalAlign: middle
+
+edges:
+  - from: storage
+    to: bronze
+    type: data
+    label: "Iceberg/Delta table"
+
+  - from: storage
+    to: silver
+    type: data
+
+  - from: storage
+    to: gold
+    type: data
+
+  - from: bronze_compute
+    to: bronze
+    type: primary
+    label: "attaches to"
+
+  - from: silver_compute
+    to: silver
+    type: primary
+
+  - from: gold_compute
+    to: gold
+    type: primary

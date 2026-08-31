@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "title": "Medallion Architecture at Nexus",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 7,
+    "edges": 6,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "gold",
+      "label": "Gold — Curated\n\nDominion & Role filtered\nAccess: Consumption APIs,\nReporting, Certified Consumers",
+      "type": "service",
+      "size": "xl"
+    },
+    {
+      "id": "silver",
+      "label": "Silver — Cleaned\n\nDLC-filtered by Dominion & Role\nAccess: BI Engineers,\nML Engineers",
+      "type": "service",
+      "size": "xl"
+    },
+    {
+      "id": "bronze",
+      "label": "Bronze — Raw\n\nEncrypted · Append-only\nAccess: Architects, Data\nEngineers, Data Scientists",
+      "type": "service",
+      "size": "xl"
+    },
+    {
+      "id": "gold_compute",
+      "label": "FastAPI Serving\n(low-latency)",
+      "type": "process",
+      "size": "large"
+    },
+    {
+      "id": "silver_compute",
+      "label": "Spark / dbt\n(scheduled batch)",
+      "type": "process",
+      "size": "large"
+    },
+    {
+      "id": "bronze_compute",
+      "label": "Kafka Ingestion\n(streaming)",
+      "type": "process",
+      "size": "large"
+    },
+    {
+      "id": "storage",
+      "label": "Shared\nStorage\nSubstrate\n\nIceberg / Delta\non Object\nStorage",
+      "type": "database"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "storage",
+      "to": "bronze",
+      "type": "data",
+      "label": "Iceberg/Delta table"
+    },
+    {
+      "id": "edge-2",
+      "from": "storage",
+      "to": "silver",
+      "type": "data"
+    },
+    {
+      "id": "edge-3",
+      "from": "storage",
+      "to": "gold",
+      "type": "data"
+    },
+    {
+      "id": "edge-4",
+      "from": "bronze_compute",
+      "to": "bronze",
+      "type": "primary",
+      "label": "attaches to"
+    },
+    {
+      "id": "edge-5",
+      "from": "silver_compute",
+      "to": "silver",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "gold_compute",
+      "to": "gold",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

@@ -6,7 +6,7 @@
 
 ## **Executive Summary**
 
-Hexagonal Architecture — also known as "Ports & Adapters" — is a way of building software so that the business rules never know, and never care, what database, message queue, or API framework happens to be plugged in around them. The rules live in one protected core; everything that talks to the outside world is an interchangeable adapter around it.
+Hexagonal Architecture — also known as "Ports & Adapters": is a way of building software so that the business rules never know, and never care, what database, message queue, or API framework happens to be plugged in around them. The rules live in one protected core; everything that talks to the outside world is an interchangeable adapter around it.
 
 Nexus adopts this deliberately, not as a fashionable pattern, but because of a fact stated plainly in the Constitution: Nexus must deploy across On-Premise infrastructure and Cloud Services, adapting to whatever a given client already has (Constitution §1). A data platform whose core rules are wired directly into one specific database or one specific cloud service cannot do that without being rewritten, or forked, per client. Hexagonal Architecture is what makes "one core, many deployments" possible at all.
 

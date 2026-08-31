@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "title": "The Golden Triad",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 3,
+    "edges": 2,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "frontend",
+      "label": "Frontend\n\nFrictionless, highly\nresponsive, secure UX",
+      "type": "service",
+      "size": "large"
+    },
+    {
+      "id": "nexus",
+      "label": "Nexus\n\nData Products Ecosystem —\nsingle, unified source of truth",
+      "type": "service",
+      "size": "large"
+    },
+    {
+      "id": "backend",
+      "label": "Backend\n\nSecure, high-speed\noperational transactions",
+      "type": "service",
+      "size": "large"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "frontend",
+      "to": "nexus",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "backend",
+      "to": "nexus",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

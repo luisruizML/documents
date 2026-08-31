@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "title": "Data Vault 2.0 at Nexus (Silver Layer, Worked Example)",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "hierarchical",
+  "counts": {
+    "nodes": 15,
+    "edges": 5,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "citizenHubHeader",
+      "label": "CITIZEN HUB",
+      "type": "process"
+    },
+    {
+      "id": "citizenHubBody",
+      "label": "citizen_hub_key (PK)\ncitizen_bk (business key)\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "addressHubHeader",
+      "label": "ADDRESS HUB",
+      "type": "process"
+    },
+    {
+      "id": "addressHubBody",
+      "label": "address_hub_key (PK)\naddress_bk (business key)\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "linkHeader",
+      "label": "CITIZEN_ADDRESS LINK",
+      "type": "process"
+    },
+    {
+      "id": "linkBody",
+      "label": "link_key (PK)\ncitizen_hub_key (FK)\naddress_hub_key (FK)\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatHeader",
+      "label": "CITIZEN SATELLITE",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatBody",
+      "label": "citizen_hub_key (FK)\nname\ndate_of_birth\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "linkSatHeader",
+      "label": "LINK SATELLITE (RESIDENCY)",
+      "type": "process"
+    },
+    {
+      "id": "linkSatBody",
+      "label": "link_key (FK)\nvalid_from\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "addressSatHeader",
+      "label": "ADDRESS SATELLITE",
+      "type": "process"
+    },
+    {
+      "id": "addressSatBody",
+      "label": "address_hub_key (FK)\nstreet\ncity\nload_date\nrecord_source",
+      "type": "process"
+    },
+    {
+      "id": "legendHub",
+      "label": "Hub — business key anchor",
+      "type": "text"
+    },
+    {
+      "id": "legendLink",
+      "label": "Link — relationship between Hubs",
+      "type": "text"
+    },
+    {
+      "id": "legendSat",
+      "label": "Satellite — time-versioned, insert-only descriptive data",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "citizenHubBody",
+      "to": "linkHeader",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "addressHubBody",
+      "to": "linkHeader",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "linkBody",
+      "to": "linkSatHeader",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "citizenHubBody",
+      "to": "citizenSatHeader",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "addressHubBody",
+      "to": "addressSatHeader",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

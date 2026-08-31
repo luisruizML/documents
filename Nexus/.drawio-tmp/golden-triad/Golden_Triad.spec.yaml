@@ -1,0 +1,58 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: auto
+  title: The Golden Triad
+  description: Frontend, Backend, and Nexus — the three-part architectural split described in the Nexus Constitution (Sec. 1).
+nodes:
+  - id: frontend
+    label: |-
+      Frontend
+
+      Frictionless, highly
+      responsive, secure UX
+    type: service
+    size: large
+    style:
+      fillColor: '#3A0CA3'
+      strokeColor: '#3A0CA3'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 600
+  - id: nexus
+    label: |-
+      Nexus
+
+      Data Products Ecosystem —
+      single, unified source of truth
+    type: service
+    size: large
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#F72586'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 600
+  - id: backend
+    label: |-
+      Backend
+
+      Secure, high-speed
+      operational transactions
+    type: service
+    size: large
+    style:
+      fillColor: '#45E3CD'
+      strokeColor: '#45E3CD'
+      fontColor: '#0B1B3A'
+      fontSize: 14
+      fontWeight: 600
+edges:
+  - from: frontend
+    to: nexus
+    type: primary
+  - from: backend
+    to: nexus
+    type: primary
+modules: []

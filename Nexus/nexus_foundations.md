@@ -1,6 +1,6 @@
 # **Nexus: Technical Foundations**
 
-*Companion document to* **`Nexus_Constitution.md`** *(v0.2.0). This file contains the full engineering mechanism behind every Annex referenced in the Constitution — audience: architects, engineers, and anyone implementing against these principles. For the narrative, motivations, and executive summary, see the Constitution itself.*
+*Companion document to* **`Nexus_Constitution.md`** *(v0.3.0). This file contains the full engineering mechanism behind every Annex referenced in the Constitution — audience: architects, engineers, and anyone implementing against these principles. For the narrative, motivations, and executive summary, see the Constitution itself.*
 
 **Version:** 0.3.0 · Versioned and governed jointly with `Nexus_Constitution.md` — the two files always carry the same version number and change together.
 
@@ -32,7 +32,7 @@ Each risk named in the Constitution (§8, and elsewhere) resolves to a concrete 
 
 ## **Annex A: GDPR Erasure Protocol**
 
-This annex resolves the apparent tension between Constitution §5.3 (Immutability & Radical Traceability) and GDPR's right to erasure (Article 17). The resolution is cryptographic, not physical: Bronze remains genuinely append-only and nothing is ever rewritten or vacuumed on demand; what is destroyed on erasure is the ability to read the data, not the data itself.
+This annex resolves the apparent tension between Constitution §5 ("Immutability & Radical Traceability") and GDPR's right to erasure (Article 17). The resolution is cryptographic, not physical: Bronze remains genuinely append-only and nothing is ever rewritten or vacuumed on demand; what is destroyed on erasure is the ability to read the data, not the data itself.
 
 **A.1 — Mechanism: Crypto-Shredding & Tokenization**
 
@@ -43,7 +43,7 @@ This annex resolves the apparent tension between Constitution §5.3 (Immutabilit
 
 **A.2 — Approval Workflow (Maker-Checker)**
 
-* Erasure is a privileged, irreversible action and requires two distinct identities: a **requester** (any authorized role) and a separate **approver** (a designated Data Protection role), consistent with the Human-in-the-Loop principle in Constitution §5.7.
+* Erasure is a privileged, irreversible action and requires two distinct identities: a **requester** (any authorized role) and a separate **approver** (a designated Data Protection role), consistent with the Human-in-the-Loop principle in Constitution §5 ("Agent-Driven Design").
 * The action does not execute until both identities are recorded. No single credential can unilaterally erase a subject's data.
 
 **A.3 — Legal Hold Exception**
@@ -82,7 +82,7 @@ This annex resolves the gap between Constitution §1's claim that Nexus is "the 
 **B.2 — Matching Pipeline**
 
 * **Deterministic pass:** an exact match on a strong key (e.g., national ID, tax ID) produces an auto-confirmed `SAME_AS` edge with no human involved.
-* **Probabilistic pass:** fuzzy matching on attributes such as name, date of birth, and address handles everything the deterministic pass leaves unresolved. Matches above a defined high-confidence threshold are auto-confirmed; matches below it are created as `candidate` edges and routed to a human steward for review, per the Human-in-the-Loop principle in Constitution §5.7.
+* **Probabilistic pass:** fuzzy matching on attributes such as name, date of birth, and address handles everything the deterministic pass leaves unresolved. Matches above a defined high-confidence threshold are auto-confirmed; matches below it are created as `candidate` edges and routed to a human steward for review, per the Human-in-the-Loop principle in Constitution §5 ("Agent-Driven Design").
 
 **B.3 — Survivorship**
 
@@ -167,7 +167,7 @@ A Dominion's accountable owner (Annex C.2) may commit a data product to a strict
 
 **D.4 — On-Premise: Kubernetes and Per-Client Measurement**
 
-* Every On-Premise deployment runs on Kubernetes (or equivalent container orchestration) over virtualized infrastructure — never bare metal — decoupling Nexus's compute workloads from any single physical machine, consistent with Constitution §5.4 (Decoupled Compute and Storage) and §5.6 (Infrastructure as Code as Mandatory).
+* Every On-Premise deployment runs on Kubernetes (or equivalent container orchestration) over virtualized infrastructure — never bare metal — decoupling Nexus's compute workloads from any single physical machine, consistent with Constitution §5 ("Decoupled Compute and Storage") and §5 ("Infrastructure as Code (IaC) as Mandatory").
 * The Tier table in D.2 is a **Cloud default only**. It is never assumed to hold On-Premise.
 * Each On-Premise client's deployment is assigned its own measured capacity baseline: a benchmark/load-test run against that client's actual provisioned Kubernetes cluster, producing client-specific numbers before any Tier is committed to.
 * This benchmark is what "capacity-planning sign-off" concretely means — a Dominion cannot commit a given On-Premise client to Tier 1 until the benchmark against that client's real cluster demonstrates it can be met.
@@ -281,7 +281,7 @@ This annex resolves the gap between Constitution §1's "Agnostic Deployment" amb
 
 ## **Annex H: Document Governance**
 
-This annex resolves the last remaining gap identified during review: a Constitution with no version, owner, or amendment process of its own. A governance document that isn't itself governed cannot be trusted to govern anything else. As of v0.2.0, this governance applies jointly to `Nexus_Constitution.md` and this companion document, `nexus_foundations.md` — the two are versioned and amended together, never independently.
+This annex resolves the last remaining gap identified during review: a Constitution with no version, owner, or amendment process of its own. A governance document that isn't itself governed cannot be trusted to govern anything else. As of v0.3.0, this governance applies jointly to `Nexus_Constitution.md` and this companion document, `nexus_foundations.md` — the two are versioned and amended together, never independently.
 
 **H.1 — Versioning Scheme**
 
@@ -289,7 +289,7 @@ This annex resolves the last remaining gap identified during review: a Constitut
   * **MAJOR** — a change that alters a core principle or foundation (Constitution §1–§5), e.g. redefining the Golden Triad boundary or an immutability guarantee.
   * **MINOR** — addition of a new Annex, a new principle, or a materially expanded mechanism or presentation (e.g., the Executive Summary, Risk Table, and Glossary added in v0.2.0).
   * **PATCH** — clarifications, typo fixes, or cross-reference updates that do not change meaning.
-* Both documents are version-controlled the same way code is, consistent with Constitution §5.6 (Infrastructure as Code as Mandatory) — changes are reviewed, not silently edited in place.
+* Both documents are version-controlled the same way code is, consistent with Constitution §5 ("Infrastructure as Code (IaC) as Mandatory") — changes are reviewed, not silently edited in place.
 
 **H.2 — Ownership and Amendment Process**
 

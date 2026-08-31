@@ -1,0 +1,216 @@
+meta:
+  theme: tech-blue
+  profile: default
+  canvas: auto
+  title: Data Mesh × Lakehouse at Nexus
+  description: >-
+    Data Mesh (columns) is who owns the data; the Lakehouse's Medallion layers (rows) are what storage guarantees it's
+    held under. Every resulting table, in every Dominion and every layer, carries the same time-travel property.
+nodes:
+  - id: cr_bronze
+    label: |-
+      Bronze
+      raw · immutable
+    type: process
+    module: civil_registry
+    position:
+      x: 140
+      'y': 140
+    style:
+      fillColor: '#FDE9D9'
+      strokeColor: '#92400E'
+      fontWeight: 600
+  - id: cr_silver
+    label: |-
+      Silver
+      cleaned · DLC-filtered
+    type: process
+    module: civil_registry
+    position:
+      x: 140
+      'y': 300
+    style:
+      fillColor: '#F1F5F9'
+      strokeColor: '#64748B'
+      fontWeight: 600
+  - id: cr_gold
+    label: |-
+      Gold
+      curated · Subject 360
+    type: process
+    module: civil_registry
+    position:
+      x: 140
+      'y': 460
+    style:
+      fillColor: '#FEF9C3'
+      strokeColor: '#CA8A04'
+      fontWeight: 600
+  - id: tax_bronze
+    label: |-
+      Bronze
+      raw · immutable
+    type: process
+    module: tax
+    position:
+      x: 420
+      'y': 140
+    style:
+      fillColor: '#FDE9D9'
+      strokeColor: '#92400E'
+      fontWeight: 600
+  - id: tax_silver
+    label: |-
+      Silver
+      cleaned · DLC-filtered
+    type: process
+    module: tax
+    position:
+      x: 420
+      'y': 300
+    style:
+      fillColor: '#F1F5F9'
+      strokeColor: '#64748B'
+      fontWeight: 600
+  - id: tax_gold
+    label: |-
+      Gold
+      curated · Subject 360
+    type: process
+    module: tax
+    position:
+      x: 420
+      'y': 460
+    style:
+      fillColor: '#FEF9C3'
+      strokeColor: '#CA8A04'
+      fontWeight: 600
+  - id: health_bronze
+    label: |-
+      Bronze
+      raw · immutable
+    type: process
+    module: health
+    position:
+      x: 700
+      'y': 140
+    style:
+      fillColor: '#FDE9D9'
+      strokeColor: '#92400E'
+      fontWeight: 600
+  - id: health_silver
+    label: |-
+      Silver
+      cleaned · DLC-filtered
+    type: process
+    module: health
+    position:
+      x: 700
+      'y': 300
+    style:
+      fillColor: '#F1F5F9'
+      strokeColor: '#64748B'
+      fontWeight: 600
+  - id: health_gold
+    label: |-
+      Gold
+      curated · Subject 360
+    type: process
+    module: health
+    position:
+      x: 700
+      'y': 460
+    style:
+      fillColor: '#FEF9C3'
+      strokeColor: '#CA8A04'
+      fontWeight: 600
+  - id: tt_header
+    label: |-
+      Time Travel
+      every table, every snapshot
+    type: text
+    position:
+      x: 1040
+      'y': 100
+    style:
+      fontWeight: 600
+      fontColor: $text
+  - id: snap1
+    label: S1
+    type: terminal
+    position:
+      x: 1040
+      'y': 220
+  - id: snap2
+    label: S2
+    type: terminal
+    position:
+      x: 1040
+      'y': 340
+  - id: snap3
+    label: |-
+      S3
+      current
+    type: terminal
+    position:
+      x: 1040
+      'y': 460
+  - id: callout
+    label: |-
+      Query "AS OF S2"
+      reconstructs the table exactly
+      as it existed at that commit
+    type: text
+    position:
+      x: 1290
+      'y': 340
+    style:
+      italic: true
+      fontColor: $textMuted
+  - id: legend
+    label: Solid = layer flow inside a Dominion  ·  Dashed = a time-travel query pointing at a past snapshot
+    type: text
+    position:
+      x: 560
+      'y': 620
+    style:
+      fontColor: $textMuted
+      fontSize: 12
+edges:
+  - from: cr_bronze
+    to: cr_silver
+    type: primary
+  - from: cr_silver
+    to: cr_gold
+    type: primary
+  - from: tax_bronze
+    to: tax_silver
+    type: primary
+  - from: tax_silver
+    to: tax_gold
+    type: primary
+  - from: health_bronze
+    to: health_silver
+    type: primary
+  - from: health_silver
+    to: health_gold
+    type: primary
+  - from: snap1
+    to: snap2
+    type: primary
+  - from: snap2
+    to: snap3
+    type: primary
+  - from: callout
+    to: snap2
+    type: optional
+modules:
+  - id: civil_registry
+    label: 'Dominion: Registry'
+    color: $secondary
+  - id: tax
+    label: 'Dominion: Tax'
+    color: $secondary
+  - id: health
+    label: 'Dominion: Benefits'
+    color: $secondary

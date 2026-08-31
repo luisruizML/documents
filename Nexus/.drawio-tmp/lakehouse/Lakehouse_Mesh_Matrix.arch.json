@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "title": "Data Mesh × Lakehouse at Nexus",
+  "type": "module-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 15,
+    "edges": 9,
+    "modules": 3
+  },
+  "nodes": [
+    {
+      "id": "cr_bronze",
+      "label": "Bronze\nraw · immutable",
+      "type": "process",
+      "module": "civil_registry"
+    },
+    {
+      "id": "cr_silver",
+      "label": "Silver\ncleaned · DLC-filtered",
+      "type": "process",
+      "module": "civil_registry"
+    },
+    {
+      "id": "cr_gold",
+      "label": "Gold\ncurated · Subject 360",
+      "type": "process",
+      "module": "civil_registry"
+    },
+    {
+      "id": "tax_bronze",
+      "label": "Bronze\nraw · immutable",
+      "type": "process",
+      "module": "tax"
+    },
+    {
+      "id": "tax_silver",
+      "label": "Silver\ncleaned · DLC-filtered",
+      "type": "process",
+      "module": "tax"
+    },
+    {
+      "id": "tax_gold",
+      "label": "Gold\ncurated · Subject 360",
+      "type": "process",
+      "module": "tax"
+    },
+    {
+      "id": "health_bronze",
+      "label": "Bronze\nraw · immutable",
+      "type": "process",
+      "module": "health"
+    },
+    {
+      "id": "health_silver",
+      "label": "Silver\ncleaned · DLC-filtered",
+      "type": "process",
+      "module": "health"
+    },
+    {
+      "id": "health_gold",
+      "label": "Gold\ncurated · Subject 360",
+      "type": "process",
+      "module": "health"
+    },
+    {
+      "id": "tt_header",
+      "label": "Time Travel\nevery table, every snapshot",
+      "type": "text"
+    },
+    {
+      "id": "snap1",
+      "label": "S1",
+      "type": "terminal"
+    },
+    {
+      "id": "snap2",
+      "label": "S2",
+      "type": "terminal"
+    },
+    {
+      "id": "snap3",
+      "label": "S3\ncurrent",
+      "type": "terminal"
+    },
+    {
+      "id": "callout",
+      "label": "Query \"AS OF S2\"\nreconstructs the table exactly\nas it existed at that commit",
+      "type": "text"
+    },
+    {
+      "id": "legend",
+      "label": "Solid = layer flow inside a Dominion  ·  Dashed = a time-travel query pointing at a past snapshot",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "cr_bronze",
+      "to": "cr_silver",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "cr_silver",
+      "to": "cr_gold",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "tax_bronze",
+      "to": "tax_silver",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "tax_silver",
+      "to": "tax_gold",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "health_bronze",
+      "to": "health_silver",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "health_silver",
+      "to": "health_gold",
+      "type": "primary"
+    },
+    {
+      "id": "edge-7",
+      "from": "snap1",
+      "to": "snap2",
+      "type": "primary"
+    },
+    {
+      "id": "edge-8",
+      "from": "snap2",
+      "to": "snap3",
+      "type": "primary"
+    },
+    {
+      "id": "edge-9",
+      "from": "callout",
+      "to": "snap2",
+      "type": "optional"
+    }
+  ],
+  "modules": [
+    {
+      "id": "civil_registry",
+      "label": "Dominion: Registry",
+      "color": "$secondary"
+    },
+    {
+      "id": "tax",
+      "label": "Dominion: Tax",
+      "color": "$secondary"
+    },
+    {
+      "id": "health",
+      "label": "Dominion: Benefits",
+      "color": "$secondary"
+    }
+  ]
+}

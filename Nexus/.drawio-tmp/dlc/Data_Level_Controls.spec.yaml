@@ -1,0 +1,190 @@
+meta:
+  profile: default
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: auto
+  routing: orthogonal
+  title: 'Data-Level Controls: Graph Traversal Access Check'
+nodes:
+  - id: userA
+    label: |-
+      User A
+      (BI Engineer)
+    type: user
+    position:
+      x: 100
+      'y': 120
+    size: medium
+    style:
+      fillColor: '#E0E7FF'
+      strokeColor: '#4338CA'
+      fontColor: '#1E1B4B'
+  - id: userB
+    label: |-
+      User B
+      (BI Engineer)
+    type: user
+    position:
+      x: 100
+      'y': 400
+    size: medium
+    style:
+      fillColor: '#E0E7FF'
+      strokeColor: '#4338CA'
+      fontColor: '#1E1B4B'
+  - id: role
+    label: |-
+      Role
+      BI Engineer
+    type: process
+    position:
+      x: 360
+      'y': 260
+    size: medium
+    style:
+      fillColor: '#FEF3C7'
+      strokeColor: '#B45309'
+      fontColor: '#78350F'
+  - id: dominionA
+    label: |-
+      Dominion
+      Civil Registry
+    type: process
+    position:
+      x: 640
+      'y': 120
+    size: medium
+    style:
+      fillColor: '#CCFBF1'
+      strokeColor: '#0F766E'
+      fontColor: '#134E4A'
+  - id: dominionB
+    label: |-
+      Dominion
+      Tax
+    type: process
+    position:
+      x: 640
+      'y': 400
+    size: medium
+    style:
+      fillColor: '#CCFBF1'
+      strokeColor: '#0F766E'
+      fontColor: '#134E4A'
+  - id: legalHold
+    label: |-
+      Legal Hold
+      (active)
+    type: decision
+    position:
+      x: 900
+      'y': 400
+    size: medium
+    style:
+      fillColor: '#FEE2E2'
+      strokeColor: '#B91C1C'
+      fontColor: '#7F1D1D'
+  - id: subject
+    label: |-
+      Subject / Data
+      (this citizen's row)
+    type: database
+    position:
+      x: 1140
+      'y': 260
+    size: large
+    style:
+      fillColor: '#EDE9FE'
+      strokeColor: '#6D28D9'
+      fontColor: '#3B0764'
+  - id: allowedTag
+    label: ✓ ALLOWED
+    type: text
+    position:
+      x: 1040
+      'y': 150
+    style:
+      fontColor: '#15803D'
+      fontSize: 16
+      fontStyle: 1
+  - id: blockedTag
+    label: ✕ BLOCKED
+    type: text
+    position:
+      x: 1000
+      'y': 460
+    style:
+      fontColor: '#B91C1C'
+      fontSize: 16
+      fontStyle: 1
+edges:
+  - from: userA
+    to: role
+    label: has role
+    type: primary
+    style:
+      strokeColor: '#15803D'
+      dashed: false
+      strokeWidth: 2
+  - from: userB
+    to: role
+    label: has role
+    type: primary
+    style:
+      strokeColor: '#B91C1C'
+      dashed: true
+      strokeWidth: 2
+  - from: role
+    to: dominionA
+    label: belongs to
+    type: primary
+    labelPosition: start
+    labelOffset:
+      x: -18
+      'y': 0
+    style:
+      strokeColor: '#15803D'
+      dashed: false
+      strokeWidth: 2
+  - from: role
+    to: dominionB
+    label: belongs to
+    type: primary
+    labelPosition: start
+    labelOffset:
+      x: -18
+      'y': 0
+    style:
+      strokeColor: '#B91C1C'
+      dashed: true
+      strokeWidth: 2
+  - from: dominionA
+    to: subject
+    label: owns
+    type: primary
+    style:
+      strokeColor: '#15803D'
+      dashed: false
+      strokeWidth: 2.5
+  - from: dominionB
+    to: legalHold
+    label: owns (attempted)
+    type: primary
+    style:
+      strokeColor: '#B91C1C'
+      dashed: true
+      strokeWidth: 2
+  - from: legalHold
+    to: subject
+    label: path blocked
+    type: primary
+    labelPosition: end
+    labelOffset:
+      x: -18
+      'y': 0
+    style:
+      strokeColor: '#B91C1C'
+      dashed: true
+      strokeWidth: 2.5
+modules: []
