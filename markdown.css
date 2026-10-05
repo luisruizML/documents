@@ -1,0 +1,12 @@
+/* Global Markdown Preview Styling */
+body, .vscode-body {
+  font-family: Arial, sans-serif !important;
+}
+
+/* Force header colors overriding VS Code dark/light theme defaults */
+h1, h2, h3, h4, h5, h6,
+.vscode-body h1, .vscode-body h2, .vscode-body h3, .vscode-body h4, .vscode-body h5, .vscode-body h6,
+body.vscode-dark h1, body.vscode-dark h2, body.vscode-dark h3, body.vscode-dark h4, body.vscode-dark h5, body.vscode-dark h6,
+body.vscode-light h1, body.vscode-light h2, body.vscode-light h3, body.vscode-light h4, body.vscode-light h5, body.vscode-light h6 {
+  color: #3A0CA3 !important;
+}

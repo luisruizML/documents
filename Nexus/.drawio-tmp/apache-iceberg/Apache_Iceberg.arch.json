@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "title": "Iceberg Storage Modeling Cheat Sheet",
+  "type": "diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 19,
+    "edges": 0,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "h1",
+      "label": "Bronze",
+      "type": "process"
+    },
+    {
+      "id": "h2",
+      "label": "Silver — Hubs & Links",
+      "type": "process"
+    },
+    {
+      "id": "h3",
+      "label": "Silver — Satellites",
+      "type": "process"
+    },
+    {
+      "id": "h4",
+      "label": "Gold",
+      "type": "process"
+    },
+    {
+      "id": "r1",
+      "label": "Partition Spec",
+      "type": "text"
+    },
+    {
+      "id": "p1",
+      "label": "days(ingested_at)",
+      "type": "process"
+    },
+    {
+      "id": "p2",
+      "label": "None — or a loose days(load_date) bucket once a table grows large over years",
+      "type": "process"
+    },
+    {
+      "id": "p3",
+      "label": "days(load_date), plus bucket(N, business_key) for the highest-cardinality tables",
+      "type": "process"
+    },
+    {
+      "id": "p4",
+      "label": "Fact tables: natural time grain. Dimension tables: usually none.",
+      "type": "process"
+    },
+    {
+      "id": "r2",
+      "label": "Sort Order",
+      "type": "text"
+    },
+    {
+      "id": "s1",
+      "label": "None — Bronze is never queried directly",
+      "type": "process"
+    },
+    {
+      "id": "s2",
+      "label": "None needed at typical size",
+      "type": "process"
+    },
+    {
+      "id": "s3",
+      "label": "(business_key, load_date DESC) — serves the \"latest row per key\" query",
+      "type": "process"
+    },
+    {
+      "id": "s4",
+      "label": "Dimension tables: surrogate key, for merge-joins",
+      "type": "process"
+    },
+    {
+      "id": "r3",
+      "label": "Maintenance",
+      "type": "text"
+    },
+    {
+      "id": "m1",
+      "label": "rewrite_data_files weekly, ~256MB target file size",
+      "type": "process"
+    },
+    {
+      "id": "m2",
+      "label": "Rarely needed — low write volume",
+      "type": "process"
+    },
+    {
+      "id": "m3",
+      "label": "rewrite_data_files + expire_snapshots, retention set per Tier (Annex D.2)",
+      "type": "process"
+    },
+    {
+      "id": "m4",
+      "label": "Copy-on-write; rewrites driven by periodic re-aggregation",
+      "type": "process"
+    }
+  ],
+  "edges": [],
+  "modules": []
+}

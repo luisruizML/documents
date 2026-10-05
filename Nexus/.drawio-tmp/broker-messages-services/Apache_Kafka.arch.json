@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "title": "Kafka Monitoring — Four Categories, One Escalation Path",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 9,
+    "edges": 4,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "h1",
+      "label": "Durability & Replication",
+      "type": "process"
+    },
+    {
+      "id": "h2",
+      "label": "Consumer Health & Freshness",
+      "type": "process"
+    },
+    {
+      "id": "h3",
+      "label": "Capacity & Configuration",
+      "type": "process"
+    },
+    {
+      "id": "h4",
+      "label": "Cluster Stability",
+      "type": "process"
+    },
+    {
+      "id": "b1",
+      "label": "• Under-replicated partitions\n• ISR shrink rate\n• Replication-factor config drift",
+      "type": "process"
+    },
+    {
+      "id": "b2",
+      "label": "• Consumer lag, converted to\n  time — not message count\n• Producer error / retry rates",
+      "type": "process"
+    },
+    {
+      "id": "b3",
+      "label": "• Broker disk headroom\n  vs. retention window\n• Partition count growth,\n  as a trend\n• Schema registry health",
+      "type": "process"
+    },
+    {
+      "id": "b4",
+      "label": "• Active controller count\n  (exactly one, always)\n• Leader distribution &\n  unplanned election rate",
+      "type": "process"
+    },
+    {
+      "id": "escalation",
+      "label": "Existing Observability & Escalation — Not a New System\n\nConstitution §7: structured logs + Correlation ID\nAnnex D.3: 3 breaches / 30 days → Nexus leadership review",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "b1",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b2",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "b3",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "b4",
+      "to": "escalation",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

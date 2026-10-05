@@ -1,0 +1,566 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1600x600
+  title: PSS 3.0 — Three System Types, Seven Value Streams, One Data Layer
+  description: >-
+    The Blyce 2030 / PSS 3.0 matrix: Engagement, Record and Insight across the seven value
+    streams, with the data layer as the substrate beneath them and the delivery vehicle for
+    the Insight row.
+nodes:
+  - id: corner
+    label: PSS 3.0
+    type: process
+    bounds:
+      x: 30
+      'y': 30
+      width: 165
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 12
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs1
+    label: |-
+      Platform &
+      Configuration
+    type: process
+    bounds:
+      x: 210
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs2
+    label: Registries
+    type: process
+    bounds:
+      x: 404
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs3
+    label: |-
+      Taxation, Licenses
+      & Contribution
+    type: process
+    bounds:
+      x: 598
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs4
+    label: Benefits
+    type: process
+    bounds:
+      x: 792
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs5
+    label: Finance
+    type: process
+    bounds:
+      x: 986
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs6
+    label: Compliance
+    type: process
+    bounds:
+      x: 1180
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: vs7
+    label: AEOI
+    type: process
+    bounds:
+      x: 1374
+      'y': 30
+      width: 186
+      height: 52
+    style:
+      fillColor: '#0B1B3A'
+      strokeColor: '#050D1F'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: rl1
+    label: |-
+      ENGAGEMENT
+      what people touch
+    type: process
+    bounds:
+      x: 30
+      'y': 90
+      width: 165
+      height: 104
+    style:
+      fillColor: '#3D6FA8'
+      strokeColor: '#27507D'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: e1
+    label: |-
+      portal shell &
+      design system
+    type: process
+    bounds:
+      x: 210
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e2
+    label: |-
+      registration
+      journeys
+    type: process
+    bounds:
+      x: 404
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e3
+    label: |-
+      filing & assessment
+      screens
+    type: process
+    bounds:
+      x: 598
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e4
+    label: claims journeys
+    type: process
+    bounds:
+      x: 792
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e5
+    label: |-
+      payment & refund
+      journeys
+    type: process
+    bounds:
+      x: 986
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e6
+    label: case handling UI
+    type: process
+    bounds:
+      x: 1180
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: e7
+    label: |-
+      reporting entity
+      portal & UX
+    type: process
+    bounds:
+      x: 1374
+      'y': 90
+      width: 186
+      height: 104
+    style:
+      fillColor: '#DCE9F7'
+      strokeColor: '#7FA8CE'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: rl2
+    label: |-
+      RECORD
+      what decides and keeps
+    type: process
+    bounds:
+      x: 30
+      'y': 202
+      width: 165
+      height: 104
+    style:
+      fillColor: '#45577A'
+      strokeColor: '#2E3C57'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: r1
+    label: |-
+      rules engine,
+      configuration,
+      identity
+    type: process
+    bounds:
+      x: 210
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r2
+    label: |-
+      the registers
+      themselves
+    type: process
+    bounds:
+      x: 404
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r3
+    label: |-
+      assessment &
+      crediting logic
+    type: process
+    bounds:
+      x: 598
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r4
+    label: |-
+      eligibility &
+      disbursement
+    type: process
+    bounds:
+      x: 792
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r5
+    label: |-
+      sub-ledger, ledger,
+      reconciliation
+    type: process
+    bounds:
+      x: 986
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r6
+    label: |-
+      enforcement &
+      objections
+    type: process
+    bounds:
+      x: 1180
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: r7
+    label: |-
+      validation & delivery
+      engine, authority tools
+    type: process
+    bounds:
+      x: 1374
+      'y': 202
+      width: 186
+      height: 104
+    style:
+      fillColor: '#E3E9F0'
+      strokeColor: '#93A2B8'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: rl3
+    label: |-
+      INSIGHT
+      what we learn
+    type: process
+    bounds:
+      x: 30
+      'y': 314
+      width: 165
+      height: 104
+    style:
+      fillColor: '#8A6D3B'
+      strokeColor: '#634E2A'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: i1
+    label: platform telemetry
+    type: process
+    bounds:
+      x: 210
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i2
+    label: |-
+      registry
+      data quality
+    type: process
+    bounds:
+      x: 404
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i3
+    label: |-
+      tax reporting
+      & analytics
+    type: process
+    bounds:
+      x: 598
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i4
+    label: benefits reporting
+    type: process
+    bounds:
+      x: 792
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i5
+    label: revenue reporting
+    type: process
+    bounds:
+      x: 986
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i6
+    label: |-
+      risk rating &
+      case selection
+    type: process
+    bounds:
+      x: 1180
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: i7
+    label: |-
+      AEOI analytics
+      & reporting
+    type: process
+    bounds:
+      x: 1374
+      'y': 314
+      width: 186
+      height: 104
+    style:
+      fillColor: '#F7EEDC'
+      strokeColor: '#D9A566'
+      fontColor: '#0B1B3A'
+      fontSize: 10
+      align: center
+      verticalAlign: middle
+  - id: band
+    label: |-
+      THE DATA LAYER  (Nexus)
+      analytic services for Engagement, Record and Insight — the bond between them
+      history · integrated view · resolved identity · personal-data custody · APIs · ML models
+    type: process
+    bounds:
+      x: 30
+      'y': 436
+      width: 1530
+      height: 100
+    style:
+      fillColor: '#FDE7F1'
+      strokeColor: '#F72586'
+      fontColor: '#0B1B3A'
+      fontSize: 12
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+edges: []
+modules: []

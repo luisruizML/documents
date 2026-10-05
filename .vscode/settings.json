@@ -1,0 +1,8 @@
+{
+  "markdown.preview.fontFamily": "Arial, sans-serif",
+  "markdown.styles": [
+    "file:///C:/Development/documents/markdown.css",
+    "markdown.css",
+    "./.vscode/markdown.css"
+  ]
+}

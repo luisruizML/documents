@@ -1,0 +1,109 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="0">
+        <mxGraphModel dx="1631" dy="1006" grid="1" gridSize="8" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1639" pageHeight="616" background="#FFFFFF" math="1" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="PSS 3.0" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#0B1B3A;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=12;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="30" width="165" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="Platform &amp;amp;&lt;br style=&quot;font-size: 15px;&quot;&gt;Configuration" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="Registries" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="404" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="Taxation, Licenses&lt;br style=&quot;font-size: 15px;&quot;&gt;&amp;amp; Contribution" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="598" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="Benefits" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="792" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Finance" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="986" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="Compliance" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="AEOI" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#B3B3B3;strokeColor=#050D1F;strokeWidth=1.5;fontColor=#000000;fontSize=15;fontFamily=Verdana;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1374" y="30" width="186" height="52" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="ENGAGEMENT&lt;br&gt;what people touch" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#3A0CA3;strokeColor=#27507D;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=11;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="90" width="165" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="portal shell &amp;amp;&lt;br style=&quot;font-size: 13px;&quot;&gt;design system" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="registration&lt;br style=&quot;font-size: 13px;&quot;&gt;journeys" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="404" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="filing &amp;amp; assessment&lt;br style=&quot;font-size: 13px;&quot;&gt;screens" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="598" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="claims journeys" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="792" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="payment &amp;amp; refund&lt;br style=&quot;font-size: 13px;&quot;&gt;journeys" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="986" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="case handling UI" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="reporting entity&lt;br style=&quot;font-size: 13px;&quot;&gt;portal &amp;amp; UX" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1374" y="90" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="RECORD&lt;br&gt;what decides and keeps" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#F72586;strokeColor=#2E3C57;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=11;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="202" width="165" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value="rules engine,&lt;br style=&quot;font-size: 13px;&quot;&gt;configuration,&lt;br style=&quot;font-size: 13px;&quot;&gt;identity" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="the registers&lt;br style=&quot;font-size: 13px;&quot;&gt;themselves" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="404" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="assessment &amp;amp;&lt;br style=&quot;font-size: 13px;&quot;&gt;crediting logic" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="598" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" value="eligibility &amp;amp;&lt;br style=&quot;font-size: 13px;&quot;&gt;disbursement" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="792" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" value="sub-ledger, ledger,&lt;br style=&quot;font-size: 13px;&quot;&gt;reconciliation" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="986" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="24" value="enforcement &amp;amp;&lt;br style=&quot;font-size: 13px;&quot;&gt;objections" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="25" value="validation &amp;amp; delivery&lt;br style=&quot;font-size: 13px;&quot;&gt;engine, authority tools" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#F72586;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1374" y="202" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="26" value="INSIGHT&lt;br&gt;what we learn" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#634E2A;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=11;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="314" width="165" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="27" value="platform telemetry" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="210" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="28" value="registry&lt;br style=&quot;font-size: 13px;&quot;&gt;data quality" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="404" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="29" value="tax reporting&lt;br style=&quot;font-size: 13px;&quot;&gt;&amp;amp; analytics" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="598" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="benefits reporting" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="792" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" value="revenue reporting" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="986" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="risk rating &amp;amp;&lt;br style=&quot;font-size: 13px;&quot;&gt;case selection" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1180" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" value="AEOI analytics&lt;br style=&quot;font-size: 13px;&quot;&gt;&amp;amp; reporting" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=13;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="1374" y="314" width="186" height="104" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="THE DATA LAYER  (Nexus)&lt;br&gt;analytic services for Engagement, Record and Insight — the bond between them&lt;br&gt;history · integrated view · resolved identity · personal-data custody · APIs · ML models" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#008a00;strokeColor=#005700;strokeWidth=1.5;fontColor=#ffffff;fontSize=12;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="30" y="436" width="1530" height="100" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

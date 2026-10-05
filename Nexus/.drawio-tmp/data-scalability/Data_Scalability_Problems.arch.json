@@ -1,0 +1,151 @@
+{
+  "version": 1,
+  "title": "Data Scalability Problems — Three Escalation Chains",
+  "type": "module-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 10,
+    "edges": 9,
+    "modules": 4
+  },
+  "nodes": [
+    {
+      "id": "a1",
+      "label": "① Wide Table / Nullable Sprawl",
+      "type": "process",
+      "module": "chainA"
+    },
+    {
+      "id": "a2",
+      "label": "② JSON Blob Escape Hatch",
+      "type": "process",
+      "module": "chainA"
+    },
+    {
+      "id": "a3",
+      "label": "⑤ Hardcoded Regulatory Branches",
+      "type": "process",
+      "module": "chainA"
+    },
+    {
+      "id": "aOut",
+      "label": "🚩 Compliance Incident",
+      "type": "process"
+    },
+    {
+      "id": "b1",
+      "label": "③ Reporting on Production",
+      "type": "process",
+      "module": "chainB"
+    },
+    {
+      "id": "b2",
+      "label": "⑥ Read-Replica Sprawl",
+      "type": "process",
+      "module": "chainB"
+    },
+    {
+      "id": "bOut",
+      "label": "🚩 Outage + Inconsistent Counts",
+      "type": "process"
+    },
+    {
+      "id": "c1",
+      "label": "④ Synchronous Cross-Dominion Fan-Out",
+      "type": "process",
+      "module": "chainC"
+    },
+    {
+      "id": "cOut",
+      "label": "🚩 Cascading Failures as Dominions Grow",
+      "type": "process"
+    },
+    {
+      "id": "nexusBox",
+      "label": "Nexus — Already Built to Hold This\n\nGrey-area resolutions (Golden Triad)\nMedallion Silver / Gold\nSubject 360 (Annex B.5)\nGoverned retention (Annex A)\nIceberg time-travel",
+      "type": "database",
+      "module": "fix"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a1",
+      "to": "a2",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "a2",
+      "to": "a3",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "a3",
+      "to": "aOut",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "aOut",
+      "to": "nexusBox",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "b1",
+      "to": "b2",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "b2",
+      "to": "bOut",
+      "type": "primary"
+    },
+    {
+      "id": "edge-7",
+      "from": "bOut",
+      "to": "nexusBox",
+      "type": "primary"
+    },
+    {
+      "id": "edge-8",
+      "from": "c1",
+      "to": "cOut",
+      "type": "primary"
+    },
+    {
+      "id": "edge-9",
+      "from": "cOut",
+      "to": "nexusBox",
+      "type": "primary"
+    }
+  ],
+  "modules": [
+    {
+      "id": "chainA",
+      "label": "Chain A — Schema & Regulatory Shortcuts",
+      "color": "#45E3CD"
+    },
+    {
+      "id": "chainB",
+      "label": "Chain B — Query-Load Shortcuts",
+      "color": "#45E3CD"
+    },
+    {
+      "id": "chainC",
+      "label": "Chain C — Coupling Shortcuts",
+      "color": "#45E3CD"
+    },
+    {
+      "id": "fix",
+      "label": "The Convergent Fix",
+      "color": "#F72586"
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 # **Hexagonal Architecture at Nexus**
 
-*Companion document to* **`Nexus_Constitution.md`** *§5.5 (Strict Boundary Enforcement). This document expands on why Nexus is built with Hexagonal Architecture, states its strengths and its honest trade-offs, and argues specifically why this is the right foundation for a data product that must run across on-premise, cloud, and hybrid deployments.*
+*Companion document to* **`Data_Principles.md`** *P4 (Business logic is isolated from technology). This document expands on why Nexus is built with Hexagonal Architecture, states its strengths and its honest trade-offs, and argues specifically why this is the right foundation for a data product that must run across on-premise, cloud, and hybrid deployments.*
 
-**Version:** 1.0 · **Status:** Draft · **Last Updated:** 2026-08-27
+**Part:** 3 — How it is built · **Document:** 10 of 22 · **Version:** 0.1 · **Status:** Draft · **Last Updated:** 2026-09-22
 
 ## **Executive Summary**
 
 Hexagonal Architecture — also known as "Ports & Adapters": is a way of building software so that the business rules never know, and never care, what database, message queue, or API framework happens to be plugged in around them. The rules live in one protected core; everything that talks to the outside world is an interchangeable adapter around it.
 
-Nexus adopts this deliberately, not as a fashionable pattern, but because of a fact stated plainly in the Constitution: Nexus must deploy across On-Premise infrastructure and Cloud Services, adapting to whatever a given client already has (Constitution §1). A data platform whose core rules are wired directly into one specific database or one specific cloud service cannot do that without being rewritten, or forked, per client. Hexagonal Architecture is what makes "one core, many deployments" possible at all.
+Nexus adopts this deliberately, not as a fashionable pattern, but because of a fact stated plainly in the Data Principles: Nexus must deploy across On-Premise infrastructure and Cloud Services, adapting to whatever a given client already has (Data Principles P1). A data platform whose core rules are wired directly into one specific database or one specific cloud service cannot do that without being rewritten, or forked, per client. Hexagonal Architecture is what makes "one core, many deployments" possible at all.
 
 This is not a cost-free choice. It adds real upfront complexity, and it only pays off if the boundary is actually enforced. Both sides of that trade-off are stated here in full — an executive summary that only listed the benefits would not be trustworthy.
 
@@ -20,7 +20,7 @@ The everyday analogy: a wall socket doesn't care what you plug into it, as long 
 
 *Editable source: `Hexagonal_Architecture.drawio`.*
 
-In Nexus's own vocabulary: the **Domain Core** is a Dominion's actual business logic — the rules that decide what counts as a valid schema change, how two records get resolved into one `Subject 360`, whether a DQ failure auto-quarantines or escalates. The **Adapters** are every specific technology named in Constitution §6 — Postgres, MongoDB, Neo4j, Iceberg, Kafka, FastAPI, OpenMetadata. The **Ports** are the strict interface contracts between them, which is what Constitution §5.1 (API-First & Contract-Driven Interactions) already requires at the edges.
+In Nexus's own vocabulary: the **Domain Core** is a Dominion's actual business logic — the rules that decide what counts as a valid schema change, how two records get resolved into one `Subject 360`, whether a DQ failure auto-quarantines or escalates. The **Adapters** are every specific technology in Nexus's stack — Postgres, MongoDB, Neo4j, Iceberg, Kafka, FastAPI, OpenMetadata. The **Ports** are the strict interface contracts between them, which is what Data Principles P4 (Business logic is isolated from technology) already requires at the edges.
 
 ## **Worked Examples**
 
@@ -28,7 +28,7 @@ The diagram above is abstract by necessity — it has to cover every Dominion. T
 
 ### Example: Object Storage
 
-Somewhere in the domain core, a rule decides that a raw file — a PDF, an image, a video — needs to be persisted (Constitution §6: "Unstructured Object Storage, S3 API Compatible"). The core knows *that* a blob needs saving and *what key/metadata* it belongs under. It must never know or care *where* that blob physically ends up — that answer changes per client, and sometimes per environment for the same client.
+Somewhere in the domain core, a rule decides that a raw file — a PDF, an image, a video — needs to be persisted (Nexus's "Unstructured Object Storage, S3 API Compatible"). The core knows *that* a blob needs saving and *what key/metadata* it belongs under. It must never know or care *where* that blob physically ends up — that answer changes per client, and sometimes per environment for the same client.
 
 So the core only ever calls an **Outbound Port** it owns the definition of:
 
@@ -73,7 +73,7 @@ This is the case worth calling out explicitly, because "update a record" is *not
 
 The domain core calls `RecordStorePort.update(collection, key, changes)` exactly once, the same way, regardless of which row of that table is behind it. Postgres's transaction, SQL Server's own driver, Mongo's operator-based partial update, and DuckDB's single-writer constraint are all real differences — but every one of them is absorbed inside the matching adapter, never leaked into the survivorship rule that triggered the update.
 
-This is the general pattern behind every row in Constitution §6: one contract lives in the core, and one adapter per concrete technology absorbs that technology's own way of doing the same job.
+This is the general pattern behind every technology in Nexus's stack: one contract lives in the core, and one adapter per concrete technology absorbs that technology's own way of doing the same job.
 
 ## **Why This Is the Right Call for a Data Product Like Nexus, Specifically**
 
@@ -81,8 +81,8 @@ This isn't a generic architecture preference — it follows directly from Nexus'
 
 * **A different client, a different infrastructure, the same core.** One client runs on-premise on their own Kubernetes cluster (Annex D.4); another runs in the cloud; a third runs the hybrid topology in Annex G, with a client-key-encrypted cloud backup behind an on-premise primary. If the erasure logic, survivorship rules, or DQ triage were written against a specific database's API, each of these would need its own fork of that logic. With the boundary enforced, onboarding a client who insists on a database they already operate and license is one new adapter — the core logic that was already reviewed, tested, and trusted is never touched, let alone re-certified.
 * **Compliance-critical logic holds by construction, not by convention.** Annex A's crypto-shredding and legal-hold checks live in the domain core, not in a Postgres adapter or a MongoDB adapter. That means a client's choice of storage technology can never accidentally bypass GDPR erasure — the guarantee is structural, not something every adapter has to remember to re-implement correctly.
-* **Technology changes without a rewrite.** Constitution §1 names cost and resource efficiency as a core motivation. Swapping Iceberg for Delta Lake, or replacing one message broker, becomes a contained adapter change — not a rewrite of the rules that make Nexus what it is.
-* **It is the concrete mechanism behind an existing principle.** Constitution §5.5 already commits Nexus to this boundary in one sentence. This document is that sentence, expanded into the reasoning an engineer — or a client's technical stakeholder — would actually ask for.
+* **Technology changes without a rewrite.** `Data_Layer_Problems.md` names wasted capacity and dependence on custom development as core problems. Swapping Iceberg for Delta Lake, or replacing one message broker, becomes a contained adapter change — not a rewrite of the rules that make Nexus what it is.
+* **It is the concrete mechanism behind an existing principle.** Data Principles P4 already commits Nexus to this boundary in one sentence. This document is that sentence, expanded into the reasoning an engineer — or a client's technical stakeholder — would actually ask for.
 
 ## **Strengths**
 
@@ -92,7 +92,7 @@ This isn't a generic architecture preference — it follows directly from Nexus'
 | Technology substitutability | A storage or messaging technology can be replaced by writing a new adapter, without touching business rules. |
 | Testability | Domain logic (erasure decisions, survivorship, DQ triage) can be unit-tested with no live database, queue, or cluster — faster, cheaper CI, and confidence that isn't dependent on infrastructure being up. |
 | Uniform policy enforcement | GDPR, data quality, and identity-resolution rules are enforced once, centrally — not re-implemented, and potentially re-implemented incorrectly, in every adapter. |
-| Safer evolution | Matches the "Evolutionary Design and Safe Destructibility" foundation in Constitution §4 — an adapter can be deleted and rebuilt without threatening the core it plugs into. |
+| Safer evolution | Matches the "Safe to evolve, safe to remove" principle in Data Principles P5 — an adapter can be deleted and rebuilt without threatening the core it plugs into. |
 | A clear mental model | New engineers have one answer to "where does this code go" — a genuine onboarding-speed benefit that's easy to underrate. |
 
 ## **Honest Trade-Offs**

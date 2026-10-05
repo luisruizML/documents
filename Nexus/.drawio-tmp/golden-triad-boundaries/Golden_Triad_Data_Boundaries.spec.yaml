@@ -1,0 +1,246 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1650x820
+  title: Golden Triad Data Boundaries
+  description: >-
+    Frontend, Backend/BackOffice, and Nexus — the clean split plus the five grey areas, resolved as mechanisms rather
+    than duplicated data.
+nodes:
+  - id: fe1
+    label: Frontend App
+    module: frontend
+    type: service
+    position:
+      x: 140
+      'y': 380
+    style:
+      fillColor: '#3A0CA3'
+      strokeColor: '#3A0CA3'
+      fontColor: '#FFFFFF'
+      fontSize: 12
+      fontWeight: 600
+  - id: be3
+    label: In-Flight Workflow Status (current)
+    module: backend
+    type: database
+    position:
+      x: 560
+      'y': 80
+    style:
+      fillColor: '#45E3CD'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: be1
+    label: Current Transactional State
+    module: backend
+    type: database
+    position:
+      x: 560
+      'y': 280
+    style:
+      fillColor: '#45E3CD'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: be2
+    label: Session / Auth State
+    module: backend
+    type: database
+    position:
+      x: 560
+      'y': 480
+    style:
+      fillColor: '#45E3CD'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: ga5
+    label: ⑤ Workflow Status History
+    module: greyband
+    type: process
+    position:
+      x: 980
+      'y': 80
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: ga1
+    label: ① CDC / Outbox
+    module: greyband
+    type: process
+    position:
+      x: 980
+      'y': 280
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: ga3
+    label: ③ File Upload Landing
+    module: greyband
+    type: process
+    position:
+      x: 980
+      'y': 400
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: ga2
+    label: ② Read Caches & UI Aggregates
+    module: greyband
+    type: process
+    position:
+      x: 980
+      'y': 540
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: ga4
+    label: ④ Regulatory / Reference Data
+    module: greyband
+    type: process
+    position:
+      x: 980
+      'y': 660
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: nx3
+    label: Historical & Cross-Dominion Data
+    module: nexus
+    type: database
+    position:
+      x: 1420
+      'y': 80
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+  - id: nx1
+    label: Bronze — Raw Landing
+    module: nexus
+    type: database
+    position:
+      x: 1420
+      'y': 340
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+  - id: nx2
+    label: Silver · Gold — Certified Data
+    module: nexus
+    type: database
+    position:
+      x: 1420
+      'y': 600
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+  - id: nx4
+    label: Identity Resolution (Subject 360)
+    module: nexus
+    type: database
+    position:
+      x: 1420
+      'y': 750
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+edges:
+  - from: be3
+    to: ga5
+    type: primary
+    label: status change
+  - from: ga5
+    to: nx3
+    type: primary
+    label: CDC → Satellite
+  - from: be1
+    to: ga1
+    type: primary
+  - from: ga1
+    to: nx1
+    type: primary
+    label: Debezium / outbox
+    labelOffset:
+      x: 0
+      'y': -16
+  - from: fe1
+    to: ga3
+    type: primary
+    label: pre-signed URL
+  - from: ga3
+    to: nx1
+    type: primary
+    label: async landing
+    labelOffset:
+      x: 0
+      'y': 16
+  - from: be1
+    to: ga3
+    type: optional
+    label: pointer + status
+  - from: nx2
+    to: ga2
+    type: data
+    label: Gold query → cached, staleness labeled
+    labelOffset:
+      x: 0
+      'y': -16
+  - from: ga2
+    to: be1
+    type: data
+  - from: nx2
+    to: ga4
+    type: data
+    label: certified ruleset → read-only cache
+    labelOffset:
+      x: 0
+      'y': 16
+  - from: ga4
+    to: be1
+    type: data
+modules:
+  - id: frontend
+    label: Frontend
+    color: '#3A0CA3'
+  - id: backend
+    label: Backend / BackOffice
+    color: '#45E3CD'
+  - id: greyband
+    label: Five Grey Areas — Resolved as Mechanisms, Not Duplicated Data
+    color: '#8D99AE'
+  - id: nexus
+    label: Nexus
+    color: '#F72586'

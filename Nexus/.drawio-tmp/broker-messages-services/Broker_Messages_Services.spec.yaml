@@ -1,0 +1,191 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1700x650
+  title: Kafka Monitoring — Four Categories, One Escalation Path
+  description: >-
+    The four mandatory monitoring categories and their specific signals, converging on existing observability and
+    escalation infrastructure.
+nodes:
+  - id: h1
+    label: Durability & Replication
+    type: process
+    bounds:
+      x: 60
+      'y': 40
+      width: 360
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h2
+    label: Consumer Health & Freshness
+    type: process
+    bounds:
+      x: 460
+      'y': 40
+      width: 360
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h3
+    label: Capacity & Configuration
+    type: process
+    bounds:
+      x: 860
+      'y': 40
+      width: 360
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h4
+    label: Cluster Stability
+    type: process
+    bounds:
+      x: 1260
+      'y': 40
+      width: 360
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: b1
+    label: |-
+      • Under-replicated partitions
+      • ISR shrink rate
+      • Replication-factor config drift
+    type: process
+    bounds:
+      x: 60
+      'y': 110
+      width: 360
+      height: 220
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 12
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 12
+  - id: b2
+    label: |-
+      • Consumer lag, converted to
+        time — not message count
+      • Producer error / retry rates
+    type: process
+    bounds:
+      x: 460
+      'y': 110
+      width: 360
+      height: 220
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 12
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 12
+  - id: b3
+    label: |-
+      • Broker disk headroom
+        vs. retention window
+      • Partition count growth,
+        as a trend
+      • Schema registry health
+    type: process
+    bounds:
+      x: 860
+      'y': 110
+      width: 360
+      height: 220
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 12
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 12
+  - id: b4
+    label: |-
+      • Active controller count
+        (exactly one, always)
+      • Leader distribution &
+        unplanned election rate
+    type: process
+    bounds:
+      x: 1260
+      'y': 110
+      width: 360
+      height: 220
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 12
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 12
+  - id: escalation
+    label: |-
+      Existing Observability & Escalation — Not a New System
+
+      Constitution §7: structured logs + Correlation ID
+      Annex D.3: 3 breaches / 30 days → Nexus leadership review
+    type: process
+    bounds:
+      x: 260
+      'y': 460
+      width: 1160
+      height: 110
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 12
+      fontWeight: 600
+      align: center
+      verticalAlign: middle
+edges:
+  - from: b1
+    to: escalation
+    type: primary
+  - from: b2
+    to: escalation
+    type: primary
+  - from: b3
+    to: escalation
+    type: primary
+  - from: b4
+    to: escalation
+    type: primary
+modules: []

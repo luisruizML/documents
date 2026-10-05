@@ -1,0 +1,326 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1700x660
+  title: Iceberg Storage Modeling Cheat Sheet
+  description: Partition spec, sort order, and maintenance cadence per Medallion layer.
+nodes:
+  - id: h1
+    label: Bronze
+    type: process
+    bounds:
+      x: 100
+      'y': 40
+      width: 340
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h2
+    label: Silver — Hubs & Links
+    type: process
+    bounds:
+      x: 480
+      'y': 40
+      width: 340
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h3
+    label: Silver — Satellites
+    type: process
+    bounds:
+      x: 860
+      'y': 40
+      width: 340
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: h4
+    label: Gold
+    type: process
+    bounds:
+      x: 1240
+      'y': 40
+      width: 340
+      height: 50
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 14
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: r1
+    label: Partition Spec
+    type: text
+    bounds:
+      x: 100
+      'y': 110
+      width: 340
+      height: 22
+    style:
+      fillColor: none
+      strokeColor: none
+      fontColor: '#7A0F44'
+      fontSize: 11
+      fontWeight: 700
+      align: left
+      verticalAlign: top
+  - id: p1
+    label: days(ingested_at)
+    type: process
+    bounds:
+      x: 100
+      'y': 132
+      width: 340
+      height: 108
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: p2
+    label: None — or a loose days(load_date) bucket once a table grows large over years
+    type: process
+    bounds:
+      x: 480
+      'y': 132
+      width: 340
+      height: 108
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: p3
+    label: days(load_date), plus bucket(N, business_key) for the highest-cardinality tables
+    type: process
+    bounds:
+      x: 860
+      'y': 132
+      width: 340
+      height: 108
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: p4
+    label: 'Fact tables: natural time grain. Dimension tables: usually none.'
+    type: process
+    bounds:
+      x: 1240
+      'y': 132
+      width: 340
+      height: 108
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: r2
+    label: Sort Order
+    type: text
+    bounds:
+      x: 100
+      'y': 254
+      width: 340
+      height: 22
+    style:
+      fillColor: none
+      strokeColor: none
+      fontColor: '#7A0F44'
+      fontSize: 11
+      fontWeight: 700
+      align: left
+      verticalAlign: top
+  - id: s1
+    label: None — Bronze is never queried directly
+    type: process
+    bounds:
+      x: 100
+      'y': 276
+      width: 340
+      height: 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: s2
+    label: None needed at typical size
+    type: process
+    bounds:
+      x: 480
+      'y': 276
+      width: 340
+      height: 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: s3
+    label: (business_key, load_date DESC) — serves the "latest row per key" query
+    type: process
+    bounds:
+      x: 860
+      'y': 276
+      width: 340
+      height: 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: s4
+    label: 'Dimension tables: surrogate key, for merge-joins'
+    type: process
+    bounds:
+      x: 1240
+      'y': 276
+      width: 340
+      height: 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: r3
+    label: Maintenance
+    type: text
+    bounds:
+      x: 100
+      'y': 380
+      width: 340
+      height: 22
+    style:
+      fillColor: none
+      strokeColor: none
+      fontColor: '#7A0F44'
+      fontSize: 11
+      fontWeight: 700
+      align: left
+      verticalAlign: top
+  - id: m1
+    label: rewrite_data_files weekly, ~256MB target file size
+    type: process
+    bounds:
+      x: 100
+      'y': 402
+      width: 340
+      height: 100
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: m2
+    label: Rarely needed — low write volume
+    type: process
+    bounds:
+      x: 480
+      'y': 402
+      width: 340
+      height: 100
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: m3
+    label: rewrite_data_files + expire_snapshots, retention set per Tier (Annex D.2)
+    type: process
+    bounds:
+      x: 860
+      'y': 402
+      width: 340
+      height: 100
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+  - id: m4
+    label: Copy-on-write; rewrites driven by periodic re-aggregation
+    type: process
+    bounds:
+      x: 1240
+      'y': 402
+      width: 340
+      height: 100
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      align: left
+      verticalAlign: top
+      spacingLeft: 10
+      spacingTop: 8
+edges: []
+modules: []

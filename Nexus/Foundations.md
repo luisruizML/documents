@@ -1,8 +1,8 @@
-# **Nexus: Technical Foundations**
+# **Technical Foundations**
 
-*Companion document to* **`Nexus_Constitution.md`** *(v0.3.0). This file contains the full engineering mechanism behind every Annex referenced in the Constitution — audience: architects, engineers, and anyone implementing against these principles. For the narrative, motivations, and executive summary, see the Constitution itself.*
+*Companion document to* **`Data_Principles.md`**. *This file contains the full engineering mechanism behind every Annex referenced in the Data Principles — audience: architects, engineers, and anyone implementing against these principles. For the principles themselves, see* `Data_Principles.md`*; for the terms, see* `Glossary.md`*.*
 
-**Version:** 0.3.0 · Versioned and governed jointly with `Nexus_Constitution.md` — the two files always carry the same version number and change together.
+**Part:** 2 — Principles and mechanisms · **Document:** 7 of 22 · **Version:** 0.1 · **Status:** Draft · **Last Updated:** 2026-09-22
 
 ## **Contents**
 
@@ -17,7 +17,7 @@
 
 ## **Risk-to-Mitigation Summary**
 
-Each risk named in the Constitution (§8, and elsewhere) resolves to a concrete mechanism defined in one of the Annexes below.
+Each risk below resolves to a concrete mechanism defined in one of the Annexes below.
 
 | Risk | Mitigation | Annex |
 |---|---|---|
@@ -28,11 +28,13 @@ Each risk named in the Constitution (§8, and elsewhere) resolves to a concrete 
 | No stated recovery target if a data center — or the encryption key vault — is lost | RPO/RTO targets by tier, split-custody key backup, mandatory drills, and a shared client/Nexus backup responsibility | E |
 | "Automated quality controls" is a slogan with no concrete mechanism | Quality checks live in dbt itself; AI proposes tests and triages failures; a human is needed only for the hardest cases | F |
 | No stated rule for where a client's data may legally reside, or how tenants are isolated | Dedicated deployment per client; residency is the client's own declared, contractual decision; a hybrid on-premise + client-key-encrypted cloud backup by default | G |
-| A Constitution with no version, owner, or amendment process | Formal semantic versioning, clear ownership, and a defined amendment process | H |
+| Principles with no version, owner, or amendment process | Formal semantic versioning, clear ownership, and a defined amendment process | H |
 
 ## **Annex A: GDPR Erasure Protocol**
 
-This annex resolves the apparent tension between Constitution §5 ("Immutability & Radical Traceability") and GDPR's right to erasure (Article 17). The resolution is cryptographic, not physical: Bronze remains genuinely append-only and nothing is ever rewritten or vacuumed on demand; what is destroyed on erasure is the ability to read the data, not the data itself.
+This annex resolves the apparent tension between Data Principles T1 (History is never overwritten) and GDPR's right to erasure (Article 17). The resolution is cryptographic, not physical: Bronze remains genuinely append-only and nothing is ever rewritten or vacuumed on demand; what is destroyed on erasure is the ability to read the data, not the data itself.
+
+*For a narrative walkthrough of this mechanism, and an open analysis of the key vault's own topology (federation, HA, and alternatives — none of it adopted), see* `Encryption_Key_Custody.md`*. This Annex remains the single authoritative source; that document is a readable map to it, not a second copy.*
 
 **A.1 — Mechanism: Crypto-Shredding & Tokenization**
 
@@ -43,7 +45,7 @@ This annex resolves the apparent tension between Constitution §5 ("Immutability
 
 **A.2 — Approval Workflow (Maker-Checker)**
 
-* Erasure is a privileged, irreversible action and requires two distinct identities: a **requester** (any authorized role) and a separate **approver** (a designated Data Protection role), consistent with the Human-in-the-Loop principle in Constitution §5 ("Agent-Driven Design").
+* Erasure is a privileged, irreversible action and requires two distinct identities: a **requester** (any authorized role) and a separate **approver** (a designated Data Protection role), consistent with Data Principles T3 (Humans stay accountable for consequential decisions).
 * The action does not execute until both identities are recorded. No single credential can unilaterally erase a subject's data.
 
 **A.3 — Legal Hold Exception**
@@ -71,7 +73,7 @@ This annex resolves the apparent tension between Constitution §5 ("Immutability
 
 ## **Annex B: Identity Resolution**
 
-This annex resolves the gap between Constitution §1's claim that Nexus is "the single, unified source of truth" and the reality that the same citizen or institution is observed independently by multiple Dominions, each with its own local record. Nexus does not force these Dominions to physically merge or overwrite their data; instead, it resolves identity at query time using a dedicated graph layer, keeping Dominion ownership and Bronze immutability fully intact.
+This annex resolves the gap between the goal of one authoritative place per fact (Data Principles O1) and the reality that the same citizen or institution is observed independently by multiple Dominions, each with its own local record. Nexus does not force these Dominions to physically merge or overwrite their data; instead, it resolves identity at query time using a dedicated graph layer, keeping Dominion ownership and Bronze immutability fully intact.
 
 **B.1 — Data Model**
 
@@ -82,7 +84,7 @@ This annex resolves the gap between Constitution §1's claim that Nexus is "the 
 **B.2 — Matching Pipeline**
 
 * **Deterministic pass:** an exact match on a strong key (e.g., national ID, tax ID) produces an auto-confirmed `SAME_AS` edge with no human involved.
-* **Probabilistic pass:** fuzzy matching on attributes such as name, date of birth, and address handles everything the deterministic pass leaves unresolved. Matches above a defined high-confidence threshold are auto-confirmed; matches below it are created as `candidate` edges and routed to a human steward for review, per the Human-in-the-Loop principle in Constitution §5 ("Agent-Driven Design").
+* **Probabilistic pass:** fuzzy matching on attributes such as name, date of birth, and address handles everything the deterministic pass leaves unresolved. Matches above a defined high-confidence threshold are auto-confirmed; matches below it are created as `candidate` edges and routed to a human steward for review, per Data Principles T3 (Humans stay accountable for consequential decisions).
 
 **B.3 — Survivorship**
 
@@ -90,7 +92,7 @@ This annex resolves the gap between Constitution §1's claim that Nexus is "the 
 
 **B.4 — Reversibility**
 
-* A `confirmed` `SAME_AS` edge can be disputed by a steward and flipped to `rejected`, splitting a wrongly merged identity back into separate Subjects. This satisfies the "Evolutionary Design and Safe Destructibility" foundation in Constitution §4 — identity-resolution mistakes are recoverable, not permanent.
+* A `confirmed` `SAME_AS` edge can be disputed by a steward and flipped to `rejected`, splitting a wrongly merged identity back into separate Subjects. This satisfies Data Principles T5 (Identity is resolved, never forcibly merged) and P5 (Safe to evolve, safe to remove) — identity-resolution mistakes are recoverable, not permanent.
 
 **B.5 — Architectural Placement**
 
@@ -98,11 +100,11 @@ This annex resolves the gap between Constitution §1's claim that Nexus is "the 
 
 **B.6 — Provenance**
 
-* Every field returned in a `Subject 360` view carries a pointer back to the Dominion, record, and timestamp it was sourced from, making the "single source of truth" claim in Constitution §1 auditable rather than asserted.
+* Every field returned in a `Subject 360` view carries a pointer back to the Dominion, record, and timestamp it was sourced from, making Data Principles O1 (One authoritative place per fact) auditable rather than asserted.
 
 ## **Annex C: Dominion Governance**
 
-This annex resolves the gap between the Data Mesh language in Constitution §2 and §6 — "Dominions," "data as a product," "clear ownership" — and an actual operating model. At this stage, the goal is the minimum structure needed for real accountability, without prematurely formalizing named roles or a standing body the organization isn't ready to commit to yet. Naming a specific role (e.g., a Data Product Owner title) or standing up a formal governance body is deliberately left open for a later version of this document.
+This annex turns the Data Mesh language — "Dominions," "data as a product," "clear ownership" — and Data Principles O3 (Every value stream's data has a named owner) into an actual operating model. At this stage, the goal is the minimum structure needed for real accountability, without prematurely formalizing named roles or a standing body the organization isn't ready to commit to yet. Naming a specific role (e.g., a Data Product Owner title) or standing up a formal governance body is deliberately left open for a later version of this document.
 
 **C.1 — What a Dominion Is**
 
@@ -120,7 +122,7 @@ This annex resolves the gap between the Data Mesh language in Constitution §2 a
 
 **C.3 — Dominion Lifecycle**
 
-* **Creation** requires, before any publication to Silver or Gold is permitted: an accountable owner, a declared bounded context, and minimum OpenMetadata registration (schema, owner, SLA). This gate is what prevents the "data swamp" risk already named in Constitution §8.
+* **Creation** requires, before any publication to Silver or Gold is permitted: an accountable owner, a declared bounded context, and minimum OpenMetadata registration (schema, owner, SLA). This gate is what prevents the "data swamp" risk — data that exists but cannot be found, trusted, or attributed to an owner.
 * **Retirement or merge** requires a consumer migration plan and a defined deprecation window before the prior data product is decommissioned.
 
 **C.4 — Cross-Dominion Escalation**
@@ -133,7 +135,7 @@ This annex resolves the gap between the Data Mesh language in Constitution §2 a
 * Disputes between Dominions follow a fixed three-step path:
   1. The two Dominions' owners attempt direct resolution.
   2. If unresolved after 5 business days, the dispute escalates to Nexus leadership.
-  3. Leadership's ruling is binding and recorded in a standing decision log, so the same dispute is never re-litigated from scratch — directly serving the "build up institutional knowledge systematically" commitment in Constitution §4.
+  3. Leadership's ruling is binding and recorded in a standing decision log, so the same dispute is never re-litigated from scratch — and institutional knowledge builds up systematically instead of being lost.
 
 **C.6 — Certification Gate**
 
@@ -141,7 +143,7 @@ This annex resolves the gap between the Data Mesh language in Constitution §2 a
 
 ## **Annex D: Service Level Objectives**
 
-This annex resolves the gap between Constitution §7's assertion of "strict SLAs" and the absence of any measurable target. Because Nexus spans real-time and batch workloads, and both Cloud and On-Premise deployments with very different elasticity, a single blanket number is inappropriate — SLOs are defined as a tiered framework with an explicit, measured exception process for On-Premise.
+This annex turns "strict SLAs" from an assertion into measurable targets. Because Nexus spans real-time and batch workloads, and both Cloud and On-Premise deployments with very different elasticity, a single blanket number is inappropriate — SLOs are defined as a tiered framework with an explicit, measured exception process for On-Premise.
 
 **D.1 — Four Measurable SLI Categories**
 
@@ -162,12 +164,12 @@ A Dominion's accountable owner (Annex C.2) may commit a data product to a strict
 
 **D.3 — Breach Handling**
 
-* An SLO breach emits a `WARN` or `ERROR` entry per the log-level scheme already defined in Constitution §7.
+* An SLO breach emits a `WARN` or `ERROR` entry per the standard log-level scheme (`DEBUG`, `INFO`, `WARN`, `ERROR`) used across Nexus.
 * Three breaches within a rolling 30-day window automatically escalate to Nexus leadership (Annex C.4) as a remediation review.
 
 **D.4 — On-Premise: Kubernetes and Per-Client Measurement**
 
-* Every On-Premise deployment runs on Kubernetes (or equivalent container orchestration) over virtualized infrastructure — never bare metal — decoupling Nexus's compute workloads from any single physical machine, consistent with Constitution §5 ("Decoupled Compute and Storage") and §5 ("Infrastructure as Code (IaC) as Mandatory").
+* Every On-Premise deployment runs on Kubernetes (or equivalent container orchestration) over virtualized infrastructure — never bare metal — decoupling Nexus's compute workloads from any single physical machine, consistent with Data Principles P3 (Storage and compute scale independently) and P2 (Everything as code).
 * The Tier table in D.2 is a **Cloud default only**. It is never assumed to hold On-Premise.
 * Each On-Premise client's deployment is assigned its own measured capacity baseline: a benchmark/load-test run against that client's actual provisioned Kubernetes cluster, producing client-specific numbers before any Tier is committed to.
 * This benchmark is what "capacity-planning sign-off" concretely means — a Dominion cannot commit a given On-Premise client to Tier 1 until the benchmark against that client's real cluster demonstrates it can be met.
@@ -175,7 +177,7 @@ A Dominion's accountable owner (Annex C.2) may commit a data product to a strict
 
 **D.5 — Measurement**
 
-* The Correlation ID already mandated in Constitution §7 is the mechanism for computing real freshness and latency per request, per Dominion.
+* The Correlation ID carried by every request is the mechanism for computing real freshness and latency per request, per Dominion.
 * The Dominion's owner publishes measured historical SLO compliance in OpenMetadata, alongside the committed target, so consumers see actual performance rather than only the promise.
 
 **D.6 — Certification Dependency**
@@ -184,7 +186,9 @@ A Dominion's accountable owner (Annex C.2) may commit a data product to a strict
 
 ## **Annex E: Disaster Recovery & Continuity**
 
-This annex resolves the gap between Constitution §8's naming of encryption-key loss as an existential risk and the absence of any stated recovery target or backup-testing requirement. Recovery objectives reuse the Tier system already established in Annex D rather than introducing a second, parallel classification.
+This annex sets recovery targets and backup-testing requirements — including for encryption-key loss, an existential risk for Nexus. Recovery objectives reuse the Tier system already established in Annex D rather than introducing a second, parallel classification.
+
+*E.2 specifically — the key vault's own, stricter DR class — is explored further in* `Encryption_Key_Custody.md`*, including whether its current unstated topology is the right one. That analysis does not amend this Annex.*
 
 **E.1 — RPO/RTO by Tier**
 
@@ -219,7 +223,7 @@ This annex resolves the gap between Constitution §8's naming of encryption-key 
 
 ## **Annex F: Data Quality**
 
-This annex resolves the gap between Constitution §1/§2's promise of "automated quality controls" and the absence of any concrete mechanism. The design goal is pragmatism: quality checks must live inside the tools teams already use, AI does the labor of proposing tests and triaging failures, and a human is involved only for the genuinely hard cases — not as a bottleneck on every run.
+This annex turns Data Principles Q2 (Quality is a precondition, not a clean-up) into a concrete mechanism. The design goal is pragmatism: quality checks must live inside the tools teams already use, AI does the labor of proposing tests and triaging failures, and a human is involved only for the genuinely hard cases — not as a bottleneck on every run.
 
 **F.1 — Checks Live Inside dbt, Not a Separate System**
 
@@ -232,13 +236,13 @@ This annex resolves the gap between Constitution §1/§2's promise of "automated
 
 **F.3 — AI Proposes Tests; a Human Approves Once**
 
-* An agent, built on the agentic stack already adopted in Constitution §6 (LangGraph / Google GenAI SDK), profiles a new or changed model and proposes additional tests — value ranges, categorical whitelists, expected row-count deltas — derived from the actual data rather than hand-written from scratch.
+* An agent, built on Nexus's agentic stack (LangGraph / Google GenAI SDK), profiles a new or changed model and proposes additional tests — value ranges, categorical whitelists, expected row-count deltas — derived from the actual data rather than hand-written from scratch.
 * The Dominion's accountable owner reviews and approves proposed tests at model-change time. This is a one-time human touch, not an ongoing review burden.
 
 **F.4 — Automatic Triage on Failure**
 
 * When a dbt test fails during an Airflow-orchestrated run, a triage agent classifies the failure:
-  * **Known pattern within historical variance** (e.g., a null-rate blip inside normal range): the offending records are automatically quarantined to a dead-letter table, a `WARN` is emitted per Constitution §7, and the pipeline continues on the clean subset. No human is involved.
+  * **Known pattern within historical variance** (e.g., a null-rate blip inside normal range): the offending records are automatically quarantined to a dead-letter table, a `WARN` is emitted, and the pipeline continues on the clean subset. No human is involved.
   * **Novel or high-severity pattern** — a threshold breached by a wide margin, a Tier 1 dataset affected, or a field feeding Annex A or Annex B: the failure is escalated to a human steward. This is the sole point at which a person is required, matching the principle that AI handles the routine case and humans handle the genuinely difficult one.
 
 **F.5 — A Live Correctness Score**
@@ -251,7 +255,7 @@ This annex resolves the gap between Constitution §1/§2's promise of "automated
 
 ## **Annex G: Multi-Tenancy & Data Residency**
 
-This annex resolves the gap between Constitution §1's "Agnostic Deployment" ambition and the absence of any stated model for tenant isolation or where a given client's data is legally permitted to reside. Both are decided per client, not assumed by the platform.
+This annex sets out, under Data Principles P1 (Deploy anywhere), how tenants are isolated and where a given client's data is legally permitted to reside. Both are decided per client, not assumed by the platform.
 
 **G.1 — Tenancy Model: Dedicated Deployment per Client**
 
@@ -270,7 +274,7 @@ This annex resolves the gap between Constitution §1's "Agnostic Deployment" amb
 
 **G.4 — Cost vs. Restriction: an Explicit, Disclosed Decision**
 
-* Cloud backup storage is materially cheaper and more elastic than a client provisioning a genuine second physical on-premise site, consistent with the resource-efficiency motivation already stated in Constitution §1.
+* Cloud backup storage is materially cheaper and more elastic than a client provisioning a genuine second physical on-premise site, which matters for resource efficiency.
 * However, some jurisdictions or data classifications legally prohibit ciphertext from leaving national borders regardless of encryption. The client's declared residency requirement (G.2) determines which path applies:
   * **Permitted:** the cheaper hybrid default (G.3) applies.
   * **Prohibited:** the client must provision a second on-premise site instead, at a correspondingly higher cost that is disclosed during onboarding — never discovered after an incident.
@@ -281,15 +285,15 @@ This annex resolves the gap between Constitution §1's "Agnostic Deployment" amb
 
 ## **Annex H: Document Governance**
 
-This annex resolves the last remaining gap identified during review: a Constitution with no version, owner, or amendment process of its own. A governance document that isn't itself governed cannot be trusted to govern anything else. As of v0.3.0, this governance applies jointly to `Nexus_Constitution.md` and this companion document, `nexus_foundations.md` — the two are versioned and amended together, never independently.
+A set of principles with no version, owner, or amendment process cannot be trusted to govern anything else. This governance applies jointly to `Data_Principles.md` and this companion document, `Foundations.md` — the two are versioned and amended together, never independently.
 
 **H.1 — Versioning Scheme**
 
 * Both documents follow a shared, semantic-style `MAJOR.MINOR.PATCH` scheme:
-  * **MAJOR** — a change that alters a core principle or foundation (Constitution §1–§5), e.g. redefining the Golden Triad boundary or an immutability guarantee.
-  * **MINOR** — addition of a new Annex, a new principle, or a materially expanded mechanism or presentation (e.g., the Executive Summary, Risk Table, and Glossary added in v0.2.0).
+  * **MAJOR** — a change that alters a principle in `Data_Principles.md`, e.g. redefining the Golden Triad boundary or an immutability guarantee.
+  * **MINOR** — addition of a new Annex, a new principle, or a materially expanded mechanism or presentation.
   * **PATCH** — clarifications, typo fixes, or cross-reference updates that do not change meaning.
-* Both documents are version-controlled the same way code is, consistent with Constitution §5 ("Infrastructure as Code (IaC) as Mandatory") — changes are reviewed, not silently edited in place.
+* Both documents are version-controlled the same way code is, consistent with Data Principles P2 (Everything as code) — changes are reviewed, not silently edited in place.
 
 **H.2 — Ownership and Amendment Process**
 
@@ -301,6 +305,4 @@ This annex resolves the last remaining gap identified during review: a Constitut
 
 | Version | Date | Summary | Approved By |
 |---|---|---|---|
-| 0.1.0 | 2026-08-26 | Initial versioned baseline. Added Annex A (GDPR Erasure Protocol), Annex B (Identity Resolution), Annex C (Dominion Governance), Annex D (Service Level Objectives), Annex E (Disaster Recovery & Continuity), Annex F (Data Quality), and Annex G (Multi-Tenancy & Data Residency), resolving prior gaps between stated principles and concrete mechanism. | Nexus Leadership |
-| 0.2.0 | 2026-08-26 | Split the single document into `Nexus_Constitution.md` (narrative, principles, executive-facing) and this companion, `nexus_foundations.md` (technical Annexes A–H). Added an Executive Summary, Table of Contents, Risk-to-Mitigation Summary, and Glossary of Key Concepts to the Constitution. | Nexus Leadership |
-| 0.3.0 | 2026-08-26 | Grouped the Constitution's Glossary into five themed sections (Architecture & Structure; Data Organization & Ownership; Privacy, Identity & Compliance; Reliability & Operations; AI & Automation). Removed the premature "Data Product Owner" and "Cross-Dominion Governance Council" named concepts from both documents, replacing them with generic "Dominion owner" / "Nexus leadership" placeholders until the organization is ready to formalize governance structure. | Nexus Leadership |
+| 0.1 | 2026-09-22 | First draft for PSS 3.0, companion to the Data Principles. Annexes A–H. | Pending Architecture Review Board |

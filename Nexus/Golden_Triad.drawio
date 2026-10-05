@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram name="Page-1" id="0">
-        <mxGraphModel dx="693" dy="1432" grid="1" gridSize="8" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="440" pageHeight="560" background="#FFFFFF" math="1" shadow="0">
+        <mxGraphModel dx="779" dy="1144" grid="1" gridSize="8" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="440" pageHeight="560" background="#FFFFFF" math="1" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -19,7 +19,7 @@
                 <mxCell id="7" style="edgeStyle=none;html=1;strokeColor=#000000;strokeWidth=3;startArrow=classic;startFill=1;" parent="1" source="4" target="3" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="4" value="Backend&lt;br&gt;&lt;br&gt;Secure, high-speed&lt;br&gt;operational transactions" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=14;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                <mxCell id="4" value="Backend/BackOffice&lt;br&gt;&lt;br&gt;Secure, high-speed&lt;br&gt;operational transactions" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#0B1B3A;fontSize=14;fontFamily=Inter, Roboto, system-ui, -apple-system, sans-serif;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
                     <mxGeometry x="64" y="376" width="225" height="104" as="geometry"/>
                 </mxCell>
             </root>

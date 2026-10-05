@@ -1,0 +1,18 @@
+﻿PM What problems we solve for the tax domain?
+Small developing countries face structural challenges across compliance, data quality, administrative burden, and technological agility. All exacerbated by limited human capacity, fragmented registries, legacy IT, and low integration across government systems.
+Compliance Gap
+Developing countries lose 3–6% of GDP to non-compliance (OECD, Tax Admin 3.0). Small businesses account for 40–45% of the tax gap, driven by limited capacity and manual processes (OECD, SME Tax Gap Analysis). In many emerging economies, informal sector participation exceeds 30–50% of the labor force, making voluntary compliance structurally difficult (ILO/IMF).
+High Administrative Burden
+Firms in low-income and small economies spend 100–250 hours/year on tax compliance vs ~40 hours in advanced economies (World Bank, Doing Business – Paying Taxes). OECD notes that SMEs face disproportionate compliance burdens, often paying 30% of taxes again in compliance costs (OECD, Towards Seamless Taxation). Burden is amplified in SIDS due to small administrations and manual processes.
+Weak Taxpayer Registry & Data Quality
+SIDS suffer from fragmented ID systems, duplicated TINs, and mismatched population records (birth/death/migration). OECD identifies a trusted digital identity and clean registers as foundational building blocks for modern tax systems (OECD, Digital Gov Maturity Model). Poor registry quality increases compliance enforcement costs by 20–40% (TADAT performance assessments). FRCA documentation shows 15+ external entities that must be integrated for a complete taxpayer view (FRCA RSC).
+Debt & Delinquency Management
+Tax arrears in developing countries often exceed 20–30% of total net collections (IMF Revenue Administration Gap Analysis). OECD FTA members reported EUR 820 billion outstanding tax debt in 2017, with low recovery rates linked to delayed enforcement (OECD, Tax Admin Series). SIDS face even weaker recovery due to small teams and manual casework (TADAT reports).
+Low Audit Effectiveness
+In many developing countries, 70–90% of audits are desk audits, producing limited behavioural impact (TADAT). OECD highlights that traditional audits are slow, costly and downstream, and rarely change long-term compliance behaviour (OECD, Tax Admin 3.0). Lack of integrated data across agencies weakens risk profiling and reduces audit yield (OECD, Seamless Taxation).
+Sudden Legislative Changes & Low Agility
+SIDS frequently adjust tax rates and exemptions during budget cycles or crises. OECD warns that most administrations lack configurable rule engines, making legal updates slow and error-prone (OECD, Tax Admin 3.0). During COVID-19, emerging-country tax systems required hundreds of temporary measures, exposing the fragility of manual rule maintenance (OECD FTA pandemic response review).
+Legacy IT & Technical Debt
+Many SIDS operate systems that are 10–20+ years old, highly customized, and expensive to maintain. Legacy maintenance consumes 30–50% of IT budgets (OECD, Digital Government Review). Lack of APIs, event-driven architecture, and data standards block real-time processes and integration (FRCA RSC). OECD identifies outdated core systems as a major barrier to achieving Tax Admin 3.0.
+Fragmented Data Ecosystem & Siloed Services
+OECD notes that tax administrations rely on manual, siloed, downstream processes with poor data exchange (OECD, Tax Admin 3.0). SMEs often must extract data from their business systems and re-enter it into tax systems, a major driver of compliance costs (OECD, Towards Seamless Taxation). SIDS struggle to integrate with registrars, customs, local govs, social funds, banks, etc., as documented in the FRCA RSC (15+ required integrations).

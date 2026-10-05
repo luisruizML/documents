@@ -7,7 +7,7 @@
   "theme": "tech-blue",
   "layout": "hierarchical",
   "counts": {
-    "nodes": 15,
+    "nodes": 37,
     "edges": 5,
     "modules": 0
   },
@@ -18,8 +18,23 @@
       "type": "process"
     },
     {
-      "id": "citizenHubBody",
-      "label": "citizen_hub_key (PK)\ncitizen_bk (business key)\nload_date\nrecord_source",
+      "id": "citizenHubPk",
+      "label": "citizen_hub_key (PK)",
+      "type": "process"
+    },
+    {
+      "id": "citizenHubBk",
+      "label": "citizen_bk (business key)",
+      "type": "process"
+    },
+    {
+      "id": "citizenHubLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "citizenHubRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -28,8 +43,23 @@
       "type": "process"
     },
     {
-      "id": "addressHubBody",
-      "label": "address_hub_key (PK)\naddress_bk (business key)\nload_date\nrecord_source",
+      "id": "addressHubPk",
+      "label": "address_hub_key (PK)",
+      "type": "process"
+    },
+    {
+      "id": "addressHubBk",
+      "label": "address_bk (business key)",
+      "type": "process"
+    },
+    {
+      "id": "addressHubLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "addressHubRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -38,8 +68,28 @@
       "type": "process"
     },
     {
-      "id": "linkBody",
-      "label": "link_key (PK)\ncitizen_hub_key (FK)\naddress_hub_key (FK)\nload_date\nrecord_source",
+      "id": "linkPk",
+      "label": "link_key (PK)",
+      "type": "process"
+    },
+    {
+      "id": "linkFkCitizen",
+      "label": "citizen_hub_key (FK)",
+      "type": "process"
+    },
+    {
+      "id": "linkFkAddress",
+      "label": "address_hub_key (FK)",
+      "type": "process"
+    },
+    {
+      "id": "linkLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "linkRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -48,8 +98,28 @@
       "type": "process"
     },
     {
-      "id": "citizenSatBody",
-      "label": "citizen_hub_key (FK)\nname\ndate_of_birth\nload_date\nrecord_source",
+      "id": "citizenSatFk",
+      "label": "citizen_hub_key (FK)",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatName",
+      "label": "name",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatDob",
+      "label": "date_of_birth",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "citizenSatRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -58,8 +128,23 @@
       "type": "process"
     },
     {
-      "id": "linkSatBody",
-      "label": "link_key (FK)\nvalid_from\nload_date\nrecord_source",
+      "id": "linkSatFk",
+      "label": "link_key (FK)",
+      "type": "process"
+    },
+    {
+      "id": "linkSatValidFrom",
+      "label": "valid_from",
+      "type": "process"
+    },
+    {
+      "id": "linkSatLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "linkSatRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -68,8 +153,28 @@
       "type": "process"
     },
     {
-      "id": "addressSatBody",
-      "label": "address_hub_key (FK)\nstreet\ncity\nload_date\nrecord_source",
+      "id": "addressSatFk",
+      "label": "address_hub_key (FK)",
+      "type": "process"
+    },
+    {
+      "id": "addressSatStreet",
+      "label": "street",
+      "type": "process"
+    },
+    {
+      "id": "addressSatCity",
+      "label": "city",
+      "type": "process"
+    },
+    {
+      "id": "addressSatLoadDate",
+      "label": "load_date",
+      "type": "process"
+    },
+    {
+      "id": "addressSatRecordSource",
+      "label": "record_source",
       "type": "process"
     },
     {
@@ -86,37 +191,42 @@
       "id": "legendSat",
       "label": "Satellite — time-versioned, insert-only descriptive data",
       "type": "text"
+    },
+    {
+      "id": "legendKey",
+      "label": "Shaded row = key field (PK / FK)",
+      "type": "text"
     }
   ],
   "edges": [
     {
       "id": "edge-1",
-      "from": "citizenHubBody",
-      "to": "linkHeader",
+      "from": "citizenHubPk",
+      "to": "linkFkCitizen",
       "type": "primary"
     },
     {
       "id": "edge-2",
-      "from": "addressHubBody",
-      "to": "linkHeader",
+      "from": "addressHubPk",
+      "to": "linkFkAddress",
       "type": "primary"
     },
     {
       "id": "edge-3",
-      "from": "linkBody",
-      "to": "linkSatHeader",
+      "from": "linkPk",
+      "to": "linkSatFk",
       "type": "primary"
     },
     {
       "id": "edge-4",
-      "from": "citizenHubBody",
-      "to": "citizenSatHeader",
+      "from": "citizenHubPk",
+      "to": "citizenSatFk",
       "type": "primary"
     },
     {
       "id": "edge-5",
-      "from": "addressHubBody",
-      "to": "addressSatHeader",
+      "from": "addressHubPk",
+      "to": "addressSatFk",
       "type": "primary"
     }
   ],

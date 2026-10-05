@@ -1,0 +1,185 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1650x760
+  title: Data Scalability Problems — Three Escalation Chains
+  description: >-
+    Three independent escalation chains of Backend shortcuts, each ending in a real-world failure, all converging on
+    mechanisms Nexus already provides.
+nodes:
+  - id: a1
+    label: ① Wide Table / Nullable Sprawl
+    module: chainA
+    type: process
+    position:
+      x: 150
+      'y': 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: a2
+    label: ② JSON Blob Escape Hatch
+    module: chainA
+    type: process
+    position:
+      x: 460
+      'y': 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: a3
+    label: ⑤ Hardcoded Regulatory Branches
+    module: chainA
+    type: process
+    position:
+      x: 770
+      'y': 90
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: aOut
+    label: 🚩 Compliance Incident
+    type: process
+    position:
+      x: 1050
+      'y': 90
+    style:
+      fillColor: '#FFE3D8'
+      strokeColor: '#C1440E'
+      fontColor: '#7A2E0E'
+      fontSize: 11
+      fontWeight: 700
+  - id: b1
+    label: ③ Reporting on Production
+    module: chainB
+    type: process
+    position:
+      x: 150
+      'y': 330
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: b2
+    label: ⑥ Read-Replica Sprawl
+    module: chainB
+    type: process
+    position:
+      x: 460
+      'y': 330
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: bOut
+    label: 🚩 Outage + Inconsistent Counts
+    type: process
+    position:
+      x: 770
+      'y': 330
+    style:
+      fillColor: '#FFE3D8'
+      strokeColor: '#C1440E'
+      fontColor: '#7A2E0E'
+      fontSize: 11
+      fontWeight: 700
+  - id: c1
+    label: ④ Synchronous Cross-Dominion Fan-Out
+    module: chainC
+    type: process
+    position:
+      x: 150
+      'y': 570
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: cOut
+    label: 🚩 Cascading Failures as Dominions Grow
+    type: process
+    position:
+      x: 460
+      'y': 570
+    style:
+      fillColor: '#FFE3D8'
+      strokeColor: '#C1440E'
+      fontColor: '#7A2E0E'
+      fontSize: 11
+      fontWeight: 700
+  - id: nexusBox
+    label: |-
+      Nexus — Already Built to Hold This
+
+      Grey-area resolutions (Golden Triad)
+      Medallion Silver / Gold
+      Subject 360 (Annex B.5)
+      Governed retention (Annex A)
+      Iceberg time-travel
+    module: fix
+    type: database
+    position:
+      x: 1380
+      'y': 330
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+edges:
+  - from: a1
+    to: a2
+    type: primary
+  - from: a2
+    to: a3
+    type: primary
+  - from: a3
+    to: aOut
+    type: primary
+  - from: aOut
+    to: nexusBox
+    type: primary
+  - from: b1
+    to: b2
+    type: primary
+  - from: b2
+    to: bOut
+    type: primary
+  - from: bOut
+    to: nexusBox
+    type: primary
+  - from: c1
+    to: cOut
+    type: primary
+  - from: cOut
+    to: nexusBox
+    type: primary
+modules:
+  - id: chainA
+    label: Chain A — Schema & Regulatory Shortcuts
+    color: '#45E3CD'
+  - id: chainB
+    label: Chain B — Query-Load Shortcuts
+    color: '#45E3CD'
+  - id: chainC
+    label: Chain C — Coupling Shortcuts
+    color: '#45E3CD'
+  - id: fix
+    label: The Convergent Fix
+    color: '#F72586'

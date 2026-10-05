@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "title": "ETL & Transformation Tooling — Division of Labor",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 7,
+    "edges": 8,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "airflow",
+      "label": "Airflow — Orchestrates Everything Below\n\nCDC relay · Flink jobs · dbt runs\nIceberg maintenance (rewrite_data_files, expire_snapshots)",
+      "type": "process"
+    },
+    {
+      "id": "cdc",
+      "label": "CDC Relay (Debezium)",
+      "type": "process"
+    },
+    {
+      "id": "kafka",
+      "label": "Kafka",
+      "type": "queue"
+    },
+    {
+      "id": "flink",
+      "label": "Flink",
+      "type": "process"
+    },
+    {
+      "id": "bronzesilver",
+      "label": "Bronze / Silver (Iceberg)",
+      "type": "database"
+    },
+    {
+      "id": "dbtNode",
+      "label": "dbt",
+      "type": "process"
+    },
+    {
+      "id": "gold",
+      "label": "Gold (Iceberg)",
+      "type": "database"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "cdc",
+      "to": "kafka",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "kafka",
+      "to": "flink",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "flink",
+      "to": "bronzesilver",
+      "type": "primary",
+      "label": "exactly-once write"
+    },
+    {
+      "id": "edge-4",
+      "from": "bronzesilver",
+      "to": "dbtNode",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "dbtNode",
+      "to": "gold",
+      "type": "primary",
+      "label": "tested + lineage tracked"
+    },
+    {
+      "id": "edge-6",
+      "from": "airflow",
+      "to": "cdc",
+      "type": "optional"
+    },
+    {
+      "id": "edge-7",
+      "from": "airflow",
+      "to": "flink",
+      "type": "optional"
+    },
+    {
+      "id": "edge-8",
+      "from": "airflow",
+      "to": "dbtNode",
+      "type": "optional"
+    }
+  ],
+  "modules": []
+}

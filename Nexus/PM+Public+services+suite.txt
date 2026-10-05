@@ -1,0 +1,14 @@
+﻿PM Public services suite
+We are building a public services suite that free people from complexity, empowering citizens, enabling governments to invest, and creating the conditions for shared prosperity.
+Future vision (3).mp4 
+Imagine a future where people in small developing countries use their time for what really matters. A future where people no longer repeat information, wait in lines, or navigate fragmented services. Institutions work as one, securely sharing the right data at the right moment, so public services flow naturally through the systems people already use.
+This future is about more than saving time. It is about creating the right incentives for participation, investment, and growth. When taxes and social services are simple, transparent, and predictable, citizens contribute with confidence, businesses plan for the long term, and governments can invest in infrastructure, education, health, and opportunities.
+In this future, data becomes a shared national asset, enabling better decisions, stronger policies, and greater trust between institutions and society. Public servants are empowered by clarity, not burdened by administration, and public investment becomes more intentional and impactful.
+This is the future we are building together: seamless public services that give people time, give institutions clarity, and help nations grow and prosper.
+
+Our proposal:
+We aim to build a configurable, platform-like product suite capable of supporting any legislation, reducing custom development to zero, and enabling teams to focus on scalable, high-value capabilities that serve more countries and millions of people faster and better.
+With this future vision we aim to solve the following problems/needs:
+The problems we aim to solve
+Public Services Suite × Blyce 2030
+The Public Services Suite future vision is a direct expression of Blyce 2030 at a platform level. It translates our commitment to clarity, simplicity, elegance, and intelligence into public services that are configurable, data-minded, and resilient by design. By reducing complexity, standardizing where it matters, and embedding quality as a prerequisite rather than an afterthought, the suite enables institutions to operate as one coherent system focused on outcomes, not administration. Seamless interactions for citizens, transparency for institutions, and evidence-based decision-making reflect our ambition for customer delight, right tech for the right task, and responsible automation, freeing both governments and Blyce teams from unnecessary effort and enabling continuous improvement at scale.

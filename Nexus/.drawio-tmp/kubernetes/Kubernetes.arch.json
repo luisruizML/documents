@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "title": "Kubernetes Monitoring — Four Categories, One Escalation Path",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 9,
+    "edges": 4,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "h1",
+      "label": "Control Plane Health",
+      "type": "process"
+    },
+    {
+      "id": "h2",
+      "label": "Workload Health",
+      "type": "process"
+    },
+    {
+      "id": "h3",
+      "label": "Storage & Stateful Workloads",
+      "type": "process"
+    },
+    {
+      "id": "h4",
+      "label": "Capacity & Tenancy Boundaries",
+      "type": "process"
+    },
+    {
+      "id": "b1",
+      "label": "• API server availability\n  & latency\n• etcd health (latency,\n  leader stability, quota)\n• NotReady node count",
+      "type": "process"
+    },
+    {
+      "id": "b2",
+      "label": "• Pod restart /\n  crash-loop rate\n• Pending, unschedulable\n  pods\n• Requested vs. actual\n  CPU/memory",
+      "type": "process"
+    },
+    {
+      "id": "b3",
+      "label": "• PersistentVolume\n  provisioning & capacity\n• StatefulSet health\n  (incl. Kafka brokers)\n• Backup/snapshot\n  verification",
+      "type": "process"
+    },
+    {
+      "id": "b4",
+      "label": "• Usage vs. Annex D.4\n  benchmark\n• Resource quota\n  utilization per namespace\n• Network policy / pod\n  security drift",
+      "type": "process"
+    },
+    {
+      "id": "escalation",
+      "label": "Existing Observability & Escalation — Not a New System\n\nConstitution §7: structured logs + Correlation ID\nAnnex D.3 / E.3: SLO breach escalation + restore drills",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "b1",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b2",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "b3",
+      "to": "escalation",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "b4",
+      "to": "escalation",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

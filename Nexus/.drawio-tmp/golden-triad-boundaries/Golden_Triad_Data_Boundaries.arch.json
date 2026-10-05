@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "title": "Golden Triad Data Boundaries",
+  "type": "module-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 13,
+    "edges": 11,
+    "modules": 4
+  },
+  "nodes": [
+    {
+      "id": "fe1",
+      "label": "Frontend App",
+      "type": "service",
+      "module": "frontend"
+    },
+    {
+      "id": "be3",
+      "label": "In-Flight Workflow Status (current)",
+      "type": "database",
+      "module": "backend"
+    },
+    {
+      "id": "be1",
+      "label": "Current Transactional State",
+      "type": "database",
+      "module": "backend"
+    },
+    {
+      "id": "be2",
+      "label": "Session / Auth State",
+      "type": "database",
+      "module": "backend"
+    },
+    {
+      "id": "ga5",
+      "label": "⑤ Workflow Status History",
+      "type": "process",
+      "module": "greyband"
+    },
+    {
+      "id": "ga1",
+      "label": "① CDC / Outbox",
+      "type": "process",
+      "module": "greyband"
+    },
+    {
+      "id": "ga3",
+      "label": "③ File Upload Landing",
+      "type": "process",
+      "module": "greyband"
+    },
+    {
+      "id": "ga2",
+      "label": "② Read Caches & UI Aggregates",
+      "type": "process",
+      "module": "greyband"
+    },
+    {
+      "id": "ga4",
+      "label": "④ Regulatory / Reference Data",
+      "type": "process",
+      "module": "greyband"
+    },
+    {
+      "id": "nx3",
+      "label": "Historical & Cross-Dominion Data",
+      "type": "database",
+      "module": "nexus"
+    },
+    {
+      "id": "nx1",
+      "label": "Bronze — Raw Landing",
+      "type": "database",
+      "module": "nexus"
+    },
+    {
+      "id": "nx2",
+      "label": "Silver · Gold — Certified Data",
+      "type": "database",
+      "module": "nexus"
+    },
+    {
+      "id": "nx4",
+      "label": "Identity Resolution (Subject 360)",
+      "type": "database",
+      "module": "nexus"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "be3",
+      "to": "ga5",
+      "type": "primary",
+      "label": "status change"
+    },
+    {
+      "id": "edge-2",
+      "from": "ga5",
+      "to": "nx3",
+      "type": "primary",
+      "label": "CDC → Satellite"
+    },
+    {
+      "id": "edge-3",
+      "from": "be1",
+      "to": "ga1",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "ga1",
+      "to": "nx1",
+      "type": "primary",
+      "label": "Debezium / outbox"
+    },
+    {
+      "id": "edge-5",
+      "from": "fe1",
+      "to": "ga3",
+      "type": "primary",
+      "label": "pre-signed URL"
+    },
+    {
+      "id": "edge-6",
+      "from": "ga3",
+      "to": "nx1",
+      "type": "primary",
+      "label": "async landing"
+    },
+    {
+      "id": "edge-7",
+      "from": "be1",
+      "to": "ga3",
+      "type": "optional",
+      "label": "pointer + status"
+    },
+    {
+      "id": "edge-8",
+      "from": "nx2",
+      "to": "ga2",
+      "type": "data",
+      "label": "Gold query → cached, staleness labeled"
+    },
+    {
+      "id": "edge-9",
+      "from": "ga2",
+      "to": "be1",
+      "type": "data"
+    },
+    {
+      "id": "edge-10",
+      "from": "nx2",
+      "to": "ga4",
+      "type": "data",
+      "label": "certified ruleset → read-only cache"
+    },
+    {
+      "id": "edge-11",
+      "from": "ga4",
+      "to": "be1",
+      "type": "data"
+    }
+  ],
+  "modules": [
+    {
+      "id": "frontend",
+      "label": "Frontend",
+      "color": "#3A0CA3"
+    },
+    {
+      "id": "backend",
+      "label": "Backend / BackOffice",
+      "color": "#45E3CD"
+    },
+    {
+      "id": "greyband",
+      "label": "Five Grey Areas — Resolved as Mechanisms, Not Duplicated Data",
+      "color": "#8D99AE"
+    },
+    {
+      "id": "nexus",
+      "label": "Nexus",
+      "color": "#F72586"
+    }
+  ]
+}

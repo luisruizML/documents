@@ -1,14 +1,14 @@
 # Medallion Architecture at Nexus
 
-*Companion document to* `Nexus_Constitution.md` *§6 (Technologies and Methodologies) and §5 ("Decoupled Compute and Storage"). This document expands on what the Medallion Architecture (Bronze/Silver/Gold) actually is, why decoupling storage from processing is the specific mechanism that makes the layering work, and who — by role — is allowed to touch each layer.*
+*Companion document to* `Data_Principles.md` *P3 (Storage and compute scale independently) and Q2 (Quality is a precondition, not a clean-up). This document expands on what the Medallion Architecture (Bronze/Silver/Gold) actually is, why decoupling storage from processing is the specific mechanism that makes the layering work, and who — by role — is allowed to touch each layer.*
 
-**Version:** 1.0 · **Status:** Draft · **Last Updated:** 2026-08-28
+**Part:** 3 — How it is built · **Document:** 13 of 22 · **Version:** 0.1 · **Status:** Draft · **Last Updated:** 2026-09-22
 
 ## **Executive Summary**
 
-Constitution §6 names the Medallion Architecture in one line: Bronze (raw), Silver (cleaned), Gold (curated), each with its own security posture. That line does real work, but it doesn't say *why* three layers instead of one, *why* storage and processing have to be decoupled for the pattern to hold, or *exactly* who is allowed to read what. This document is that expansion.
+The Medallion Architecture is usually summed up in one line: Bronze (raw), Silver (cleaned), Gold (curated), each with its own security posture. That line does real work, but it doesn't say *why* three layers instead of one, *why* storage and processing have to be decoupled for the pattern to hold, or *exactly* who is allowed to read what. This document is that expansion.
 
-The short version: Medallion is a data-quality and access-control pipeline expressed as physical layers, not a storage format. Iceberg/Delta tables (see `Lakehouse_Architecture.md`) are what each layer is *stored in*; Medallion is what each layer *means*. Decoupling storage from processing (Constitution §5, "Decoupled Compute and Storage") is what lets each layer run a different compute engine, at a different cadence, with a different access policy, on top of the exact same underlying files — without one layer's workload ever blocking or corrupting another's.
+The short version: Medallion is a data-quality and access-control pipeline expressed as physical layers, not a storage format. Iceberg/Delta tables (see `Lakehouse_Architecture.md`) are what each layer is *stored in*; Medallion is what each layer *means*. Decoupling storage from processing (Data Principles P3, "Storage and compute scale independently") is what lets each layer run a different compute engine, at a different cadence, with a different access policy, on top of the exact same underlying files — without one layer's workload ever blocking or corrupting another's.
 
 ## **What Is the Medallion Architecture?**
 
@@ -18,7 +18,7 @@ Three layers, each a transformation and a trust boundary on top of the last:
 * **Silver (Cleaned):** Bronze is parsed, typed, deduplicated, and conformed to a schema. Identity resolution (Annex B) and survivorship rules run here. Silver is *correct*, but still Dominion-shaped — it hasn't been aggregated for any particular audience yet.
 * **Gold (Curated):** Silver is aggregated, joined across Dominions where needed, and shaped for a specific consumption pattern — a reporting table, an API response, a feature store. Gold is opinionated on purpose: it exists to answer a known question fast, not to hold every fact.
 
-Each hop is a one-way, reproducible transformation. Nothing is ever written backward from Gold into Silver or from Silver into Bronze — the same discipline that makes Bronze's append-only guarantee (Constitution §5, "Immutability & Radical Traceability") meaningful survives all the way up the stack.
+Each hop is a one-way, reproducible transformation. Nothing is ever written backward from Gold into Silver or from Silver into Bronze — the same discipline that makes Bronze's append-only guarantee (Data Principles T1, "History is never overwritten") meaningful survives all the way up the stack.
 
 ![Medallion Architecture diagram](Medallion_Architecture.png)
 
@@ -32,7 +32,7 @@ If Bronze, Silver, and Gold lived inside one tightly coupled storage-plus-comput
 * **Silver** needs heavy, scheduled batch compute — deduplication, identity resolution, DQ checks (Annex F) — that runs for minutes at a time, on a predictable cadence, and can be paused without anyone noticing.
 * **Gold** needs the opposite: low, predictable read latency for APIs and dashboards, serving many small queries concurrently, with compute that can scale up and down independently of whatever batch job is currently churning through Silver.
 
-Three different load shapes, three different scaling needs — one shared, dumb, cheap storage layer underneath all of them. This is Constitution §5's "Decoupled Compute and Storage" principle applied concretely: Iceberg/Delta tables on object storage are the one constant; Kafka ingestion, Spark/dbt batch jobs, and FastAPI serving layers are independent, swappable compute engines that each attach to their own layer without contending for the others' resources. A slow Silver transformation job never degrades Gold's API latency, because they were never running on the same compute in the first place. And because storage is decoupled from any one engine, a client's on-premise Kubernetes cluster (Annex D.4) can size Bronze, Silver, and Gold compute independently — rather than provisioning one oversized cluster to cover the worst-case load of all three layers at once.
+Three different load shapes, three different scaling needs — one shared, dumb, cheap storage layer underneath all of them. This is Data Principles P3 (Storage and compute scale independently) applied concretely: Iceberg/Delta tables on object storage are the one constant; Kafka ingestion, Spark/dbt batch jobs, and FastAPI serving layers are independent, swappable compute engines that each attach to their own layer without contending for the others' resources. A slow Silver transformation job never degrades Gold's API latency, because they were never running on the same compute in the first place. And because storage is decoupled from any one engine, a client's on-premise Kubernetes cluster (Annex D.4) can size Bronze, Silver, and Gold compute independently — rather than provisioning one oversized cluster to cover the worst-case load of all three layers at once.
 
 ## **Who Can Access What**
 
@@ -40,7 +40,7 @@ Access tightens as data moves up the stack — not because higher layers are "mo
 
 | Layer | Data State | Security Control | Who Can Access | Why |
 | --- | --- | --- | --- | --- |
-| **Bronze** | Raw, unvalidated, may contain uncleaned PII | Fully encrypted at rest, per-subject DEKs (Annex A) | Architects, Data Engineers, Data Scientists only | Bronze is the highest-risk surface — it's the one layer where a raw, unredacted source payload can appear before any masking or cleaning runs |
+| **Bronze** | Raw, unvalidated, may contain uncleaned PII | Fully encrypted at rest, per-subject DEKs (Annex A — see `Encryption_Key_Custody.md` for the full mechanism) | Architects, Data Engineers, Data Scientists only | Bronze is the highest-risk surface — it's the one layer where a raw, unredacted source payload can appear before any masking or cleaning runs |
 | **Silver** | Cleaned, typed, deduplicated, Dominion-scoped | Data-Level Controls (DLC), filtered by Dominion and Role | BI Engineers, ML Engineers | Silver is trustworthy enough to build on, but still shaped around one Dominion's internal logic — not yet safe to hand to a consumer outside it |
 | **Gold** | Aggregated, curated, shaped for a specific consumption pattern | Strict filtering by Dominion and Role, enforced at the API/reporting boundary | Consumption APIs, reporting tools, and any team or external partner the Dominion has certified access for (Annex C.6) | Gold is the only layer designed to be handed outside the Dominion that produced it — everything sensitive has already been resolved, masked, or aggregated away by the time data reaches here |
 
@@ -64,7 +64,7 @@ The same underlying fact — this citizen's new address — exists in three diff
 
 A caseworker needs more than "where does this citizen live today." They need every address the citizen has ever had, and what's registered to them right now — a property, a vehicle — across Dominions that don't report to each other.
 
-1. **Bronze:** Every address-change form this citizen has ever submitted is still sitting there as its own row. Bronze never overwrites — it only appends (Constitution §5, "Immutability & Radical Traceability") — so the address from three moves ago exists in exactly the same form it did the day it was submitted.
+1. **Bronze:** Every address-change form this citizen has ever submitted is still sitting there as its own row. Bronze never overwrites — it only appends (Data Principles T1, "History is never overwritten") — so the address from three moves ago exists in exactly the same form it did the day it was submitted.
 2. **Silver:** Each submission has already been cleaned and identity-resolved into the Civil Registry Dominion's Silver table, but resolving *which* address is "current" happens through survivorship rules (Annex B.3) applied at query time — the superseded ones are never deleted, just no longer marked authoritative.
 3. **Gold:** A `Subject 360` view (Annex B.5) doesn't only expose current state — because it's built on Iceberg/Delta snapshots (see `Lakehouse_Architecture.md`), the same view can be queried *as of* any past date to reconstruct the citizen's full address history. And because Gold is where Dominions join, that same view pulls the Property Registry Dominion's Gold table for owned real estate and the Vehicle Registry Dominion's for registered vehicles — one certified query, one citizen, every address they've had and everything currently registered to them, without the caseworker's tool ever touching another Dominion's Bronze or Silver.
 
@@ -101,4 +101,4 @@ Nobody had to query raw filings or write a one-off script against Bronze to answ
 
 ## **Verdict**
 
-Medallion isn't a storage format choice — it's what happens when you take Constitution §5's "Decoupled Compute and Storage" principle and apply it deliberately, layer by layer, to both compute *and* access. Bronze, Silver, and Gold could theoretically live in one undifferentiated table with row-level flags for "is this clean" and "who can see this" — but that collapses three different load shapes and three different trust boundaries onto one piece of infrastructure, which is precisely the coupling Nexus's architecture exists to avoid. Three layers, three independently scaled compute engines, one shared cheap storage substrate, and an access boundary that narrows exactly in step with how trustworthy the data has become — that is the concrete mechanism behind Constitution §6's one-line commitment.
+Medallion isn't a storage format choice — it's what happens when you take Data Principles P3 (Storage and compute scale independently) and apply it deliberately, layer by layer, to both compute *and* access. Bronze, Silver, and Gold could theoretically live in one undifferentiated table with row-level flags for "is this clean" and "who can see this" — but that collapses three different load shapes and three different trust boundaries onto one piece of infrastructure, which is precisely the coupling Nexus's architecture exists to avoid. Three layers, three independently scaled compute engines, one shared cheap storage substrate, and an access boundary that narrows exactly in step with how trustworthy the data has become — that is the concrete mechanism behind Data Principles Q2 (Quality is a precondition, not a clean-up).

@@ -1,0 +1,128 @@
+meta:
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1750x620
+  title: ETL & Transformation Tooling — Division of Labor
+  description: Kafka/Flink streaming into Bronze/Silver, dbt batch transformation into Gold, Airflow orchestrating both.
+nodes:
+  - id: airflow
+    label: |-
+      Airflow — Orchestrates Everything Below
+
+      CDC relay · Flink jobs · dbt runs
+      Iceberg maintenance (rewrite_data_files, expire_snapshots)
+    type: process
+    bounds:
+      x: 430
+      'y': 50
+      width: 620
+      height: 110
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 12
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+  - id: cdc
+    label: CDC Relay (Debezium)
+    type: process
+    position:
+      x: 110
+      'y': 400
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: kafka
+    label: Kafka
+    type: queue
+    position:
+      x: 370
+      'y': 400
+    style:
+      fillColor: '#45E3CD'
+      strokeColor: '#0B1B3A'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: flink
+    label: Flink
+    type: process
+    position:
+      x: 620
+      'y': 400
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: bronzesilver
+    label: Bronze / Silver (Iceberg)
+    type: database
+    position:
+      x: 900
+      'y': 400
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+  - id: dbtNode
+    label: dbt
+    type: process
+    position:
+      x: 1200
+      'y': 400
+    style:
+      fillColor: '#EDF1F5'
+      strokeColor: '#8D99AE'
+      fontColor: '#0B1B3A'
+      fontSize: 11
+      fontWeight: 600
+  - id: gold
+    label: Gold (Iceberg)
+    type: database
+    position:
+      x: 1480
+      'y': 400
+    style:
+      fillColor: '#F72586'
+      strokeColor: '#7A0F44'
+      fontColor: '#FFFFFF'
+      fontSize: 11
+      fontWeight: 600
+edges:
+  - from: cdc
+    to: kafka
+    type: primary
+  - from: kafka
+    to: flink
+    type: primary
+  - from: flink
+    to: bronzesilver
+    type: primary
+    label: exactly-once write
+  - from: bronzesilver
+    to: dbtNode
+    type: primary
+  - from: dbtNode
+    to: gold
+    type: primary
+    label: tested + lineage tracked
+  - from: airflow
+    to: cdc
+    type: optional
+  - from: airflow
+    to: flink
+    type: optional
+  - from: airflow
+    to: dbtNode
+    type: optional
+modules: []
