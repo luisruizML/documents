@@ -193,5 +193,18 @@ class RemainingSectionTests(unittest.TestCase):
             self.assertEqual(vp.main([str(bad)]), 1)
 
 
+class TemplateTests(unittest.TestCase):
+    def test_template_has_all_sections_and_headers(self):
+        text = (HERE.parent / "assets" / "template.md").read_text(encoding="utf-8")
+        parsed = vp.parse_page(text)
+        self.assertEqual(parsed.order, vp.SECTIONS)
+        self.assertEqual(list(parsed.tables("Vault objects")[0][0].keys()), ["Type", "Name", "Grain", "Business key"])
+        self.assertEqual(list(parsed.tables("Jurisdictions map")[0][0].keys()), vp.JURISDICTION_COLUMNS)
+        self.assertEqual(list(parsed.tables("Open decisions")[0][0].keys()), vp.DECISION_COLUMNS)
+        fields = vp._fields_tables(parsed)
+        self.assertEqual(list(next(iter(fields.values()))[0].keys()), ["Column", "Type", "Null", "Personal data", "Description"])
+        self.assertEqual([r["Field"] for r in parsed.tables("Header")[0]], vp.HEADER_FIELDS)
+
+
 if __name__ == "__main__":
     unittest.main()
