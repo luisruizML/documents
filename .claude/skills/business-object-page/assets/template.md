@@ -4,7 +4,7 @@
 
 *Who owns the object and where it stands. Owner domain, Shared with and Scope use the fixed lists; Status is Draft, Reviewed or Agreed.*
 
-| Field | Value |
+| **Field** | **Value** |
 | --- | --- |
 | Object | <<Object name>> |
 | Parent object | <<Parent object, or —>> |
@@ -31,7 +31,7 @@
 
 *One row per vault object. Names follow the naming convention (R9); every grain starts with the "one row per" of its type (R12).*
 
-| Type | Name | Grain | Business key |
+| **Type** | **Name** | **Grain** | **Business key** |
 | --- | --- | --- | --- |
 | Hub | `hub_<<object>>` | one row per business key | `<<object>>_bk`: <<how the key is chosen>> |
 | Link | `lnk_<<a>>__<<b>>` | one row per distinct combination of <<a and b>> | `hub_<<a>>`, `hub_<<b>>` |
@@ -39,16 +39,18 @@
 
 ## Fields
 
-*One table per vault object, in the order of the table above. Types come from the allowed list (R11). Personal data forces its own Satellite (T4).*
+*One table per vault object, in the order of the table above. Types come from the allowed list (R11). PII forces its own Satellite (T4).*
+
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
 
 ### hub_<<object>>
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `<<object>>_hk` | `string` | No | No | Hash key |
-| `<<object>>_bk` | `string` | No | No | <<The business key>> |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `<<object>>_hk` | ◆ | `string` | No | No | — | Hash key |
+| `<<object>>_bk` | ● | `string` | No | No | — | <<The business key>> |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
 ## Sources and mapping
 
@@ -60,7 +62,7 @@ No endpoints declared yet
 
 *Edge cases that need a different approach. A difference is a scenario of the same object, never a new object (R7). Name the countries; they explain the design.*
 
-| Edge case | Where it happens | Approach | Vault effect |
+| **Edge case** | **Where it happens** | **Approach** | **Vault effect** |
 | --- | --- | --- | --- |
 | <<What differs>> | <<Countries or kinds of jurisdiction>> | <<How the model handles it>> | <<Which vault object carries the difference>> |
 
@@ -80,12 +82,16 @@ No endpoints declared yet
 
 *The cluster, in the brand style.*
 
+*Two pictures, generated from this page with `scripts/build_diagram.py`: the simple one and the full one with the tables.*
+
 ![<<Object name>> cluster](<<Object_Name>>.png)
+
+![<<Object name>> cluster, full](<<Object_Name>>_Full.png)
 
 ## Open decisions
 
 *Same table as the Principles document. If there are none, write exactly: None open*
 
-| Decision | Owner | How it is decided | Decide by |
+| **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
 | <<Decision>> | <<Role>> | <<How>> | <<When>> |

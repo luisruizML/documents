@@ -2,7 +2,7 @@
 
 ## Header
 
-| Field | Value |
+| **Field** | **Value** |
 | --- | --- |
 | Object | Party |
 | Parent object | — |
@@ -27,7 +27,7 @@ A thin Hub gives them one thing to point to. It is thin on purpose: a Natural Pe
 
 ## Vault objects
 
-| Type | Name | Grain | Business key |
+| **Type** | **Name** | **Grain** | **Business key** |
 | --- | --- | --- | --- |
 | Hub | `hub_party` | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
 
@@ -35,14 +35,16 @@ The links from the two specific objects to `hub_party` are defined on their own 
 
 ## Fields
 
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+
 ### hub_party
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `party_hk` | `string` | No | No | Hash key, from the business key |
-| `party_bk` | `string` | No | No | The party identifier assigned by Nexus |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `party_hk` | ◆ | `string` | No | No | — | Hash key, from the business key |
+| `party_bk` | ● | `string` | No | No | — | The party identifier assigned by Nexus |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
 ## Sources and mapping
 
@@ -58,7 +60,7 @@ Illustrative data. A tax account in any jurisdiction points to `hub_party` throu
 
 `hub_party`
 
-| party_bk | Joined to |
+| **party_bk** | **Joined to** |
 | --- | --- |
 | PTY-0001 | `hub_natural_person` key P-7 (Papua New Guinea) |
 | PTY-0002 | `hub_legal_entity`, a family farming collective |
@@ -73,6 +75,8 @@ Illustrative data. A tax account in any jurisdiction points to `hub_party` throu
 ## Diagram
 
 ![Party cluster](Party.png)
+
+![Party cluster, full](Party_Full.png)
 
 ## Open decisions
 

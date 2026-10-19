@@ -2,7 +2,7 @@
 
 ## Header
 
-| Field | Value |
+| **Field** | **Value** |
 | --- | --- |
 | Object | Natural Person |
 | Parent object | Party |
@@ -30,7 +30,7 @@ If a Natural Person were merged into a single Party table, every registry would 
 
 ## Vault objects
 
-| Type | Name | Grain | Business key |
+| **Type** | **Name** | **Grain** | **Business key** |
 | --- | --- | --- | --- |
 | Hub | `hub_natural_person` | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
 | Link | `lnk_natural_person__party` | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
@@ -43,75 +43,77 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 
 ## Fields
 
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+
 ### hub_natural_person
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key, from jurisdiction, key type and business key |
-| `natural_person_bk` | `string` | No | No | Primary person identifier of the source of record |
-| `jurisdiction_code` | `string` | No | No | Jurisdiction that owns the key (ISO 3166-1) |
-| `key_type_code` | `string` | No | No | Which kind of identifier the business key is |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
+| `natural_person_bk` | ● | `string` | No | No | — | Primary person identifier of the source of record |
+| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction that owns the key (ISO 3166-1) |
+| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
 ### lnk_natural_person__party
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key of the natural person |
-| `party_hk` | `string` | No | No | Hash key of the party |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the natural person |
+| `party_hk` | ◇ | `string` | No | No | — | Hash key of the party |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
 ### sat_natural_person__name
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key of the parent |
-| `name_type_code` | `string` | No | Yes | Legal name, alias, tribal title or community alias |
-| `name_text` | `string` | No | Yes | The name as written; a single name is valid |
-| `script_code` | `string` | No | Yes | Writing system of the name (ISO 15924) |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
-| `hashdiff` | `string` | No | No | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `name_type_code` | | `string` | No | Yes | — | Legal name, alias, tribal title or community alias |
+| `name_text` | | `string` | No | Yes | — | The name as written; a single name is valid |
+| `script_code` | | `string` | No | Yes | — | Writing system of the name (ISO 15924) |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
 ### sat_natural_person__identification
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key of the parent |
-| `identification_type_code` | `string` | No | Yes | Passport, residence permit, national identity number or community card |
-| `identification_id` | `string` | No | Yes | The identifier as issued; never numeric |
-| `issuing_jurisdiction_code` | `string` | No | Yes | Jurisdiction that issued the document (ISO 3166-1) |
-| `expiry_date` | `date` | Yes | Yes | When the document stops being valid; empty if it does not expire |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
-| `hashdiff` | `string` | No | No | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `identification_type_code` | | `string` | No | Yes | — | Passport, residence permit, national identity number or community card |
+| `identification_id` | | `string` | No | Yes | — | The identifier as issued; never numeric |
+| `issuing_jurisdiction_code` | | `string` | No | Yes | — | Jurisdiction that issued the document (ISO 3166-1) |
+| `expiry_date` | | `date` | Yes | Yes | null | When the document stops being valid; empty if it does not expire |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
 ### sat_natural_person__registration
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key of the parent |
-| `registration_basis_code` | `string` | No | No | Document, biometric, testimony or census |
-| `registration_date` | `date` | No | No | When the person was registered on this basis |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
-| `hashdiff` | `string` | No | No | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `registration_basis_code` | | `string` | No | No | — | Document, biometric, testimony or census |
+| `registration_date` | | `date` | No | No | — | When the person was registered on this basis |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
 ### sat_natural_person__lifecycle
 
-| Column | Type | Null | Personal data | Description |
-| --- | --- | --- | --- | --- |
-| `natural_person_hk` | `string` | No | No | Hash key of the parent |
-| `status_code` | `string` | No | No | Active or inactive |
-| `origin_event_code` | `string` | No | No | Birth or immigration |
-| `origin_date` | `date` | Yes | No | Date of the origin event; empty when unknown, as with an unregistered birth |
-| `termination_event_code` | `string` | Yes | No | Confirmed death; empty while the person is active |
-| `termination_date` | `date` | Yes | No | Date of the termination event |
-| `load_dts` | `timestamptz` | No | No | When Nexus first loaded the row |
-| `record_source` | `string` | No | No | Which system and endpoint the row came from |
-| `hashdiff` | `string` | No | No | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `status_code` | | `string` | No | No | — | Active or inactive |
+| `origin_event_code` | | `string` | No | No | — | Birth or immigration |
+| `origin_date` | | `date` | Yes | No | null | Date of the origin event; empty when unknown, as with an unregistered birth |
+| `termination_event_code` | | `string` | Yes | No | null | Confirmed death; empty while the person is active |
+| `termination_date` | | `date` | Yes | No | null | Date of the termination event |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
 ## Sources and mapping
 
@@ -119,7 +121,7 @@ No endpoints declared yet
 
 ## Jurisdictions map
 
-| Edge case | Where it happens | Approach | Vault effect |
+| **Edge case** | **Where it happens** | **Approach** | **Vault effect** |
 | --- | --- | --- | --- |
 | Single names (mononyms) and tribal titles | Papua New Guinea and other island and customary-law communities | The name is stored as written in `name_text`; no first, middle or last name is required (R7: a scenario of the same object) | `sat_natural_person__name`, with the kind of name in `name_type_code` |
 | No identity document: refugees, stateless persons, unregistered births | Refugee-hosting and emerging-economy jurisdictions | The person exists without an identification row; the key is assigned by the registry | No row in `sat_natural_person__identification`; basis recorded in `sat_natural_person__registration` |
@@ -136,25 +138,25 @@ Illustrative data. The first example is a person with no document; the second is
 
 `hub_natural_person`
 
-| natural_person_bk | jurisdiction_code | key_type_code |
+| **natural_person_bk** | **jurisdiction_code** | **key_type_code** |
 | --- | --- | --- |
 | P-7 | PNG | registry_person_id |
 
 `sat_natural_person__name`
 
-| name_type_code | name_text | script_code |
+| **name_type_code** | **name_text** | **script_code** |
 | --- | --- | --- |
 | tribal_title | Kila | Latn |
 
 `sat_natural_person__registration`
 
-| registration_basis_code | registration_date |
+| **registration_basis_code** | **registration_date** |
 | --- | --- |
 | testimony | 2026-03-12 |
 
 `sat_natural_person__lifecycle`
 
-| status_code | origin_event_code | origin_date |
+| **status_code** | **origin_event_code** | **origin_date** |
 | --- | --- | --- |
 | active | birth | (empty) |
 
@@ -164,7 +166,7 @@ Illustrative data. The first example is a person with no document; the second is
 
 `sat_natural_person__identification`
 
-| identification_type_code | identification_id | issuing_jurisdiction_code | expiry_date | Loaded |
+| **identification_type_code** | **identification_id** | **issuing_jurisdiction_code** | **expiry_date** | **Loaded** |
 | --- | --- | --- | --- | --- |
 | passport | X1234567 | NZL | 2027-05-01 | on arrival |
 | passport | X7654321 | NZL | 2037-05-01 | on renewal; the first row stays as history |
@@ -185,9 +187,11 @@ Illustrative data. The first example is a person with no document; the second is
 
 ![Natural Person cluster](Natural_Person.png)
 
+![Natural Person cluster, full](Natural_Person_Full.png)
+
 ## Open decisions
 
-| Decision | Owner | How it is decided | Decide by |
+| **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
 | How biometric templates attach to a person | Data Architecture Engineer and Data Product Owner | Through the Digital Artifact object; the link is defined on that page | Before the Digital Artifact page is reviewed |
 | Whether the attesting authority of a testimony is a link to Government Authority | Data Architecture Engineer and Data Product Owner | Decided when the Government Authority page is written | Before the first mapping that needs it |

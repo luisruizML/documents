@@ -67,6 +67,10 @@ Rules:
 - Medallion order is left to right or top to bottom: Bronze, Silver, Gold. Connectors between layers follow section 4.
 - This replaces older per-topic Medallion colors (e.g. `#B0B7C6`, `#1F2A44`) in existing diagrams when they are next edited.
 
+## 3c. Data Vault object colors (mandatory exception)
+
+Diagrams of Data Vault objects color the object by type, **instead of** the Medallion Silver colors: Hub `#3A0CA3` (white text), Link `#45E3CD` (black text), Satellite `#F72586` (white text), Reference table `#A6A8AB` (black text). Lines and table grids inside an object are derived from its fill: lighter (55% toward white) on dark fills, darker (40% toward black) on light fills. The objects are collapsible containers (drawio `swimlane`), with the grain as an italic note. `business-object-page/scripts/build_diagram.py` applies all of this.
+
 ## 4. Geometry & Connectors
 
 - **Corners:** every box, container, card, and state block is rounded (`rounded=1` in drawio; `rx=5, ry=5` or rounded-corner syntax in Mermaid). No sharp 90° rectangles.

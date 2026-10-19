@@ -41,7 +41,7 @@ class CoreTests(unittest.TestCase):
         self.assertTrue(has(vp.validate(text), "section", "order"))
 
     def test_blank_section_is_reported(self):
-        text = page("An illustrative order placed in Samoa.\n\n| sample_order_bk | total_amount | currency_code |\n| --- | --- | --- |\n| ORD-0001 | 120.00 | WST |\n", "")
+        text = page("An illustrative order placed in Samoa.\n\n| **sample_order_bk** | **total_amount** | **currency_code** |\n| --- | --- | --- |\n| ORD-0001 | 120.00 | WST |\n", "")
         self.assertTrue(has(vp.validate(text), "section", "Examples"))
 
     def test_bad_owner_domain(self):
@@ -104,7 +104,7 @@ class VaultObjectTests(unittest.TestCase):
                 self.assertTrue(has(errors(old, new), "grain", vp.GRAIN_PREFIX[kind]))
 
     def test_type_not_on_list_is_rejected(self):
-        errs = errors("| `currency_code` | `string` |", "| `currency_code` | `varchar(10)` |")
+        errs = errors("| `currency_code` | | `string` |", "| `currency_code` | | `varchar(10)` |")
         self.assertTrue(has(errs, "type", "varchar(10)"))
 
     def test_decimal_needs_precision_and_scale(self):
@@ -117,9 +117,9 @@ class VaultObjectTests(unittest.TestCase):
 
     def test_representation_terms_fix_types(self):
         cases = [
-            ("| `status_code` | `string` |", "| `status_code` | `int` |", "_code"),
-            ("| `status_name` | `string` |", "| `status_name` | `int` |", "_name"),
-            ("| `event_dts` | `timestamptz` |", "| `event_dts` | `date` |", "_dts"),
+            ("| `status_code` | | `string` |", "| `status_code` | | `int` |", "_code"),
+            ("| `status_name` | | `string` |", "| `status_name` | | `int` |", "_name"),
+            ("| `event_dts` | | `timestamptz` |", "| `event_dts` | | `date` |", "_dts"),
         ]
         for old, new, term in cases:
             with self.subTest(term=term):
@@ -130,21 +130,21 @@ class VaultObjectTests(unittest.TestCase):
         self.assertTrue(has(errors("### ref_order_status", "### ref_other_status"), "fields", "ref_other_status"))
 
     def test_null_and_personal_data_are_yes_or_no(self):
-        errs = errors("| `status_code` | `string` | No | No |", "| `status_code` | `string` | Maybe | No |")
+        errs = errors("| `status_code` | | `string` | No | No | — |", "| `status_code` | | `string` | Maybe | No | — |")
         self.assertTrue(has(errs, "fields", "Maybe"))
 
     def test_hub_fields_include_hash_and_business_key(self):
-        errs = errors("| `sample_order_bk` | `string` | No | No | The order number |\n", "")
+        errs = errors("| `sample_order_bk` | ● | `string` | No | No | — | The order number |\n", "")
         self.assertTrue(has(errs, "fields", "sample_order_bk"))
 
     def test_satellite_fields_carry_parent_hash_key_and_no_business_key(self):
-        errs = errors("| `currency_code` | `string` | No | No | ISO 4217 code |", "| `currency_code` | `string` | No | No | ISO 4217 code |\n| `sample_order_bk` | `string` | No | No | wrong |")
+        errs = errors("| `currency_code` | | `string` | No | No | — | ISO 4217 code |", "| `currency_code` | | `string` | No | No | — | ISO 4217 code |\n| `sample_order_bk` | ● | `string` | No | No | — | wrong |")
         self.assertTrue(has(errs, "fields", "_bk"))
 
 
 class RemainingSectionTests(unittest.TestCase):
     ENDPOINTS = (
-        "| Source | Endpoint | Bronze table | Provides |\n| --- | --- | --- | --- |\n"
+        "| **Source** | **Endpoint** | **Bronze table** | **Provides** |\n| --- | --- | --- | --- |\n"
         "| registry | taxpayers | `bronze.registry__taxpayers` | Taxpayer records |"
     )
 
@@ -161,7 +161,7 @@ class RemainingSectionTests(unittest.TestCase):
         self.assertTrue(has(errors("No endpoints declared yet", mapping), "sources", "mapping"))
 
     def test_jurisdictions_table_columns(self):
-        bad = errors("| Edge case | Where it happens |", "| Edge | Where it happens |")
+        bad = errors("| **Edge case** | **Where it happens** |", "| **Edge** | **Where it happens** |")
         self.assertTrue(has(bad, "jurisdictions", "Edge case"))
         ok = errors(
             page().split("## Jurisdictions map")[1].split("## Examples")[0].strip(),
@@ -170,18 +170,23 @@ class RemainingSectionTests(unittest.TestCase):
         self.assertEqual([e for e in ok if e.startswith("jurisdictions:")], [])
 
     def test_diagram_needs_image_link(self):
-        self.assertTrue(has(errors("![Sample Order cluster](Sample_Order.png)", "no picture"), "diagram", "image"))
+        self.assertTrue(has(errors("![Sample Order cluster](Sample_Order.png)\n\n![Sample Order cluster, full](Sample_Order_Full.png)", "no picture"), "diagram", "image"))
+
+    def test_diagram_needs_simple_and_full_versions(self):
+        errs = errors("\n\n![Sample Order cluster, full](Sample_Order_Full.png)", "")
+        self.assertTrue(has(errs, "diagram", "_Full.png"))
 
     def test_diagram_file_must_exist_when_base_dir_given(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
             self.assertTrue(has(vp.validate(page(), base_dir=Path(d)), "diagram", "Sample_Order.png"))
             (Path(d) / "Sample_Order.png").write_bytes(b"x")
+            (Path(d) / "Sample_Order_Full.png").write_bytes(b"x")
             self.assertEqual([e for e in vp.validate(page(), base_dir=Path(d)) if e.startswith("diagram:")], [])
 
     def test_decisions_table_columns(self):
-        self.assertTrue(has(errors("| Decision | Owner |", "| Question | Owner |"), "decisions", "Decision"))
-        table = "| Decision | Owner | How it is decided | Decide by |\n| --- | --- | --- | --- |\n| Whether a split shipment is one event or several | Data Architecture Engineer | Agreed with Finance | Before the first mapping that needs it |"
+        self.assertTrue(has(errors("| **Decision** | **Owner** |", "| **Question** | **Owner** |"), "decisions", "Decision"))
+        table = "| **Decision** | **Owner** | **How it is decided** | **Decide by** |\n| --- | --- | --- | --- |\n| Whether a split shipment is one event or several | Data Architecture Engineer | Agreed with Finance | Before the first mapping that needs it |"
         self.assertEqual([e for e in errors(table, "None open") if e.startswith("decisions:")], [])
 
     def test_cli_exit_codes(self):
@@ -193,6 +198,45 @@ class RemainingSectionTests(unittest.TestCase):
             self.assertEqual(vp.main([str(bad)]), 1)
 
 
+class TableFormatTests(unittest.TestCase):
+    def test_table_header_must_be_bold(self):
+        errs = errors("| **Type** | **Name** |", "| Type | **Name** |")
+        self.assertTrue(has(errs, "format", "Type"))
+
+    def test_every_table_is_checked_for_bold_headers(self):
+        errs = errors("| **Field** | **Value** |", "| Field | Value |")
+        self.assertTrue(has(errs, "format", "Field"))
+
+    def test_fields_table_needs_pii_and_default_columns(self):
+        errs = errors("| **PII** |", "| **Personal data** |")
+        self.assertTrue(has(errs, "fields", "PII"))
+        errs = errors(" **Default** |", " **Other** |")
+        self.assertTrue(has(errs, "fields", "Default"))
+
+    def test_default_cell_must_not_be_empty(self):
+        errs = errors("| `status_code` | | `string` | No | No | — |", "| `status_code` | | `string` | No | No | |")
+        self.assertTrue(has(errs, "fields", "Default"))
+
+    def test_base_columns_carry_their_indicator(self):
+        cases = [
+            ("| `sample_order_hk` | ◆ |", "| `sample_order_hk` | |", "sample_order_hk"),
+            ("| `sample_order_bk` | ● |", "| `sample_order_bk` | ◆ |", "sample_order_bk"),
+            ("| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |\n\n### lnk_customer", "| `load_dts` | | `timestamptz` | No | No | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |\n\n### lnk_customer", "load_dts"),
+            ("| `hashdiff` | Δ |", "| `hashdiff` | ▪ |", "hashdiff"),
+        ]
+        for old, new, col in cases:
+            with self.subTest(col=col):
+                self.assertTrue(has(errors(old, new), "fields", col))
+
+    def test_descriptive_column_has_no_indicator(self):
+        errs = errors("| `currency_code` | | `string` |", "| `currency_code` | ● | `string` |")
+        self.assertTrue(has(errs, "fields", "currency_code"))
+
+    def test_own_hash_key_only_on_hub(self):
+        errs = errors("| `customer_hk` | ◇ |", "| `customer_hk` | ◆ |")
+        self.assertTrue(has(errs, "fields", "customer_hk"))
+
+
 class TemplateTests(unittest.TestCase):
     def test_template_has_all_sections_and_headers(self):
         text = (HERE.parent / "assets" / "template.md").read_text(encoding="utf-8")
@@ -202,7 +246,7 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(list(parsed.tables("Jurisdictions map")[0][0].keys()), vp.JURISDICTION_COLUMNS)
         self.assertEqual(list(parsed.tables("Open decisions")[0][0].keys()), vp.DECISION_COLUMNS)
         fields = vp._fields_tables(parsed)
-        self.assertEqual(list(next(iter(fields.values()))[0].keys()), ["Column", "Type", "Null", "Personal data", "Description"])
+        self.assertEqual(list(next(iter(fields.values()))[0].keys()), ["Column", "Role", "Type", "Null", "PII", "Default", "Description"])
         self.assertEqual([r["Field"] for r in parsed.tables("Header")[0]], vp.HEADER_FIELDS)
 
 

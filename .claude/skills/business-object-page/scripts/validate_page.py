@@ -77,6 +77,12 @@ def _cells(line: str) -> list[str]:
     return [c.strip() for c in inner.split("|")]
 
 
+def _plain(cell: str) -> str:
+    """A header cell without its bold markers."""
+    c = cell.strip()
+    return c[2:-2].strip() if len(c) > 4 and c.startswith("**") and c.endswith("**") else c
+
+
 def _tables(lines: list[str]) -> list[list[dict[str, str]]]:
     result: list[list[dict[str, str]]] = []
     i = 0
@@ -87,7 +93,7 @@ def _tables(lines: list[str]) -> list[list[dict[str, str]]]:
                 block.append(lines[i])
                 i += 1
             if len(block) >= 2:
-                header = _cells(block[0])
+                header = [_plain(c) for c in _cells(block[0])]
                 rows = [dict(zip(header, _cells(r))) for r in block[2:]]
                 result.append(rows)
         else:
@@ -187,6 +193,19 @@ def _type_ok(t: str) -> bool:
     return t in TYPES or bool(DECIMAL_RE.match(t)) or bool(FIXED_RE.match(t))
 
 
+def _expected_role(col: str, kind: str, table: str) -> str:
+    if col.endswith("_hk"):
+        own = kind == "Hub" and col == table[len("hub_"):] + "_hk"
+        return "◆" if own else "◇"
+    if col.endswith("_bk"):
+        return "●"
+    if col in ("load_dts", "record_source"):
+        return "▪"
+    if col == "hashdiff":
+        return "Δ"
+    return ""
+
+
 def _fields_tables(page: Page) -> dict[str, list[dict[str, str]]]:
     out: dict[str, list[dict[str, str]]] = {}
     name: str | None = None
@@ -260,12 +279,24 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     for name, rows_ in fields.items():
         kind = names.get(name, "")
         cols = [_strip(r.get("Column", "")) for r in rows_]
+        if rows_:
+            have = list(rows_[0].keys())
+            if have != FIELD_COLUMNS:
+                missing = [c for c in FIELD_COLUMNS if c not in have]
+                errs.append(f"fields: table '{name}' must have columns {', '.join(FIELD_COLUMNS)}; missing {', '.join(missing) or 'none'}")
+                continue
         for r in rows_:
             col = _strip(r.get("Column", ""))
             typ = _strip(r.get("Type", ""))
-            for key in ("Null", "Personal data"):
+            for key in ("Null", "PII"):
                 if r.get(key, "") not in ("Yes", "No"):
                     errs.append(f"fields: '{name}.{col}' {key} must be Yes or No, found '{r.get(key, '')}'")
+            if not r.get("Default", "").strip():
+                errs.append(f"fields: '{name}.{col}' Default must not be empty; write — when there is no default")
+            expected = _expected_role(col, kind, name)
+            if r.get("Role", "").strip() != expected:
+                want = f"'{expected}' ({ROLES[expected]})" if expected else "no indicator"
+                errs.append(f"fields: '{name}.{col}' Role must be {want}, found '{r.get('Role', '').strip()}'")
             if not _type_ok(typ):
                 errs.append(f"type: '{name}.{col}' type '{typ}' is not on the allowed list (decimal needs decimal(P,S), fixed needs fixed(L))")
                 continue
@@ -293,9 +324,26 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     return errs
 
 
+def parse_lines(text: str) -> list[str]:
+    cr, lf = chr(13), chr(10)
+    return text.replace(cr + lf, lf).replace(cr, lf).split(lf)
+
+
+def check_bold_headers(text: str) -> list[str]:
+    errs: list[str] = []
+    lines = parse_lines(text)
+    for i in range(len(lines) - 1):
+        if lines[i].lstrip().startswith("|") and re.match(r"^\s*\|[\s:|-]+\|\s*$", lines[i + 1]) and not re.match(r"^\s*\|[\s:|-]+\|\s*$", lines[i]):
+            for cell in _cells(lines[i]):
+                if cell and _plain(cell) == cell:
+                    errs.append(f"format: table header '{cell}' must be bold, write **{cell}**")
+    return errs
+
+
 def validate(text: str, base_dir: Path | None = None, approved: frozenset[str] = frozenset()) -> list[str]:
     page = parse_page(text)
     errs = check_sections(page)
+    errs += check_bold_headers(text)
     errs += check_header(page)
     errs += check_vault_objects(page, approved)
     errs += check_sources(page)
@@ -312,6 +360,8 @@ JURISDICTION_COLUMNS = ["Edge case", "Where it happens", "Approach", "Vault effe
 DECISION_COLUMNS = ["Decision", "Owner", "How it is decided", "Decide by"]
 BRONZE_RE = re.compile(r"^bronze\.[a-z0-9_]+__[a-z0-9_]+$")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+\.png)\)")
+FIELD_COLUMNS = ["Column", "Role", "Type", "Null", "PII", "Default", "Description"]
+ROLES = {"◆": "own hash key", "◇": "hash key of another object", "●": "business key", "▪": "load metadata", "Δ": "hashdiff"}
 
 
 def _prose(lines: list[str]) -> list[str]:
@@ -362,12 +412,19 @@ def check_decisions(page: Page) -> list[str]:
 
 def check_diagram(page: Page, base_dir: Path | None) -> list[str]:
     body = chr(10).join(page.sections.get("Diagram", []))
-    m = IMAGE_RE.search(body)
-    if not m:
+    images = IMAGE_RE.findall(body)
+    if not images:
         return ["diagram: the Diagram section needs an image link like ![text](Name.png)"]
-    if base_dir is not None and not (base_dir / m.group(1)).is_file():
-        return [f"diagram: image file '{m.group(1)}' not found next to the page"]
-    return []
+    full = [i for i in images if i.endswith("_Full.png")]
+    simple = [i for i in images if not i.endswith("_Full.png")]
+    errs: list[str] = []
+    if not simple or not full:
+        errs.append("diagram: the Diagram section needs the simple image (Name.png) and the full image (Name_Full.png)")
+    if base_dir is not None:
+        for image in images:
+            if not (base_dir / image).is_file():
+                errs.append(f"diagram: image file '{image}' not found next to the page")
+    return errs
 
 
 def main(argv: list[str] | None = None) -> int:
