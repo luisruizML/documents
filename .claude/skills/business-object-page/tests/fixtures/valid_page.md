@@ -57,7 +57,7 @@ An order is created and closed on its own schedule, is identified by its own num
 | --- | --- | --- | --- | --- | --- | --- |
 | `sample_order_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
 | `total_amount` | | `decimal(18,2)` | No | No | — | Order total |
-| `currency_code` | | `string` | No | No | — | ISO 4217 code |
+| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -76,7 +76,7 @@ An order is created and closed on its own schedule, is identified by its own num
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
-| `status_code` | | `string` | No | No | — | The code |
+| `status_code` | | `string` | No | No | — | One of `open`, `paid`, `cancelled` |
 | `status_name` | | `string` | No | No | — | The label |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |

@@ -193,6 +193,18 @@ def _type_ok(t: str) -> bool:
     return t in TYPES or bool(DECIMAL_RE.match(t)) or bool(FIXED_RE.match(t))
 
 
+def _check_examples(table: str, col: str, desc: str) -> list[str]:
+    """A _code column says what values look like: e.g. with three or more, or a closed list."""
+    if "e.g." in desc:
+        values = [v for v in re.split(r",| or ", desc.split("e.g.", 1)[1]) if v.strip(" .`")]
+        if len(values) < 3:
+            return [f"fields: '{table}.{col}' lists {len(values)} example values; give at least three"]
+        return []
+    if desc.startswith(("One of", "Only")) or ". One of" in desc or ". Only" in desc:
+        return []
+    return [f"fields: '{table}.{col}' Description needs example values: e.g. `a`, `b`, `c`; or One of `a`, `b` for a closed list"]
+
+
 def _expected_role(col: str, kind: str, table: str) -> str:
     if col.endswith("_hk"):
         own = kind == "Hub" and col == table[len("hub_"):] + "_hk"
@@ -293,6 +305,8 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
                     errs.append(f"fields: '{name}.{col}' {key} must be Yes or No, found '{r.get(key, '')}'")
             if not r.get("Default", "").strip():
                 errs.append(f"fields: '{name}.{col}' Default must not be empty; write — when there is no default")
+            if col.endswith("_code"):
+                errs += _check_examples(name, col, r.get("Description", ""))
             expected = _expected_role(col, kind, name)
             if r.get("Role", "").strip() != expected:
                 want = f"'{expected}' ({ROLES[expected]})" if expected else "no indicator"

@@ -138,7 +138,7 @@ class VaultObjectTests(unittest.TestCase):
         self.assertTrue(has(errs, "fields", "sample_order_bk"))
 
     def test_satellite_fields_carry_parent_hash_key_and_no_business_key(self):
-        errs = errors("| `currency_code` | | `string` | No | No | — | ISO 4217 code |", "| `currency_code` | | `string` | No | No | — | ISO 4217 code |\n| `sample_order_bk` | ● | `string` | No | No | — | wrong |")
+        errs = errors("| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |", "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |\n| `sample_order_bk` | ● | `string` | No | No | — | wrong |")
         self.assertTrue(has(errs, "fields", "_bk"))
 
 
@@ -235,6 +235,24 @@ class TableFormatTests(unittest.TestCase):
     def test_own_hash_key_only_on_hub(self):
         errs = errors("| `customer_hk` | ◇ |", "| `customer_hk` | ◆ |")
         self.assertTrue(has(errs, "fields", "customer_hk"))
+
+
+class DescriptionTests(unittest.TestCase):
+    def test_code_column_needs_example_values(self):
+        errs = errors("ISO 4217 code, e.g. `WST`, `PGK`, `NZD`", "ISO 4217 code")
+        self.assertTrue(has(errs, "fields", "currency_code"))
+
+    def test_examples_need_at_least_three_values(self):
+        errs = errors("e.g. `WST`, `PGK`, `NZD`", "e.g. `WST`, `PGK`")
+        self.assertTrue(has(errs, "fields", "three"))
+
+    def test_closed_list_is_accepted_in_place_of_examples(self):
+        errs = errors("One of `open`, `paid`, `cancelled`", "One of `open`, `paid`")
+        self.assertEqual([e for e in errs if e.startswith("fields:")], [])
+
+    def test_non_code_column_needs_no_examples(self):
+        errs = errors("| Order total |", "| Order total |")
+        self.assertEqual([e for e in errs if e.startswith("fields:")], [])
 
 
 class TemplateTests(unittest.TestCase):

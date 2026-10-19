@@ -51,8 +51,8 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | --- | --- | --- | --- | --- | --- | --- |
 | `natural_person_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
 | `natural_person_bk` | ● | `string` | No | No | — | Primary person identifier of the source of record |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction that owns the key (ISO 3166-1) |
-| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is |
+| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction that owns the key, ISO 3166-1 alpha-3: e.g. `PNG`, `WSM`, `NZL` |
+| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is: e.g. `registry_person_id`, `civil_registry_number`, `census_id` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -70,9 +70,9 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `name_type_code` | | `string` | No | Yes | — | Legal name, alias, tribal title or community alias |
-| `name_text` | | `string` | No | Yes | — | The name as written; a single name is valid |
-| `script_code` | | `string` | No | Yes | — | Writing system of the name (ISO 15924) |
+| `name_type_code` | | `string` | No | Yes | — | Which kind of name this is: e.g. `legal_name`, `alias`, `tribal_title`, `community_alias` |
+| `name_text` | | `string` | No | Yes | — | The name as written; a single name is valid: e.g. `Kila`, `Maria Tui`, `Aroha` |
+| `script_code` | | `string` | No | Yes | — | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -82,9 +82,9 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `identification_type_code` | | `string` | No | Yes | — | Passport, residence permit, national identity number or community card |
-| `identification_id` | | `string` | No | Yes | — | The identifier as issued; never numeric |
-| `issuing_jurisdiction_code` | | `string` | No | Yes | — | Jurisdiction that issued the document (ISO 3166-1) |
+| `identification_type_code` | | `string` | No | Yes | — | Kind of document: e.g. `passport`, `residence_permit`, `national_identity_number`, `community_card` |
+| `identification_id` | | `string` | No | Yes | — | The identifier as issued, always text: e.g. `X1234567`, `RP-889`, `N-555` |
+| `issuing_jurisdiction_code` | | `string` | No | Yes | — | Jurisdiction that issued the document, ISO 3166-1 alpha-3: e.g. `NZL`, `WSM`, `PNG` |
 | `expiry_date` | | `date` | Yes | Yes | null | When the document stops being valid; empty if it does not expire |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
@@ -95,7 +95,7 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` | | `string` | No | No | — | Document, biometric, testimony or census |
+| `registration_basis_code` | | `string` | No | No | — | Why the person was registered: e.g. `document`, `biometric`, `testimony`, `census` |
 | `registration_date` | | `date` | No | No | — | When the person was registered on this basis |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
@@ -106,10 +106,10 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `status_code` | | `string` | No | No | — | Active or inactive |
-| `origin_event_code` | | `string` | No | No | — | Birth or immigration |
+| `status_code` | | `string` | No | No | — | One of `active`, `inactive` |
+| `origin_event_code` | | `string` | No | No | — | One of `birth`, `immigration` |
 | `origin_date` | | `date` | Yes | No | null | Date of the origin event; empty when unknown, as with an unregistered birth |
-| `termination_event_code` | | `string` | Yes | No | null | Confirmed death; empty while the person is active |
+| `termination_event_code` | | `string` | Yes | No | null | Only `death` (confirmed); empty while the person is active |
 | `termination_date` | | `date` | Yes | No | null | Date of the termination event |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
