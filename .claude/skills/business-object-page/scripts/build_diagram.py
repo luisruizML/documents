@@ -309,7 +309,7 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
         cid, xml = _vertex(
             ids, "1", n.name,
             f"swimlane;html=1;whiteSpace=wrap;rounded=1;arcSize=6;startSize={HEAD_H};collapsible=1;"
-            f"fillColor={pal['fill']};swimlaneFillColor={pal['fill']};strokeColor={line};strokeWidth=2;"
+            f"fillColor={pal['fill']};swimlaneFillColor=#FFFFFF;strokeColor={pal['fill']};strokeWidth=2;"
             f"fontFamily=Courier New;fontSize=12;fontStyle=1;fontColor={pal['text']};align=left;spacingLeft=8;",
             x, y, w, h,
         )
@@ -319,7 +319,7 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
         _, xml = _vertex(
             ids, cid, n.note,
             f"text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontFamily=Arial;fontSize=11;fontStyle=2;"
-            f"fontColor={pal['text']};spacingLeft=8;spacingRight=8;",
+            "fontColor=#000000;spacingLeft=8;spacingRight=8;",
             0, HEAD_H + 2, w, note_h,
         )
         cells.append(xml)
