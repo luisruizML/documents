@@ -72,10 +72,6 @@ The full version, with the Fields table of every object:
 
 ![Natural Person cluster, full](Natural_Person_Full.png)
 
-### The full model in Lucidchart
-
-Every page's full model is also drawn as an entity-relationship diagram in Lucidchart, with all objects on one canvas, zoomable and searchable: [Full model of the pilot objects (Natural Person, Party)](https://lucid.app/lucidchart/ebe95ec8-31f9-43dc-b215-f4e38325f494/view). It shows each column with its type, nullability, PII flag and keys. The descriptions and examples stay on the pages.
-
 ## Vault object types and grain
 
 Every vault object states its grain, the meaning of one row, in a fixed form.
