@@ -38,8 +38,10 @@ If a Natural Person were merged into a single Party table, every registry would 
 | Satellite | `sat_natural_person__identification` | one row per parent key and identification document (type and number), for each time its values change | — |
 | Satellite | `sat_natural_person__registration` | one row per parent key and registration basis, for each time its values change | — |
 | Satellite | `sat_natural_person__lifecycle` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_natural_person__demographics` | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__demographics` | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__demographics_history` | one row per parent key, for each time its values change | — |
 | Satellite | `sat_natural_person__physical_traits` | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
 
 The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `natural_person_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
@@ -99,6 +101,7 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 | `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
 | `registration_basis_code` | | `string` | No | No | — | Why the person was registered: e.g. `document`, `biometric`, `testimony`, `census` |
 | `registration_date` | | `date` | No | No | — | When the person was registered on this basis |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the evidence held in Digital Artifact, such as a biometric template or a signed testimony; only the pointer is stored: e.g. `artifact://biometric/9f3a`, `artifact://testimony/p7-2026`, `artifact://census/c-1204`; empty when the basis has no artifact |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -119,7 +122,19 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 
 ### sat_natural_person__demographics
 
-Keeps its history: every change adds a row (SCD Type 2). The allowed `gender_code` values depend on the jurisdiction and can change over time.
+Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. It serves the same purpose as `sat_natural_person__demographics_history`; the Platform configuration says which one a jurisdiction loads.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `gender_code` | | `string` | No | Yes | — | Gender as the jurisdiction defines it; the allowed list is set per jurisdiction: e.g. `male`, `female`, `non_binary`, `unspecified` |
+| `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+
+### sat_natural_person__demographics_history
+
+Keeps its history: every change adds a row (SCD Type 2). The allowed `gender_code` values depend on the jurisdiction and can change over time. It carries the same attributes as `sat_natural_person__demographics`.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -131,7 +146,7 @@ Keeps its history: every change adds a row (SCD Type 2). The allowed `gender_cod
 
 ### sat_natural_person__physical_traits
 
-Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept.
+Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. It serves the same purpose as `sat_natural_person__physical_traits_history`; the Platform configuration says which one a jurisdiction loads.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -141,6 +156,19 @@ Keeps no history: the row is updated in place (row versioning). `row_version` st
 | `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+
+### sat_natural_person__physical_traits_history
+
+Keeps its history: every change adds a row (SCD Type 2). It carries the same attributes as `sat_natural_person__physical_traits`.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `height_cm` | | `decimal(4,1)` | Yes | Yes | null | Body height in centimetres, one decimal: e.g. `172.5`, `160.0`, `188.0`; empty when not measured |
+| `blood_type_code` | | `string` | Yes | Yes | null | ABO group and Rh factor; empty when unknown. One of `A+`, `A-`, `B+`, `B-`, `AB+`, `AB-`, `O+`, `O-` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
 ## Sources and mapping
 
@@ -155,9 +183,9 @@ No endpoints declared yet
 | Record created from a local authority's testimony | Customary-law communities, for example a village chief in Papua New Guinea | Registration basis is testimony; the person is later linked to documents when they exist | A `testimony` row in `sat_natural_person__registration` |
 | Local character sets | Any jurisdiction with a non-Latin script | The name keeps its original script; `script_code` says which | `sat_natural_person__name` |
 | Temporary residents, cross-border workers, long-term tourists | Any jurisdiction with a migration route | They are the same kind of person; their status is a Credential or Entitlement | Nothing on this object; see the Legal objects |
-| Gender recorded with two values, then three or more | A jurisdiction that widens its definition | The code list in force is set for the jurisdiction; each change in a person's value is a new row | New rows in `sat_natural_person__demographics`; earlier rows stay as history |
-| Gender recorded with three or more values, then two | A jurisdiction that narrows its definition | Same as above; a value no longer in the list stays readable in the earlier rows | New rows in `sat_natural_person__demographics` |
-| Gender recorded with two values only | A jurisdiction that never widens its definition | Same satellite, with a shorter list | `sat_natural_person__demographics` |
+| Gender recorded with two values, then three or more | A jurisdiction that widens its definition | The code list in force is set for the jurisdiction; each change in a person's value is a new row | New rows in `sat_natural_person__demographics_history`; earlier rows stay as history |
+| Gender recorded with three or more values, then two | A jurisdiction that narrows its definition | Same as above; a value no longer in the list stays readable in the earlier rows | New rows in `sat_natural_person__demographics_history` |
+| Gender recorded with two values only | A jurisdiction that never widens its definition | Either satellite, with a shorter list | `sat_natural_person__demographics` or `sat_natural_person__demographics_history`, as configured |
 | Passport first, then residence permit, then national identity number | Any jurisdiction with a naturalization route | Each document is a new identification row; the person's key never changes | New rows in `sat_natural_person__identification` |
 
 ## Examples
@@ -203,14 +231,14 @@ Illustrative data. The first example is a person with no document; the second is
 | residence_permit | RP-889 | WSM | 2030-01-15 | when the permit was issued |
 | national_identity_number | N-555 | WSM | (empty) | after naturalization |
 
-**A person whose jurisdiction widens its gender list.** `sat_natural_person__demographics` keeps both rows.
+**A person whose jurisdiction widens its gender list.** `sat_natural_person__demographics_history` keeps both rows.
 
 | **gender_code** | **Loaded** |
 | --- | --- |
 | female | before the change of list |
 | non_binary | after the change of list; the first row stays as history |
 
-`sat_natural_person__physical_traits` holds one row for the same person, updated in place.
+`sat_natural_person__physical_traits` holds one row for the same person, updated in place. If the jurisdiction asks for history, `sat_natural_person__physical_traits_history` holds a row for each change instead.
 
 | **height_cm** | **blood_type_code** | **row_version** |
 | --- | --- | --- |
@@ -222,9 +250,10 @@ Illustrative data. The first example is a person with no document; the second is
 - **Validity is never stored.** Whether a document is valid today is worked out when asked, from `expiry_date`. A scheduled check may publish an event when a date passes.
 - **A person known under two source keys stays two Hub rows.** They are joined by a same-as relationship recorded when the source reports a merge. Keys are never rewritten and nothing is deleted.
 - **Citizenship and visa type are not attributes.** They are Credentials and Entitlements. A residence permit or national identity number is also a Credential in the Legal objects, which carries the right and the issuing Authority; here it is only an identifier.
-- **Personal data is kept in its own Satellites.** Name and identification hold personal data. Registration and lifecycle do not, so they can be read by roles that must not see identity. Demographics and physical traits hold sensitive personal data and are also kept apart.
-- **History is chosen by how the attribute behaves.** An attribute whose value or allowed list can change over time, such as gender, goes in a Satellite that keeps history. An attribute that does not need history, such as blood type, goes in a Satellite that is updated in place with `row_version`. If a jurisdiction needs history of height, the attribute moves to a history Satellite.
-- **The allowed gender values belong to the jurisdiction, not to the column.** The list is configuration per jurisdiction and can change; the column stays a string, so a change of list never changes the table.
+- **Personal data is kept in its own Satellites.** Name and identification hold personal data. Lifecycle does not, so it can be read by roles that must not see identity. Demographics and physical traits hold sensitive personal data and are also kept apart. The registration Satellite holds only a pointer (`artifact_uri`) to evidence in Digital Artifact, which is personal data in itself, so it is marked PII.
+- **History is chosen by how the attribute behaves.** An attribute whose value or allowed list can change over time, such as gender, goes in a Satellite that keeps history. An attribute that does not need history, such as blood type, goes in a Satellite that is updated in place with `row_version`. By default there is no history. Every such group is delivered as a pair that serves the same purpose with a different mechanism, one updated in place and one with history (`_history`), and the Platform configuration says which one a jurisdiction loads.
+- **The allowed values of a code belong to a Code List, not to the column.** Codes such as `gender_code`, `jurisdiction_code` and `key_type_code` take their values from the Code List object, which holds them per jurisdiction with validity dates. The column stays a string, so a change of list never changes the table. Codes that the logic depends on (`status_code`, `origin_event_code`, `termination_event_code`) and `blood_type_code` are closed lists written in the Description.
+- **Derived values are not stored (R13).** Age and age group are computed from the birth date in the Gold layer; this page keeps only the date (`origin_date`).
 - **A person is never deleted.** A confirmed death inactivates the record through `sat_natural_person__lifecycle`.
 - **Government Authority is not a Party.** Only citizens and legal entities that use the system are parties.
 
@@ -238,10 +267,9 @@ Illustrative data. The first example is a person with no document; the second is
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| How biometric templates attach to a person | Data Architecture Engineer and Data Product Owner | Through the Digital Artifact object; the link is defined on that page | Before the Digital Artifact page is reviewed |
+| How biometric templates attach to a person | Data Architecture Engineer and Data Product Owner | Only a pointer is stored here (`artifact_uri` in `sat_natural_person__registration`); the Digital Artifact page defines the artifact and its link | Before the Digital Artifact page is reviewed |
 | Whether the attesting authority of a testimony is a link to Government Authority | Data Architecture Engineer and Data Product Owner | Decided when the Government Authority page is written | Before the first mapping that needs it |
 | The name of the same-as Link between two Natural Person records | Data Architecture Engineer and Data Product Owner | They decide the name, following the Link rules in the Principles | Before the first mapping that needs it |
 | Configuration for a source whose primary key is a document number | Data Architecture Engineer | A key change is treated as a re-key event and recorded with a same-as link | When such a source is onboarded |
-| Whether a Satellite updated in place (row versioning) is added to the Principles as a grain beside the history Satellite | Data Architecture Engineer | Decided in the Principles, with the rule for when it may be used | Before the first review of this page |
-| Where the gender list of each jurisdiction is kept | Data Architecture Engineer and Platform configuration | A Reference table or the Nexus configuration; decided with the jurisdiction and key type lists | Before the first mapping that needs it |
+| Which Natural Person codes become Code List values | Data Architecture Engineer | The Code List object holds them; the rule for which codes qualify is decided with that page | Before the Code List page is reviewed |
 | Which key type and jurisdiction each source uses | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |

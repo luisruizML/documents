@@ -200,6 +200,10 @@ def place(model: Model, full: bool) -> dict[str, tuple[float, float, float, floa
     stacks: list[list[Node]] = [[] for _ in range(ncols)]
     for n in model.nodes:
         stacks[col[n.name]].append(n)
+    order = {n.name: i for i, n in enumerate(model.nodes)}
+    parent_of = {e.child: e.parent for e in model.edges}
+    for stack in stacks:  # satellites follow the order of their parents, so arrows do not cross
+        stack.sort(key=lambda n: order.get(parent_of.get(n.name, ""), order[n.name]) if n.kind == "Satellite" else 0)
     vgap = 40 if full else 30
     widths = [max(size(n)[0] for n in s) if s else 0 for s in stacks]
     heights = [sum(size(n)[1] for n in s) + vgap * (len(s) - 1) if s else 0 for s in stacks]
