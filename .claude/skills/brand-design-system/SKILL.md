@@ -1,0 +1,123 @@
+---
+name: brand-design-system
+description: Use whenever creating or editing ANY diagram, chart, or image for the documents in this repo (Nexus, Rosetta, Arquitecture_summit) with drawio, Lucid, Mermaid, PlantUML or similar. Defines the mandatory brand typography, color palette, contrast rule, color scales, corner and connector rules.
+---
+
+# Brand Design System & Diagramming Instructions
+
+## Overview
+
+Mandatory visual identity for every diagram or chart that goes into a document. It governs the **look** (fonts, colors, shapes, connectors). Tool-specific skills (`drawio`, `lucid-diagram-conventions`) still govern **mechanics** (layout, file format, containment). If a topic-specific palette elsewhere conflicts with this skill, this skill wins unless the user says otherwise.
+
+## When to Use
+
+Any time a document needs a diagram, chart, or image: drawio (`.drawio`/`.png`), Lucid, Mermaid, PlantUML, or generated charts. Apply it before choosing a single color or font.
+
+## 1. Typography (exactly three families)
+
+| Use | Font |
+|---|---|
+| Titles & emphasized text (diagram titles, primary headers, milestones) | `Mulish`, sans-serif |
+| Body & default text (node labels, descriptions, free-standing notes) | `Arial`, sans-serif |
+| Code & technical data (file paths, variable names, SQL, raw code) and **connector labels** (the text on or above an arrow) | `Courier New`, monospace |
+
+No other font families.
+
+## 2. Color Palette & Roles
+
+| Color | Hex | Role |
+|---|---|---|
+| Primary Indigo | `#3A0CA3` | Dominant structure, core process states, primary containers |
+| Primary Teal | `#45E3CD` | Success states, highlighted nodes, secondary flows, positive accents |
+| Primary Magenta | `#F72586` | Critical paths, alerts, starting triggers, key focal points |
+| Neutral Gray | `#A6A8AB` | Borders, inactive components, secondary annotations, grid lines |
+| Black | `#000000` | Text on light backgrounds |
+| White | `#FFFFFF` | Canvas background, light end of gradients, text on dark nodes |
+
+### Contrast rule (mandatory)
+- Labels inside `#45E3CD` or light tints: text `#000000`.
+- Labels inside `#3A0CA3` or `#F72586`: text `#FFFFFF`.
+
+## 3. Dynamic Color Scales
+
+Interpolate along the color wheel / saturation radius.
+
+1. **Sequential (low to high / depth):** start from a primary (`#3A0CA3`, `#45E3CD`, or `#F72586`) and move inward toward `#FFFFFF`. Lightest = minimum intensity, solid brand hex = maximum.
+2. **Diverging (comparative / bipolar):** interpolate along the arc:
+   - `#3A0CA3` ↔ `#45E3CD`: **clockwise**
+   - `#3A0CA3` ↔ `#F72586`: **counter-clockwise**
+   - `#45E3CD` ↔ `#F72586`: **counter-clockwise**
+   - Neutral midpoints move toward `#FFFFFF` or `#A6A8AB`.
+3. **Qualitative (categorical):** step clockwise `#F72586` → `#3A0CA3` → `#45E3CD`; vary lightness between the pure color and `#FFFFFF` to get distinct, non-competing categories.
+
+## 3b. Medallion Architecture Layers (mandatory exception)
+
+Any chart that shows or refers to Medallion layers (Bronze, Silver, Gold, and elements assigned to them) uses these metallic colors for the layer elements, **instead of** indigo/teal/magenta. Everything else in the diagram (titles, connectors, non-layer nodes) still follows the core brand palette.
+
+| Layer | Default fill | Variants | Default label text | Border / line |
+|---|---|---|---|---|
+| Bronze | `#B08D57` Metallic Bronze | `#8C6239` Antique Bronze, `#5C4033` Dark Bronze | `#000000` on `#B08D57`; `#FFFFFF` on `#8C6239` / `#5C4033` | `#8C6239` |
+| Silver | `#D8D8D8` Light Silver | `#E5E4E2` Platinum / Cool Silver, `#A9A9A9` Sterling Silver | `#000000` | `#A9A9A9` |
+| Gold | `#D4AF37` Metallic Gold | `#FFDF00` Bright Gold, `#CFB53B` Old Gold | `#000000` | `#CFB53B` |
+
+Rules:
+- Use the default fill for the layer container or main node; use variants for sub-elements, emphasis, or depth within that layer (lightest to darkest, same layer only).
+- Never mix one layer's metallic colors into another layer's elements.
+- Contrast rule still applies: black text on light/mid metallic fills, white text only on `#8C6239` and `#5C4033`.
+- Medallion order is left to right or top to bottom: Bronze, Silver, Gold. Connectors between layers follow section 4.
+- This replaces older per-topic Medallion colors (e.g. `#B0B7C6`, `#1F2A44`) in existing diagrams when they are next edited.
+
+## 4. Geometry & Connectors
+
+- **Corners:** every box, container, card, and state block is rounded (`rounded=1` in drawio; `rx=5, ry=5` or rounded-corner syntax in Mermaid). No sharp 90° rectangles.
+- **Routing:** orthogonal (elbow) or smooth curved connectors. Never diagonal point-to-point lines.
+- **Crossings:** drawio uses line jumps (`jumpStyle=arc`); Lucid uses line hops (`lineJump=arc`). Mermaid: order nodes and use subgraphs to minimize crossings.
+- **Line colors:** `#A6A8AB` regular flows, `#3A0CA3` major control paths, `#F72586` critical dependencies.
+- **Connector labels (annotations on arrows):** always `Courier New`, size 11, text `#000000`, and an **explicit white label background** (`#FFFFFF`). Never rely on the tool's default background: draw.io takes it from the editor theme, so in dark mode the label shows black text on a black background even though the PNG export (always white) looks right.
+
+## 5. Implementation Templates
+
+### Mermaid: put at the top of every diagram
+
+```mermaid
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'fontFamily': 'Arial, sans-serif',
+    'titleColor': '#3A0CA3',
+    'primaryColor': '#3A0CA3',
+    'primaryTextColor': '#FFFFFF',
+    'primaryBorderColor': '#3A0CA3',
+    'lineColor': '#A6A8AB',
+    'secondaryColor': '#45E3CD',
+    'tertiaryColor': '#FFFFFF',
+    'edgeLabelBackground': '#FFFFFF'
+  }
+}}%%
+```
+
+### drawio style fragments
+
+- Indigo node: `rounded=1;fillColor=#3A0CA3;strokeColor=#3A0CA3;fontColor=#FFFFFF;fontFamily=Arial;`
+- Teal node: `rounded=1;fillColor=#45E3CD;strokeColor=#45E3CD;fontColor=#000000;fontFamily=Arial;`
+- Magenta node: `rounded=1;fillColor=#F72586;strokeColor=#F72586;fontColor=#FFFFFF;fontFamily=Arial;`
+- Title text: `fontFamily=Mulish;fontStyle=1;fontColor=#3A0CA3;`
+- Code text: `fontFamily=Courier New;`
+- Edge: `edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=8;strokeColor=#A6A8AB;` (swap color per section 4). `jumpStyle` is the draw.io key; `lineJump` belongs to Lucid.
+- Edge label (the separate `edgeLabel` cell): `edgeLabel;html=1;align=center;verticalAlign=middle;fontSize=11;labelBackgroundColor=#FFFFFF;fontColor=#000000;fontFamily=Courier New;`
+
+**Mandatory post-processing step for the drawio skill's generator.** The generator writes `edgeLabel` cells without a background and in its theme font, and the rule above needs both. After generating each `.drawio` (and before exporting the PNG), rewrite every style that starts with `edgeLabel;` so it ends with `labelBackgroundColor=#FFFFFF;fontColor=#000000;fontFamily=Courier New;` and has no other `fontFamily`, `fontColor` or `labelBackgroundColor`. The script `scripts/postprocess_drawio.py <file.drawio>` does this, rounds every edge, and turns the marker `[[br]]` in a label into a line break (the generator collapses real line breaks). Export the PNG from that corrected `.drawio` with draw.io Desktop directly (`draw.io.exe -x -f png --scale 3 -b 10 -o out.png in.drawio`), not by importing the `.drawio` back through the generator, which re-guesses shapes from label words. Verify by opening the `.drawio` in dark mode: arrow labels must stay readable.
+
+### Lucid
+
+Set `fontFamily`, fill, and line colors per shape from the tables above; keep rounded shapes (`roundedRectangleContainer`, rounded rectangle) and smart lines.
+
+## Common Mistakes
+
+- Dark text on `#3A0CA3` / `#F72586`, or white text on `#45E3CD`.
+- Using a font outside the three families.
+- Straight diagonal connectors or sharp-cornered boxes.
+- Arrow labels in Arial or any theme font, or without an explicit white background (unreadable in the draw.io editor's dark mode).
+- Inventing new hex values for categories instead of tinting the brand colors toward `#FFFFFF` (Medallion layers are the one exception, section 3b).
+- Coloring Medallion layers with indigo/teal/magenta, or swapping the Bronze/Silver/Gold colors between layers.
+- Using magenta decoratively; it is reserved for critical paths, alerts, triggers, and focal points.
