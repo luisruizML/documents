@@ -8,6 +8,13 @@ An object shared by several domains is one page, listed once with every domain i
 | --- | --- | --- | --- | --- | --- |
 | Party | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI, Platform | Global | Draft | [Party](Party.md) |
 | Natural Person | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Natural Person](Natural_Person.md) |
+
+### Platform objects
+
+What the platform owns and every domain uses, such as configuration, has its own place: see [Platform](Platform.md).
+
+| **Object** | **Owner domain** | **Shared with** | **Scope** | **Status** | **Page** |
+| --- | --- | --- | --- | --- | --- |
 | Code List | Platform | Registries, Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Code List](Code_List.md) |
 
 ## What every page contains
@@ -83,6 +90,7 @@ Every vault object states its grain, the meaning of one row, in a fixed form.
 | **Link** | one row per distinct combination of the Hubs it joins | A relationship between objects |
 | **Non-historized Link** | one row per occurrence of an event or transaction | Facts that never change once recorded |
 | **Satellite** | one row per parent key, for each time its values change | The descriptive history of a Hub or Link |
+| **Satellite with row versioning** | one row per parent key, replaced in place when its values change | Attributes that need no history. Each is delivered with a history twin (`_history`) |
 | **Reference table** | one row per code | A code list with its labels |
 
 Naming, allowed data types and the rules for changing a grain are in the Principles.
