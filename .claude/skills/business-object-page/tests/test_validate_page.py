@@ -142,5 +142,56 @@ class VaultObjectTests(unittest.TestCase):
         self.assertTrue(has(errs, "fields", "_bk"))
 
 
+class RemainingSectionTests(unittest.TestCase):
+    ENDPOINTS = (
+        "| Source | Endpoint | Bronze table | Provides |\n| --- | --- | --- | --- |\n"
+        "| registry | taxpayers | `bronze.registry__taxpayers` | Taxpayer records |"
+    )
+
+    def test_sources_is_declarative_or_empty_statement(self):
+        self.assertEqual([e for e in errors("No endpoints declared yet", self.ENDPOINTS) if e.startswith("sources:")], [])
+        self.assertTrue(has(errors("No endpoints declared yet", "We will probably call some API."), "sources", ""))
+
+    def test_bronze_table_name_pattern(self):
+        bad = self.ENDPOINTS.replace("bronze.registry__taxpayers", "Bronze.Registry_Taxpayers")
+        self.assertTrue(has(errors("No endpoints declared yet", bad), "sources", "Bronze.Registry_Taxpayers"))
+
+    def test_mapping_record_requires_declared_endpoints(self):
+        mapping = "No endpoints declared yet\n\n| Bronze path | Decision | Vault object | Rule |\n| --- | --- | --- | --- |\n| `a.b` | Business key | `hub_sample_order` | 1 |"
+        self.assertTrue(has(errors("No endpoints declared yet", mapping), "sources", "mapping"))
+
+    def test_jurisdictions_table_columns(self):
+        bad = errors("| Edge case | Where it happens |", "| Edge | Where it happens |")
+        self.assertTrue(has(bad, "jurisdictions", "Edge case"))
+        ok = errors(
+            page().split("## Jurisdictions map")[1].split("## Examples")[0].strip(),
+            "No jurisdiction differences known",
+        )
+        self.assertEqual([e for e in ok if e.startswith("jurisdictions:")], [])
+
+    def test_diagram_needs_image_link(self):
+        self.assertTrue(has(errors("![Sample Order cluster](Sample_Order.png)", "no picture"), "diagram", "image"))
+
+    def test_diagram_file_must_exist_when_base_dir_given(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self.assertTrue(has(vp.validate(page(), base_dir=Path(d)), "diagram", "Sample_Order.png"))
+            (Path(d) / "Sample_Order.png").write_bytes(b"x")
+            self.assertEqual([e for e in vp.validate(page(), base_dir=Path(d)) if e.startswith("diagram:")], [])
+
+    def test_decisions_table_columns(self):
+        self.assertTrue(has(errors("| Decision | Owner |", "| Question | Owner |"), "decisions", "Decision"))
+        table = "| Decision | Owner | How it is decided | Decide by |\n| --- | --- | --- | --- |\n| Whether a split shipment is one event or several | Data Architecture Engineer | Agreed with Finance | Before the first mapping that needs it |"
+        self.assertEqual([e for e in errors(table, "None open") if e.startswith("decisions:")], [])
+
+    def test_cli_exit_codes(self):
+        import tempfile
+        self.assertEqual(vp.main([str(FIXTURE)]), 0)
+        with tempfile.TemporaryDirectory() as d:
+            bad = Path(d) / "bad.md"
+            bad.write_text(page("| Status | Draft |", "| Status | Final |"), encoding="utf-8")
+            self.assertEqual(vp.main([str(bad)]), 1)
+
+
 if __name__ == "__main__":
     unittest.main()

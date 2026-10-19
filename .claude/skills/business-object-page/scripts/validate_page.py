@@ -298,4 +298,95 @@ def validate(text: str, base_dir: Path | None = None, approved: frozenset[str] =
     errs = check_sections(page)
     errs += check_header(page)
     errs += check_vault_objects(page, approved)
+    errs += check_sources(page)
+    errs += check_jurisdictions(page)
+    errs += check_diagram(page, base_dir)
+    errs += check_decisions(page)
     return errs
+
+SOURCES_EMPTY = "No endpoints declared yet"
+JURISDICTIONS_EMPTY = "No jurisdiction differences known"
+DECISIONS_EMPTY = "None open"
+SOURCE_COLUMNS = ["Source", "Endpoint", "Bronze table", "Provides"]
+JURISDICTION_COLUMNS = ["Edge case", "Where it happens", "Approach", "Vault effect"]
+DECISION_COLUMNS = ["Decision", "Owner", "How it is decided", "Decide by"]
+BRONZE_RE = re.compile(r"^bronze\.[a-z0-9_]+__[a-z0-9_]+$")
+IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+\.png)\)")
+
+
+def _prose(lines: list[str]) -> list[str]:
+    return [l.strip() for l in lines if l.strip() and not l.lstrip().startswith("|")]
+
+
+def _table_or_statement(page: Page, section: str, statement: str, columns: list[str], tag: str) -> list[str]:
+    lines = page.sections.get(section, [])
+    if _body_is_blank(lines):
+        return []  # reported by check_sections
+    tables = _tables(lines)
+    if not tables and [l for l in _prose(lines)] == [statement]:
+        return []
+    if not tables:
+        return [f"{tag}: section '{section}' must be a table with columns {', '.join(columns)} or the exact statement '{statement}'"]
+    header = list(tables[0][0].keys()) if tables[0] else []
+    if header != columns:
+        missing = [c for c in columns if c not in header]
+        return [f"{tag}: section '{section}' table must have columns {', '.join(columns)}; missing {', '.join(missing) or 'none'}"]
+    return []
+
+
+def check_sources(page: Page) -> list[str]:
+    errs = _table_or_statement(page, "Sources and mapping", SOURCES_EMPTY, SOURCE_COLUMNS, "sources")
+    if errs:
+        return errs
+    lines = page.sections.get("Sources and mapping", [])
+    tables = _tables(lines)
+    declared = bool(tables) and list(tables[0][0].keys()) == SOURCE_COLUMNS if tables and tables[0] else False
+    for row in (tables[0] if declared else []):
+        bt = _strip(row.get("Bronze table", ""))
+        if not BRONZE_RE.match(bt):
+            errs.append(f"sources: Bronze table '{bt}' must look like bronze.<source>__<endpoint>, lowercase")
+    if not declared and tables:
+        errs.append("sources: a mapping record needs declared endpoints; the section says no endpoints are declared")
+    if not declared and _prose(lines) == [SOURCES_EMPTY] and tables:
+        errs.append("sources: a mapping record cannot exist while no endpoints are declared")
+    return errs
+
+
+def check_jurisdictions(page: Page) -> list[str]:
+    return _table_or_statement(page, "Jurisdictions map", JURISDICTIONS_EMPTY, JURISDICTION_COLUMNS, "jurisdictions")
+
+
+def check_decisions(page: Page) -> list[str]:
+    return _table_or_statement(page, "Open decisions", DECISIONS_EMPTY, DECISION_COLUMNS, "decisions")
+
+
+def check_diagram(page: Page, base_dir: Path | None) -> list[str]:
+    body = chr(10).join(page.sections.get("Diagram", []))
+    m = IMAGE_RE.search(body)
+    if not m:
+        return ["diagram: the Diagram section needs an image link like ![text](Name.png)"]
+    if base_dir is not None and not (base_dir / m.group(1)).is_file():
+        return [f"diagram: image file '{m.group(1)}' not found next to the page"]
+    return []
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+
+    ap = argparse.ArgumentParser(description="Validate a Business Object page")
+    ap.add_argument("page")
+    ap.add_argument("--approved", default="", help="comma-separated approved abbreviations")
+    args = ap.parse_args(argv)
+    path = Path(args.page)
+    approved = frozenset(a.strip() for a in args.approved.split(",") if a.strip())
+    errs = validate(path.read_text(encoding="utf-8"), base_dir=path.parent, approved=approved)
+    for e in errs:
+        print(f"{path}: {e}")
+    return 1 if errs else 0
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(main(sys.argv[1:]))
+
