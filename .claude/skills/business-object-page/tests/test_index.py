@@ -35,6 +35,13 @@ class IndexTests(unittest.TestCase):
         for color in ("#3A0CA3", "#45E3CD", "#F72586"):
             self.assertIn(color, self.text)
 
+    def test_both_diagrams_of_the_reference_page_are_shown(self):
+        self.assertIn("(Natural_Person.png)", self.text)
+        self.assertIn("(Natural_Person_Full.png)", self.text)
+
+    def test_full_model_links_to_lucidchart(self):
+        self.assertIn("https://lucid.app/lucidchart/", self.text)
+
     def test_every_table_header_is_bold(self):
         self.assertEqual(vp.check_bold_headers(self.text), [])
 

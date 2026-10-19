@@ -112,7 +112,7 @@ def _kind_from_name(name: str) -> str:
 
 
 def _clean(cell: str) -> str:
-    return vp._strip(cell)
+    return cell.replace(chr(96), "").strip()
 
 
 def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
