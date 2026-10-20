@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -59,6 +60,16 @@ def _contrast_text(h: str) -> str:
     return "#000000" if (lum + 0.05) / 0.05 >= 1.05 / (lum + 0.05) else "#FFFFFF"
 
 
+def _tint(fill: str, amount: float) -> str:
+    """The fill moved toward white by `amount`."""
+    r, g, b = _rgb(fill)
+    return _hex((r + (255 - r) * amount, g + (255 - g) * amount, b + (255 - b) * amount))
+
+
+# A Satellite updated in place is the exception to the history default: the same color, lighter.
+PALETTE["Satellite (in place)"] = {"fill": _tint(PALETTE["Satellite"]["fill"], 0.65), "text": "#000000"}
+
+
 def derive_line(fill: str) -> str:
     """A line color that contrasts with the fill: lighter on dark fills, darker on light fills."""
     r, g, b = _rgb(fill)
@@ -67,7 +78,9 @@ def derive_line(fill: str) -> str:
     return _hex((r * 0.6, g * 0.6, b * 0.6))
 
 
-def palette_for(kind: str) -> dict:
+def palette_for(kind: str, in_place: bool = False) -> dict:
+    if in_place and kind == "Satellite":
+        return PALETTE["Satellite (in place)"]
     return PALETTE[KIND_ALIAS.get(kind, kind)]
 
 
@@ -80,6 +93,10 @@ class Node:
     grain: str = ""
     rows: list[dict[str, str]] | None = None
     external: bool = False
+
+    @property
+    def in_place(self) -> bool:
+        return self.kind == "Satellite" and "replaced in place" in self.grain
 
     @property
     def note(self) -> str:
@@ -246,7 +263,8 @@ def _vertex(ids: _Ids, parent: str, value: str, style: str, x: float, y: float, 
 
 def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: float, y: float) -> list[str]:
     line = derive_line(pal["fill"])
-    head_text = _contrast_text(line)
+    head_fill = pal["fill"] if pal is PALETTE["Satellite (in place)"] else line  # the lighter table stays light
+    head_text = _contrast_text(head_fill)
     heights = [20] + [_row_h(r) for r in rows]
     out: list[str] = []
     tid, xml = _vertex(
@@ -269,7 +287,7 @@ def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: flo
         for c_i, name in enumerate(FIELD_COLUMNS):
             width = COL_WIDTHS[c_i]
             if h is None:
-                value, fill, color, bold = name, line, head_text, "fontStyle=1;"
+                value, fill, color, bold = name, head_fill, head_text, "fontStyle=1;"
                 font = "Arial"
             else:
                 value, fill, color, bold = r_status(rows[r_i - 1], name), "#FFFFFF", "#000000", ""
@@ -308,12 +326,13 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
     node_id: dict[str, str] = {}
     for n in model.nodes:
         x, y, w, h = boxes[n.name]
-        pal = palette_for(n.kind)
-        line = derive_line(pal["fill"])
+        pal = palette_for(n.kind, n.in_place)
+        border = derive_line(pal["fill"]) if n.in_place else pal["fill"]
+        dashed = "dashed=1;" if n.in_place else ""
         cid, xml = _vertex(
             ids, "1", n.name,
-            f"swimlane;html=1;whiteSpace=wrap;rounded=1;arcSize=6;startSize={HEAD_H};collapsible=1;"
-            f"fillColor={pal['fill']};swimlaneFillColor=#FFFFFF;strokeColor={pal['fill']};strokeWidth=2;"
+            f"swimlane;html=1;whiteSpace=wrap;rounded=1;arcSize=6;startSize={HEAD_H};collapsible=1;{dashed}"
+            f"fillColor={pal['fill']};swimlaneFillColor=#FFFFFF;strokeColor={border};strokeWidth=2;"
             f"fontFamily=Courier New;fontSize=12;fontStyle=1;fontColor={pal['text']};align=left;spacingLeft=8;",
             x, y, w, h,
         )
@@ -334,19 +353,23 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
 
     ly = bottom + 40
     lx = 30.0
-    kinds = ["Hub", "Link", "Satellite"]
-    for kind in kinds:
-        pal = PALETTE[kind]
+    legend = [("Hub", "Hub"), ("Link", "Link"), ("Satellite", "Satellite")]
+    if any(n.in_place for n in model.nodes):
+        legend.append(("Satellite, in place (exception)", "Satellite (in place)"))
+    for label, key in legend:
+        pal = PALETTE[key]
+        dashed = "dashed=1;" if key.endswith("(in place)") else ""
         _, xml = _vertex(
             ids, "1", "",
-            f"rounded=1;arcSize=20;fillColor={pal['fill']};strokeColor={derive_line(pal['fill'])};strokeWidth=2;",
+            f"rounded=1;arcSize=20;{dashed}fillColor={pal['fill']};strokeColor={derive_line(pal['fill'])};strokeWidth=2;",
             lx, ly, 22, 22,
         )
         cells.append(xml)
+        width = 190 if len(label) > 12 else 110
         _, xml = _vertex(
-            ids, "1", kind,
+            ids, "1", label,
             "text;html=1;align=left;verticalAlign=middle;fontFamily=Arial;fontSize=11;fontColor=#000000;",
-            lx + 28, ly, 110, 22,
+            lx + 28, ly, width, 22,
         )
         cells.append(xml)
         lx += 150
@@ -448,8 +471,19 @@ def find_drawio() -> str | None:
     return next((c for c in candidates if c and Path(c).is_file()), None)
 
 
-def export_png(exe: str, source: Path, target: Path, scale: int) -> None:
-    subprocess.run([exe, "-x", "-f", "png", "--scale", str(scale), "-b", "10", "-o", str(target), str(source)], check=True)
+MAX_PNG_HEIGHT = 4500  # draw.io cuts off the bottom of a taller render
+GEOMETRY_RE = re.compile(r'<mxGeometry x="[-0-9.]+" y="([-0-9.]+)" width="[-0-9.]+" height="([0-9.]+)"')
+
+
+def fit_scale(xml: str, wanted: float, limit: int = MAX_PNG_HEIGHT) -> float:
+    """The wanted export scale, lowered so the picture is not taller than the limit."""
+    bottoms = [float(y) + float(h) for y, h in GEOMETRY_RE.findall(xml)]
+    height = max(bottoms, default=0.0) + 20
+    return min(wanted, round(limit / height, 2)) if height else wanted
+
+
+def export_png(exe: str, source: Path, target: Path, scale: float) -> None:
+    subprocess.run([exe, "-x", "-f", "png", "--scale", f"{scale:g}", "-b", "10", "-o", str(target), str(source)], check=True)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -466,7 +500,8 @@ def main(argv: list[str] | None = None) -> int:
     for full, suffix, scale in ((False, "", 3), (True, "_Full", 2)):
         title = f"SILVER: {model.title} cluster (Data Vault 2.0)" + (", full" if full else "")
         drawio = page.with_name(page.stem + suffix + ".drawio")
-        drawio.write_text(to_drawio(model, full, title), encoding="utf-8", newline="\n")
+        xml = to_drawio(model, full, title)
+        drawio.write_text(xml, encoding="utf-8", newline="\n")
         print("wrote", drawio)
         if not args.no_export:
             exe = find_drawio()
@@ -474,7 +509,7 @@ def main(argv: list[str] | None = None) -> int:
                 print("draw.io Desktop not found; set DRAWIO_EXE or use --no-export", file=sys.stderr)
                 return 1
             png = drawio.with_suffix(".png")
-            export_png(exe, drawio, png, scale)
+            export_png(exe, drawio, png, fit_scale(xml, scale))
             print("wrote", png)
     return 0
 

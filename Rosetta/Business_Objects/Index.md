@@ -68,7 +68,8 @@ Each page has two pictures: the **simple** one shows each object with its name a
 | --- | --- |
 | Indigo `#3A0CA3` | Hub |
 | Teal `#45E3CD` | Link |
-| Magenta `#F72586` | Satellite |
+| Magenta `#F72586` | Satellite that keeps history, the default |
+| Light magenta, dashed border | Satellite updated in place, the exception |
 
 Arrows run from the child to its parent: a Satellite points to its Hub or Link, and a Link points to the Hubs it joins. The italic line in each box is the grain. Objects defined on another page appear in the picture with a short note and no table.
 

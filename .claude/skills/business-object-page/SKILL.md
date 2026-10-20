@@ -57,7 +57,7 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 ```
 
 - `build_diagram.py` reads the page and writes `<Object>.drawio`, `<Object>_Full.drawio` and the two PNGs. `--context` names objects defined on other pages, which are drawn with a note and no table.
-- Colors: Hub `#3A0CA3`, Link `#45E3CD`, Satellite `#F72586`. The skill `brand-design-system` (section 3c) owns the rules.
+- Colors: Hub `#3A0CA3`, Link `#45E3CD`, Satellite `#F72586`. A Satellite updated in place is drawn lighter with a dashed border, so the history default stands out. The skill `brand-design-system` (section 3c) owns the rules.
 - Run the validator before reporting done. The validator checks form only. Whether the model is right is a human review.
 
 ## What to do with each validator error

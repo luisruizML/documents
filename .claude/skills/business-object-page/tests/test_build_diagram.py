@@ -68,6 +68,61 @@ class ModelTests(unittest.TestCase):
         self.assertIn(("lnk_customer__sample_order", "hub_sample_order"), pairs)
 
 
+class InPlaceSatelliteTests(unittest.TestCase):
+    """A Satellite updated in place is the exception to the history default, so it is drawn lighter."""
+
+    def setUp(self):
+        text = FIXTURE.read_text(encoding="utf-8")
+        grain = "one row per parent key, for each time its values change"
+        self.assertIn(grain, text)
+        self.model = bd.load_model(text)
+        self.model.node("sat_sample_order__pricing").grain = "one row per parent key, replaced in place when its values change"
+        self.simple = bd.to_drawio(self.model, full=False, title="t")
+        self.full = bd.to_drawio(self.model, full=True, title="t")
+
+    def test_in_place_palette_is_a_lighter_satellite_color(self):
+        def lum(h):
+            return sum(int(h[i:i + 2], 16) for i in (1, 3, 5))
+        light = bd.palette_for("Satellite", in_place=True)
+        self.assertGreater(lum(light["fill"]), lum(bd.PALETTE["Satellite"]["fill"]))
+        self.assertEqual(light["text"], "#000000")
+
+    def test_only_an_in_place_satellite_gets_the_lighter_color(self):
+        self.assertTrue(self.model.node("sat_sample_order__pricing").in_place)
+        self.assertFalse(self.model.node("hub_sample_order").in_place)
+        light = bd.PALETTE["Satellite (in place)"]["fill"]
+        self.assertIn(f"fillColor={light};", self.simple)
+        self.assertNotIn("fillColor=#F72586;swimlaneFillColor", self.simple)
+
+    def test_in_place_container_has_a_dashed_border(self):
+        head = [c for c in cells(self.simple) if c.get("value") == "sat_sample_order__pricing"][0]
+        self.assertIn("dashed=1", head.get("style"))
+
+    def test_the_full_table_header_stays_light(self):
+        light = bd.PALETTE["Satellite (in place)"]["fill"]
+        self.assertIn(f"fillColor={light};", self.full)
+        self.assertGreater(self.full.count(f"fillColor={light};"), 1)
+
+    def test_legend_lists_the_exception_only_when_one_is_present(self):
+        self.assertIn("Satellite, in place (exception)", self.simple)
+        plain = bd.to_drawio(bd.load_model(FIXTURE.read_text(encoding="utf-8")), full=False, title="t")
+        self.assertNotIn("in place", plain)
+        self.assertNotIn(bd.PALETTE["Satellite (in place)"]["fill"], plain)
+
+
+class ExportScaleTests(unittest.TestCase):
+    def geometry(self, bottom):
+        return f'<mxGeometry x="0" y="{bottom - 100}" width="10" height="100" as="geometry"/>'
+
+    def test_a_short_picture_keeps_the_wanted_scale(self):
+        self.assertEqual(bd.fit_scale(self.geometry(1000), 2), 2)
+
+    def test_a_tall_picture_is_scaled_down_so_it_is_not_cut_off(self):
+        scale = bd.fit_scale(self.geometry(3033), 2)
+        self.assertLess(scale, 2)
+        self.assertLessEqual(3033 * scale, bd.MAX_PNG_HEIGHT)
+
+
 class DrawioTests(unittest.TestCase):
     def setUp(self):
         text = FIXTURE.read_text(encoding="utf-8")

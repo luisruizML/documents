@@ -69,7 +69,7 @@ Rules:
 
 ## 3c. Data Vault object colors (mandatory exception)
 
-Diagrams of Data Vault objects color the object by type, **instead of** the Medallion Silver colors: Hub `#3A0CA3` (white text), Link `#45E3CD` (black text), Satellite `#F72586` (white text), Reference table `#A6A8AB` (black text). Lines and table grids inside an object are derived from its fill: lighter (55% toward white) on dark fills, darker (40% toward black) on light fills. The objects are collapsible containers (drawio `swimlane`): only the header bar and the border use the type color; the body is white with black text, so the picture is not overloaded. The grain is an italic note. `business-object-page/scripts/build_diagram.py` applies all of this.
+Diagrams of Data Vault objects color the object by type, **instead of** the Medallion Silver colors: Hub `#3A0CA3` (white text), Link `#45E3CD` (black text), Satellite `#F72586` (white text). A Satellite updated in place, which is the exception to the history default, uses a lighter tint of the Satellite color (65% toward white, black text) and a dashed border; the legend then adds "Satellite, in place (exception)". Lines and table grids inside an object are derived from its fill: lighter (55% toward white) on dark fills, darker (40% toward black) on light fills. The objects are collapsible containers (drawio `swimlane`): only the header bar and the border use the type color; the body is white with black text, so the picture is not overloaded. The grain is an italic note. `business-object-page/scripts/build_diagram.py` applies all of this.
 
 ## 4. Geometry & Connectors
 
