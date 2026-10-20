@@ -15,14 +15,14 @@
 
 ## Definition
 
-A Load Configuration says, for one jurisdiction and one attribute group, which Satellite of a twin pair the loader writes: the one updated in place (row versioning) or the one that keeps history.
+A Load Configuration says, for one jurisdiction and one attribute group, which Satellite of a twin pair the loader writes: the one that keeps history, which is the default, or the one updated in place (row versioning), which is the exception.
 
 An attribute group that may need history is delivered as a pair of Satellites with the same attributes, such as `sat_natural_person__demographics` and `sat_natural_person__demographics_history`. The pair serves one purpose with two mechanisms. This object holds the choice, so the choice is data and not code.
 
 ## Why it is its own object
 
-- **The choice differs by jurisdiction.** One jurisdiction needs the history of gender values; another needs only the current value (R7). A jurisdiction is onboarded by adding rows, not by changing a loader.
-- **The choice changes over time.** A jurisdiction that starts with the current value may later need history. The change is recorded with its date, so it can be audited (R1).
+- **The choice differs by jurisdiction.** One jurisdiction may keep every value of a special-category attribute; another may be forbidden to keep a value once it is corrected (R7). A jurisdiction is onboarded by adding rows, not by changing a loader.
+- **The choice changes over time.** A jurisdiction that starts with the default may later gain a retention rule, or the reverse. The change is recorded with its date, so it can be audited (R1).
 - **It is not a list of allowed values.** [Code List](Code_List.md) holds the values a column accepts. A Load Configuration holds which table is written. It has no labels and no values.
 - **Every domain depends on it.** Each attribute group of each object has an entry, and Platform decides it.
 
@@ -70,34 +70,34 @@ No endpoints declared yet
 
 | **Edge case** | **Where it happens** | **Approach** | **Vault effect** |
 | --- | --- | --- | --- |
-| A jurisdiction that needs the history of an attribute | Any jurisdiction whose rules or audits ask for it | Its setting for that group is `history` | A row in `sat_load_configuration__mechanism` with `mechanism_code` `history` |
-| A jurisdiction that needs only the current value | Any jurisdiction | Its setting is `row_versioning`, or no setting, so the default applies | A row with `row_versioning`, or the row of `any` |
-| A jurisdiction with no setting | Any newly onboarded jurisdiction | The default row of `any` applies; by default there is no history | The row of `any` for the group |
+| A jurisdiction with no rule about keeping previous values | Any jurisdiction | The default row of `any` applies: history | The row of `any` for the group, with `mechanism_code` `history` |
+| A jurisdiction that forbids keeping a previous value of special-category data | Jurisdictions with a deletion-on-correction rule | Its setting for that group is `row_versioning`, and the maintenance that removes previous values is scheduled | A row in `sat_load_configuration__mechanism` with `mechanism_code` `row_versioning` |
 | A jurisdiction that changes its mechanism | Any jurisdiction whose rules change | A new row with a new effective date; the earlier row stays as history | New rows in `sat_load_configuration__mechanism` |
 
 ## Examples
 
-Illustrative data. Three jurisdictions choose different mechanisms for the same groups.
+Illustrative data. Every group is loaded with history by default. One jurisdiction has a deletion-on-correction rule for community affiliation.
 
 `hub_load_configuration` and `sat_load_configuration__mechanism`
 
 | **load_configuration_bk** | **mechanism_code** | **loaded_object_name** | **effective_date** |
 | --- | --- | --- | --- |
-| any:natural_person__demographics | row_versioning | sat_natural_person__demographics | 2026-10-20 |
-| any:natural_person__physical_traits | row_versioning | sat_natural_person__physical_traits | 2026-10-20 |
-| WSM:natural_person__demographics | history | sat_natural_person__demographics_history | 2026-10-20 |
-| WSM:natural_person__physical_traits | history | sat_natural_person__physical_traits_history | 2026-10-20 |
-| NZL:natural_person__demographics | history | sat_natural_person__demographics_history | 2026-10-20 |
+| any:natural_person__demographics | history | sat_natural_person__demographics_history | 2026-10-20 |
+| any:natural_person__physical_traits | history | sat_natural_person__physical_traits_history | 2026-10-20 |
+| any:natural_person__community_affiliation | history | sat_natural_person__community_affiliation_history | 2026-10-20 |
+| PNG:natural_person__community_affiliation | row_versioning | sat_natural_person__community_affiliation | 2026-10-20 |
 
-`PNG` has no row, so the default of `any` applies to it: the in-place Satellites. `NZL` has history for demographics only, so its physical traits fall back to the default.
+`WSM` has no row, so the default of `any` applies to it: history for every group. `PNG` keeps history for demographics and physical traits, which fall back to the default, and replaces the community-affiliation row in place.
 
 ## Modeling considerations
 
-- **The default is no history.** A group without a row for its jurisdiction uses the row of `any`, which is `row_versioning` (Principles, "A Satellite with row versioning").
+- **The default is history.** A group without a row for its jurisdiction uses the row of `any`, which is `history` (Principles, "History by default, row versioning by exception").
 - **A setting names the Satellite that is written.** `loaded_object_name` is read by the loader, so the pair can never be loaded twice for one jurisdiction.
 - **Every setting points to the exact objects.** `attribute_group_name` and `loaded_object_name` use the names of the vault objects, so a search from either side finds the other. `jurisdiction_code` takes its values from the [Code List](Code_List.md).
 - **A change is a new row.** A setting is never edited in place. The earlier row stays, so it can be shown when a table was written by which mechanism (R1).
-- **Moving from in place to history is not retroactive.** History starts at the effective date, and the row in the in-place Satellite becomes the first row of the history Satellite. Moving the other way stops loading the history Satellite and keeps what it holds.
+- **Moving to history is not retroactive.** History starts at the effective date, and the row in the in-place Satellite becomes the first row of the history Satellite.
+- **Moving to in place removes history.** A jurisdiction that gains a rule against keeping previous values needs the earlier history deleted and the snapshots expired. That is a decision of its own, see Open decisions.
+- **In place needs maintenance.** A `row_versioning` setting is complete only when the expiry of snapshots and the rewrite of files are scheduled for the group.
 - **Platform decides who may change it.** A change of mechanism changes what is kept, so it follows the access rules of the platform.
 
 ## Diagram
@@ -112,5 +112,5 @@ Illustrative data. Three jurisdictions choose different mechanisms for the same 
 | --- | --- | --- | --- |
 | Which roles may change a setting | Platform | Decided with the role-based access control design of the platform | Before the first jurisdiction is configured |
 | Whether a change of mechanism needs a review before it takes effect | Data Architecture Engineer and Platform | Decided from the first change requested | When such a change is requested |
-| Whether moving from history back to in place keeps or archives the history Satellite | Data Architecture Engineer | Decided with the retention rules of the platform | Before the first jurisdiction moves back |
+| Whether moving to in place deletes the earlier history, and who approves the deletion | Data Architecture Engineer and Platform | Decided with the retention rules of the platform | Before the first jurisdiction moves to in place |
 | Whether the settings are loaded from a file under version control or entered in a tool | Platform | Decided when the Nexus configuration is built | Before the first jurisdiction is configured |

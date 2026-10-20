@@ -92,6 +92,6 @@ Every vault object states its grain, the meaning of one row, in a fixed form.
 | **Link** | one row per distinct combination of the Hubs it joins | A relationship between objects |
 | **Non-historized Link** | one row per occurrence of an event or transaction | Facts that never change once recorded |
 | **Satellite** | one row per parent key, for each time its values change | The descriptive history of a Hub or Link |
-| **Satellite with row versioning** | one row per parent key, replaced in place when its values change | Attributes that need no history. Each is delivered with a history twin (`_history`) |
+| **Satellite with row versioning** | one row per parent key, replaced in place when its values change | The exception: attributes a jurisdiction must not keep a history of. History, in the `_history` twin, is the default |
 
 Naming, allowed data types and the rules for changing a grain are in the Principles.

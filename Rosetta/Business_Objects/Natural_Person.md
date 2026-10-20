@@ -124,7 +124,7 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 
 ### sat_natural_person__demographics
 
-Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. It serves the same purpose as `sat_natural_person__demographics_history`; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
+The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. A previous value is gone only after snapshots are expired and files are rewritten (Principles). It serves the same purpose as `sat_natural_person__demographics_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -136,7 +136,7 @@ Keeps no history: the row is updated in place (row versioning). `row_version` st
 
 ### sat_natural_person__demographics_history
 
-Keeps its history: every change adds a row (SCD Type 2). The allowed `gender_code` values depend on the jurisdiction and can change over time. It carries the same attributes as `sat_natural_person__demographics`.
+The default: keeps its history, and every change adds a row (SCD Type 2). The allowed `gender_code` values depend on the jurisdiction and can change over time. It carries the same attributes as `sat_natural_person__demographics`.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -148,7 +148,7 @@ Keeps its history: every change adds a row (SCD Type 2). The allowed `gender_cod
 
 ### sat_natural_person__physical_traits
 
-Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. It serves the same purpose as `sat_natural_person__physical_traits_history`; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
+The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. A previous value is gone only after snapshots are expired and files are rewritten (Principles). It serves the same purpose as `sat_natural_person__physical_traits_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -161,7 +161,7 @@ Keeps no history: the row is updated in place (row versioning). `row_version` st
 
 ### sat_natural_person__physical_traits_history
 
-Keeps its history: every change adds a row (SCD Type 2). It carries the same attributes as `sat_natural_person__physical_traits`.
+The default: keeps its history, and every change adds a row (SCD Type 2). It carries the same attributes as `sat_natural_person__physical_traits`.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -174,7 +174,7 @@ Keeps its history: every change adds a row (SCD Type 2). It carries the same att
 
 ### sat_natural_person__community_affiliation
 
-Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It serves the same purpose as `sat_natural_person__community_affiliation_history`; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
+The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. A previous value is gone only after snapshots are expired and files are rewritten (Principles). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It serves the same purpose as `sat_natural_person__community_affiliation_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -188,7 +188,7 @@ Keeps no history: the row is updated in place (row versioning). `row_version` st
 
 ### sat_natural_person__community_affiliation_history
 
-Keeps its history: every change adds a row (SCD Type 2). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It carries the same attributes as `sat_natural_person__community_affiliation`.
+The default: keeps its history, and every change adds a row (SCD Type 2). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It carries the same attributes as `sat_natural_person__community_affiliation`.
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -269,17 +269,21 @@ Illustrative data. The first example is a person with no document; the second is
 | female | before the change of list |
 | non_binary | after the change of list; the first row stays as history |
 
-`sat_natural_person__physical_traits` holds one row for the same person, updated in place. If the jurisdiction asks for history, `sat_natural_person__physical_traits_history` holds a row for each change instead.
+`sat_natural_person__physical_traits_history` holds a row for each change, and `cur_natural_person__physical_traits` returns the latest one. Only in a jurisdiction that forbids keeping previous values is `sat_natural_person__physical_traits` loaded instead, with one row updated in place.
 
-| **height_cm** | **blood_type_code** | **row_version** |
+| **height_cm** | **blood_type_code** | **Loaded** |
 | --- | --- | --- |
-| 172.5 | O+ | 2 |
+| 170.0 | O+ | first measurement |
+| 172.5 | O+ | after a new measurement; the first row stays as history |
 
-**A person registered in a customary-law community.** `sat_natural_person__community_affiliation` holds one row; the tribe is a value of the Code List `tribe`.
+**A person registered in a customary-law community.** `sat_natural_person__community_affiliation_history` keeps each recorded value; the tribe is a value of the Code List `tribe`.
 
-| **ethnicity_code** | **tribe_code** | **religion_code** | **row_version** |
+| **ethnicity_code** | **tribe_code** | **religion_code** | **Loaded** |
 | --- | --- | --- | --- |
-| melanesian | huli | (empty) | 1 |
+| melanesian | huli | (empty) | first recorded |
+| melanesian | enga | (empty) | after a correction; the first row stays as history |
+
+In a jurisdiction that forbids keeping the corrected value, `sat_natural_person__community_affiliation` holds one row (`enga`, `row_version` 2) and the earlier value is removed by maintenance.
 
 ## Modeling considerations
 
@@ -289,7 +293,7 @@ Illustrative data. The first example is a person with no document; the second is
 - **Citizenship and visa type are not attributes.** They are Credentials and Entitlements. A residence permit or national identity number is also a Credential in the Legal objects, which carries the right and the issuing Authority; here it is only an identifier.
 - **Personal data is kept in its own Satellites.** Name and identification hold personal data. Lifecycle does not, so it can be read by roles that must not see identity. Demographics and physical traits hold sensitive personal data and are also kept apart. The registration Satellite holds only a pointer (`artifact_uri`) to evidence in Digital Artifact, which is personal data in itself, so it is marked PII.
 - **Community affiliation is special-category data.** Race or ethnicity, tribe and religion are kept in their own Satellites, so that access can be limited to named roles and so that a jurisdiction that does not collect them simply has no row. The access rule is recorded on the Code List (`sat_code_list__access`).
-- **History is chosen by how the attribute behaves.** An attribute whose value or allowed list can change over time, such as gender, goes in a Satellite that keeps history. An attribute that does not need history, such as blood type, goes in a Satellite that is updated in place with `row_version`. By default there is no history. Every such group is delivered as a pair that serves the same purpose with a different mechanism, one updated in place and one with history (`_history`), and the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
+- **History is the default.** Each group is delivered as a pair: the `_history` Satellite, loaded by default, and the in-place Satellite, loaded only where a jurisdiction forbids keeping previous values. The Load Configuration says which one a jurisdiction loads. The current value is read from `cur_<parent>__<descriptor>`, a view over the history Satellite. The reasons, including what Iceberg time travel does and does not give, are in the Principles, "History by default, row versioning by exception".
 - **The allowed values of a code belong to a Code List, not to the column.** Codes such as `gender_code`, `jurisdiction_code` and `key_type_code` take their values from the Code List object, which holds them per jurisdiction with validity dates. The column stays a string, so a change of list never changes the table. Codes that the logic depends on (`status_code`, `origin_event_code`, `termination_event_code`) and `blood_type_code` are closed lists written in the Description.
 - **Derived values are not stored (R13).** Age and age group are computed from the birth date in the Gold layer; this page keeps only the date (`origin_date`).
 - **A person is never deleted.** A confirmed death inactivates the record through `sat_natural_person__lifecycle`.

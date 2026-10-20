@@ -53,6 +53,6 @@ Run a scenario by giving the skill the raw input and checking the result against
 
 **Input.** A draft with `blood type` and `gender`, and a note that some jurisdictions change the gender list over time.
 
-**Expected.** Two Satellites per group, one updated in place with `row_version` and one with `_history`. `blood_type_code` is a closed list; `gender_code` takes its values from the Code List object.
+**Expected.** Two Satellites per group: the `_history` one is the default and the in-place one, with `row_version`, is the exception for jurisdictions that forbid keeping previous values. The current value is read from a `cur_` view. `blood_type_code` is a closed list; `gender_code` takes its values from the Code List object.
 
 **Failures to watch for.** One Satellite for both mechanisms; a `ref_` table; a stored age.

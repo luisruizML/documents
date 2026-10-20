@@ -18,7 +18,7 @@ Do these in order.
 3. **Type** every column from the allowed list, by representation term. Money is `decimal(P,S)`, identifiers are `string`, moments are `timestamptz`.
 4. **State the grain** of every vault object, starting with the "one row per" of its type.
 5. **Split** personal data into its own Satellite. Special-category data (race or ethnicity, tribe, religion, health) goes in its own Satellite too.
-6. **Choose the history mechanism** of each attribute group. History is not the default: a group that does not need it is a Satellite updated in place with `row_version`, delivered with a `_history` twin of the same attributes.
+6. **Keep history by default.** An attribute group whose rows are not meant to be kept in place is delivered as a pair: the `_history` Satellite, which is the default, and an in-place Satellite with `row_version`, loaded only where a jurisdiction forbids keeping previous values. The current value is the view `cur_<parent>__<descriptor>`, never a stored copy. Do not choose in place for performance.
 7. **Do not store what can be computed** (R13). Age, age group and "valid today" are Gold objects. Keep the date.
 8. **Use the Code List object** for the values of a `_code` column that can change or differ by jurisdiction. A code on which logic depends is a closed list: `One of` in the Description. Never create a `ref_` table.
 9. **Extract** edge cases from the draft into the Jurisdictions map, with the jurisdictions the draft names.
@@ -83,7 +83,9 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 | Descriptive columns on `hub_party` | They live on the specific object |
 | `Hub_Legal_Entity`, `LegalEntity` | `hub_legal_entity` |
 | A stored age or "is active today" | A Gold object (R13) |
-| One Satellite for in-place and history | A pair, the second with `_history` |
+| One Satellite for in-place and history | A pair: `_history` is the default, the in-place one is the exception |
+| Choosing in place because it is cheaper | History by default; partition and compact instead |
+| Storing the current value in a second table | The `cur_` view over the history Satellite |
 | A new table for each code list | New rows in the Code List object |
 
 ## When you finish
