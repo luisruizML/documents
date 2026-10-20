@@ -17,6 +17,7 @@ What the platform owns and every domain uses, such as configuration, has its own
 | **Object** | **Owner domain** | **Shared with** | **Scope** | **Status** | **Page** |
 | --- | --- | --- | --- | --- | --- |
 | Code List | Platform | Registries, Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Code List](Code_List.md) |
+| Load Configuration | Platform | Registries, Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Load Configuration](Load_Configuration.md) |
 
 ## What every page contains
 

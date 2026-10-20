@@ -19,13 +19,13 @@ Platform objects follow the same page format as every other business object (see
 | **Object** | **What it holds** | **Status** | **Page** |
 | --- | --- | --- | --- |
 | Code List | The allowed values of a column, with labels, jurisdictions, validity periods, where each list is used and who may read it | Draft | [Code List](Code_List.md) |
+| Load Configuration | For each jurisdiction and attribute group, which Satellite of a twin pair is loaded: the one updated in place or the one with history | Draft | [Load Configuration](Load_Configuration.md) |
 
 ## Planned
 
 | **Object** | **What it will hold** | **Where it comes from** |
 | --- | --- | --- |
 | Government Authority | The public bodies that issue credentials and attest records. It is not a Party | Open decision on [Natural Person](Natural_Person.md) |
-| Load configuration | For each jurisdiction, which Satellite of a twin pair is loaded: the one updated in place or the one with history | Principles, section "A Satellite with row versioning" |
 
 ## Rules for Platform objects
 
@@ -38,5 +38,4 @@ Platform objects follow the same page format as every other business object (see
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| Whether the Load configuration is part of Code List or its own object | Platform and Data Architecture Engineer | Decided when the first jurisdiction asks for the history mechanism | Before that jurisdiction is configured |
 | Where the roles used for access come from | Platform | Decided with the role-based access control design of the platform | Before the first list with restricted values |
