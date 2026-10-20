@@ -74,7 +74,17 @@ Illustrative data. A tax account in any jurisdiction points to `hub_party` throu
 
 ## Diagram
 
-![Party cluster](images/Diagrams_Party_Simplified.png)
+Two pictures of the same cluster. Read the simplified one first, then use the full one when you need the columns. Colors: Hub indigo, Link teal, Satellite magenta; a Satellite updated in place is lighter, with a dashed border. Arrows run from the child to its parent.
+
+### Simplified version
+
+The shape of the cluster: the Hub with its name and grain, and the two Links that join it to Natural Person and Legal Entity, drawn as context because their pages define them. Use it to see how the objects relate. It has no columns.
+
+![Party cluster, simplified](images/Diagrams_Party_Simplified.png)
+
+### Full version
+
+The same objects, each with its Fields table (column, role, type, null, PII, default, description). Use it to check exactly what is stored. It is wide: zoom in or open the image on its own.
 
 ![Party cluster, full](images/Diagrams_Party_Full.png)
 

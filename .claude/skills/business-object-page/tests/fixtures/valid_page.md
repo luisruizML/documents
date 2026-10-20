@@ -97,7 +97,15 @@ An illustrative order placed in Samoa.
 
 ## Diagram
 
+### Simplified version
+
+The shape.
+
 ![Sample Order cluster](images/Diagrams_Sample_Order_Simplified.png)
+
+### Full version
+
+The columns.
 
 ![Sample Order cluster, full](images/Diagrams_Sample_Order_Full.png)
 

@@ -435,6 +435,12 @@ def check_diagram(page: Page, base_dir: Path | None) -> list[str]:
             "diagram: the Diagram section needs the simplified image (images/Diagrams_Name_Simplified.png) "
             "and the full image (images/Diagrams_Name_Full.png)"
         )
+    lines = body.splitlines()
+    heads = {h: next((i for i, l in enumerate(lines) if l.strip() == h), -1) for h in ("### Simplified version", "### Full version")}
+    pos = {k: next((i for i, l in enumerate(lines) if f"_{k}.png" in l), -1) for k in ("Simplified", "Full")}
+    s_h, f_h = heads["### Simplified version"], heads["### Full version"]
+    if min(s_h, f_h) < 0 or not s_h < pos["Simplified"] < f_h < pos["Full"]:
+        errs.append("diagram: divide the section into '### Simplified version' and '### Full version', each heading before its own image")
     for image in images:
         if not image.startswith("images/Diagrams_"):
             errs.append(f"diagram: image '{image}' must be images/Diagrams_<Object>_<Simplified|Full>.png")

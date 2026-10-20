@@ -80,11 +80,17 @@ No endpoints declared yet
 
 ## Diagram
 
-*The cluster, in the brand style.*
+*Two pictures of the same cluster, generated from this page with `scripts/build_diagram.py`. One sentence on how to read them and the color legend.*
 
-*Two pictures, generated from this page with `scripts/build_diagram.py`: the simple one and the full one with the tables.*
+### Simplified version
 
-![<<Object name>> cluster](images/Diagrams_<<Object_Name>>_Simplified.png)
+*What it shows: the objects by type and count, each with name and grain, no columns. When to use it.*
+
+![<<Object name>> cluster, simplified](images/Diagrams_<<Object_Name>>_Simplified.png)
+
+### Full version
+
+*What it adds: the Fields table of each object. When to use it.*
 
 ![<<Object name>> cluster, full](images/Diagrams_<<Object_Name>>_Full.png)
 

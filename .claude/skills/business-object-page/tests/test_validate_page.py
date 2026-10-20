@@ -174,7 +174,12 @@ class RemainingSectionTests(unittest.TestCase):
         self.assertEqual([e for e in ok if e.startswith("jurisdictions:")], [])
 
     def test_diagram_needs_image_link(self):
-        self.assertTrue(has(errors("![Sample Order cluster](images/Diagrams_Sample_Order_Simplified.png)\n\n![Sample Order cluster, full](images/Diagrams_Sample_Order_Full.png)", "no picture"), "diagram", "image"))
+        block = page().split("## Diagram\n\n")[1].split("\n\n## Open")[0]
+        self.assertTrue(has(errors(block, "no picture"), "diagram", "image"))
+
+    def test_diagram_needs_a_heading_for_each_version(self):
+        two = "![Sample Order cluster](images/Diagrams_Sample_Order_Simplified.png)" + chr(10) * 2 + "![Sample Order cluster, full](images/Diagrams_Sample_Order_Full.png)"
+        self.assertTrue(has(errors(page().split("## Diagram" + chr(10) * 2)[1].split(chr(10) * 2 + "## Open")[0], two), "diagram", "### Simplified version"))
 
     def test_diagram_needs_simple_and_full_versions(self):
         errs = errors("\n\n![Sample Order cluster, full](images/Diagrams_Sample_Order_Full.png)", "")

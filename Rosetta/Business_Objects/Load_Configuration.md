@@ -102,7 +102,17 @@ Illustrative data. Every group is loaded with history by default. One jurisdicti
 
 ## Diagram
 
-![Load Configuration cluster](images/Diagrams_Load_Configuration_Simplified.png)
+Two pictures of the same cluster. Read the simplified one first, then use the full one when you need the columns. Colors: Hub indigo, Link teal, Satellite magenta; a Satellite updated in place is lighter, with a dashed border. Arrows run from the child to its parent.
+
+### Simplified version
+
+The shape of the cluster: 1 Hub and 1 Satellite, each with its name and grain. Use it to see how the objects relate. It has no columns.
+
+![Load Configuration cluster, simplified](images/Diagrams_Load_Configuration_Simplified.png)
+
+### Full version
+
+The same objects, each with its Fields table (column, role, type, null, PII, default, description). Use it to check exactly what is stored. It is wide: zoom in or open the image on its own.
 
 ![Load Configuration cluster, full](images/Diagrams_Load_Configuration_Full.png)
 

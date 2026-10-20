@@ -173,7 +173,17 @@ Here a person in `PNG` can be recorded only as male or female, and a person in `
 
 ## Diagram
 
-![Code List cluster](images/Diagrams_Code_List_Simplified.png)
+Two pictures of the same cluster. Read the simplified one first, then use the full one when you need the columns. Colors: Hub indigo, Link teal, Satellite magenta; a Satellite updated in place is lighter, with a dashed border. Arrows run from the child to its parent.
+
+### Simplified version
+
+The shape of the cluster: 2 Hubs, 1 Link and 4 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+
+![Code List cluster, simplified](images/Diagrams_Code_List_Simplified.png)
+
+### Full version
+
+The same objects, each with its Fields table (column, role, type, null, PII, default, description). Use it to check exactly what is stored. It is wide: zoom in or open the image on its own.
 
 ![Code List cluster, full](images/Diagrams_Code_List_Full.png)
 

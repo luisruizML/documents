@@ -223,7 +223,17 @@ Illustrative data. The first example is a formal company; the second is an infor
 
 ## Diagram
 
-![Legal Entity cluster](images/Diagrams_Legal_Entity_Simplified.png)
+Two pictures of the same cluster. Read the simplified one first, then use the full one when you need the columns. Colors: Hub indigo, Link teal, Satellite magenta; a Satellite updated in place is lighter, with a dashed border. Arrows run from the child to its parent.
+
+### Simplified version
+
+The shape of the cluster: 1 Hub, 2 Links and 5 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+
+![Legal Entity cluster, simplified](images/Diagrams_Legal_Entity_Simplified.png)
+
+### Full version
+
+The same objects, each with its Fields table (column, role, type, null, PII, default, description). Use it to check exactly what is stored. It is wide: zoom in or open the image on its own.
 
 ![Legal Entity cluster, full](images/Diagrams_Legal_Entity_Full.png)
 
