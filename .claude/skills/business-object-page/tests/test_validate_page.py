@@ -96,7 +96,6 @@ class VaultObjectTests(unittest.TestCase):
             ("one row per distinct combination of customer", "Link"),
             ("one row per parent key, for each", "Satellite"),
             ("one row per occurrence of a shipment", "Non-historized Link"),
-            ("one row per code |", "Reference table"),
         ]
         for old, kind in cases:
             with self.subTest(kind=kind):
@@ -126,8 +125,13 @@ class VaultObjectTests(unittest.TestCase):
                 self.assertTrue(has(errors(old, new), "type", term))
 
     def test_every_vault_object_has_a_fields_table_and_no_extra(self):
-        self.assertTrue(has(errors("### ref_order_status", "### ref_other_status"), "fields", "ref_order_status"))
-        self.assertTrue(has(errors("### ref_order_status", "### ref_other_status"), "fields", "ref_other_status"))
+        self.assertTrue(has(errors("### sat_sample_order__pricing", "### sat_sample_order__other"), "fields", "sat_sample_order__pricing"))
+        self.assertTrue(has(errors("### sat_sample_order__pricing", "### sat_sample_order__other"), "fields", "sat_sample_order__other"))
+
+    def test_a_reference_table_is_not_a_vault_object_type(self):
+        row = "| Reference table | `ref_order_status` | one row per code | — |"
+        text = FIXTURE.read_text(encoding="utf-8").replace("| Non-historized Link |", row + chr(10) + "| Non-historized Link |", 1)
+        self.assertTrue(has(vp.validate(text), "name", "Reference table"))
 
     def test_null_and_personal_data_are_yes_or_no(self):
         errs = errors("| `status_code` | | `string` | No | No | — |", "| `status_code` | | `string` | Maybe | No | — |")

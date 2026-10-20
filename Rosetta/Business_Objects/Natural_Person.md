@@ -42,6 +42,8 @@ If a Natural Person were merged into a single Party table, every registry would 
 | Satellite | `sat_natural_person__demographics_history` | one row per parent key, for each time its values change | — |
 | Satellite | `sat_natural_person__physical_traits` | one row per parent key, replaced in place when its values change | — |
 | Satellite | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__community_affiliation` | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__community_affiliation_history` | one row per parent key, for each time its values change | — |
 
 The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `natural_person_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
@@ -170,6 +172,34 @@ Keeps its history: every change adds a row (SCD Type 2). It carries the same att
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
+### sat_natural_person__community_affiliation
+
+Keeps no history: the row is updated in place (row versioning). `row_version` starts at 1 and goes up by one with each update; the previous values are not kept. Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It serves the same purpose as `sat_natural_person__community_affiliation_history`; the Platform configuration says which one a jurisdiction loads.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `ethnicity_code` | | `string` | Yes | Yes | null | Ethnic group, as the jurisdiction records it: e.g. `melanesian`, `polynesian`, `micronesian`; empty when not collected |
+| `tribe_code` | | `string` | Yes | Yes | null | Tribe or customary community: e.g. `huli`, `enga`, `chimbu`; empty when not collected |
+| `religion_code` | | `string` | Yes | Yes | null | Religious affiliation: e.g. `christian`, `muslim`, `traditional_belief`; empty when not collected |
+| `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+
+### sat_natural_person__community_affiliation_history
+
+Keeps its history: every change adds a row (SCD Type 2). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It carries the same attributes as `sat_natural_person__community_affiliation`.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `ethnicity_code` | | `string` | Yes | Yes | null | Ethnic group, as the jurisdiction records it: e.g. `melanesian`, `polynesian`, `micronesian`; empty when not collected |
+| `tribe_code` | | `string` | Yes | Yes | null | Tribe or customary community: e.g. `huli`, `enga`, `chimbu`; empty when not collected |
+| `religion_code` | | `string` | Yes | Yes | null | Religious affiliation: e.g. `christian`, `muslim`, `traditional_belief`; empty when not collected |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
 ## Sources and mapping
 
 No endpoints declared yet
@@ -186,6 +216,7 @@ No endpoints declared yet
 | Gender recorded with two values, then three or more | A jurisdiction that widens its definition | The code list in force is set for the jurisdiction; each change in a person's value is a new row | New rows in `sat_natural_person__demographics_history`; earlier rows stay as history |
 | Gender recorded with three or more values, then two | A jurisdiction that narrows its definition | Same as above; a value no longer in the list stays readable in the earlier rows | New rows in `sat_natural_person__demographics_history` |
 | Gender recorded with two values only | A jurisdiction that never widens its definition | Either satellite, with a shorter list | `sat_natural_person__demographics` or `sat_natural_person__demographics_history`, as configured |
+| Race, ethnicity, tribe or religion | Jurisdictions differ: some forbid collecting it, others rely on it, for example customary-law communities | Collected only where the jurisdiction allows it; every column may be empty; the values come from a Code List with restricted access | `sat_natural_person__community_affiliation` or `sat_natural_person__community_affiliation_history`, as configured; no row where it is not collected |
 | Passport first, then residence permit, then national identity number | Any jurisdiction with a naturalization route | Each document is a new identification row; the person's key never changes | New rows in `sat_natural_person__identification` |
 
 ## Examples
@@ -244,6 +275,12 @@ Illustrative data. The first example is a person with no document; the second is
 | --- | --- | --- |
 | 172.5 | O+ | 2 |
 
+**A person registered in a customary-law community.** `sat_natural_person__community_affiliation` holds one row; the tribe is a value of the Code List `tribe`.
+
+| **ethnicity_code** | **tribe_code** | **religion_code** | **row_version** |
+| --- | --- | --- | --- |
+| melanesian | huli | (empty) | 1 |
+
 ## Modeling considerations
 
 - **Identifiers are facts, not keys.** Passports, permits and national numbers live in `sat_natural_person__identification` and are used to find and match a person. The business key is the source's own person identifier, so adding or replacing a document never changes a key.
@@ -251,6 +288,7 @@ Illustrative data. The first example is a person with no document; the second is
 - **A person known under two source keys stays two Hub rows.** They are joined by a same-as relationship recorded when the source reports a merge. Keys are never rewritten and nothing is deleted.
 - **Citizenship and visa type are not attributes.** They are Credentials and Entitlements. A residence permit or national identity number is also a Credential in the Legal objects, which carries the right and the issuing Authority; here it is only an identifier.
 - **Personal data is kept in its own Satellites.** Name and identification hold personal data. Lifecycle does not, so it can be read by roles that must not see identity. Demographics and physical traits hold sensitive personal data and are also kept apart. The registration Satellite holds only a pointer (`artifact_uri`) to evidence in Digital Artifact, which is personal data in itself, so it is marked PII.
+- **Community affiliation is special-category data.** Race or ethnicity, tribe and religion are kept in their own Satellites, so that access can be limited to named roles and so that a jurisdiction that does not collect them simply has no row. The access rule is recorded on the Code List (`sat_code_list__access`).
 - **History is chosen by how the attribute behaves.** An attribute whose value or allowed list can change over time, such as gender, goes in a Satellite that keeps history. An attribute that does not need history, such as blood type, goes in a Satellite that is updated in place with `row_version`. By default there is no history. Every such group is delivered as a pair that serves the same purpose with a different mechanism, one updated in place and one with history (`_history`), and the Platform configuration says which one a jurisdiction loads.
 - **The allowed values of a code belong to a Code List, not to the column.** Codes such as `gender_code`, `jurisdiction_code` and `key_type_code` take their values from the Code List object, which holds them per jurisdiction with validity dates. The column stays a string, so a change of list never changes the table. Codes that the logic depends on (`status_code`, `origin_event_code`, `termination_event_code`) and `blood_type_code` are closed lists written in the Description.
 - **Derived values are not stored (R13).** Age and age group are computed from the birth date in the Gold layer; this page keeps only the date (`origin_date`).

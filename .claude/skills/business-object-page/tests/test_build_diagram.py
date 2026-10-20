@@ -79,7 +79,7 @@ class DrawioTests(unittest.TestCase):
         self.assertEqual(styled(self.simple, "shape=table"), [])
 
     def test_full_version_has_one_table_per_page_object_with_fields(self):
-        self.assertEqual(len(styled(self.full, "shape=table")), 5)
+        self.assertEqual(len(styled(self.full, "shape=table")), 4)
 
     def test_full_table_has_header_plus_one_row_per_field(self):
         expected = sum(len(n.rows) + 1 for n in self.model.nodes if n.rows)

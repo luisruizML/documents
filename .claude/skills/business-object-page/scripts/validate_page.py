@@ -54,7 +54,6 @@ GRAIN_PREFIX = {
     "Link": "one row per distinct combination of",
     "Non-historized Link": "one row per occurrence of",
     "Satellite": "one row per parent key",
-    "Reference table": "one row per code",
 }
 
 
@@ -168,9 +167,8 @@ NAME_RE = {
     "Link": re.compile(rf"^lnk_{SNAKE}__{SNAKE}$"),
     "Non-historized Link": re.compile(rf"^lnk_{SNAKE}__{SNAKE}$"),
     "Satellite": re.compile(rf"^sat_{SNAKE}(?:__{SNAKE})+$"),
-    "Reference table": re.compile(rf"^ref_{SNAKE}$"),
 }
-PREFIX = {"Hub": "hub_", "Link": "lnk_", "Non-historized Link": "lnk_", "Satellite": "sat_", "Reference table": "ref_"}
+PREFIX = {"Hub": "hub_", "Link": "lnk_", "Non-historized Link": "lnk_", "Satellite": "sat_"}
 ALLOWED_SHORT = {"id", "hk", "bk", "dts", "of", "to", "by", "in", "on", "no", "is"}
 DECIMAL_RE = re.compile(r"^decimal\(\d+,\d+\)$")
 FIXED_RE = re.compile(r"^fixed\(\d+\)$")

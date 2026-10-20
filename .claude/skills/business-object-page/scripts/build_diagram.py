@@ -33,7 +33,6 @@ PALETTE = {
     "Hub": {"fill": "#3A0CA3", "text": "#FFFFFF"},
     "Link": {"fill": "#45E3CD", "text": "#000000"},
     "Satellite": {"fill": "#F72586", "text": "#FFFFFF"},
-    "Reference table": {"fill": "#A6A8AB", "text": "#000000"},
 }
 KIND_ALIAS = {"Non-historized Link": "Link"}
 EDGE_COLOR = "#A6A8AB"
@@ -108,7 +107,7 @@ class Model:
 
 
 def _kind_from_name(name: str) -> str:
-    return {"hub_": "Hub", "lnk_": "Link", "sat_": "Satellite", "ref_": "Reference table"}[name[:4]]
+    return {"hub_": "Hub", "lnk_": "Link", "sat_": "Satellite"}[name[:4]]
 
 
 def _clean(cell: str) -> str:
@@ -164,6 +163,7 @@ def _row_h(row: dict[str, str]) -> int:
 
 def _size(n: Node, full: bool, degree: int = 0) -> tuple[int, int]:
     w = FULL_W if (full and not n.external) else SIMPLE_W
+    w = max(w, int(len(n.name) * 7.8) + 36)  # a long name must fit its header
     note_h = 14 * _lines(n.note, w) + 6
     h = HEAD_H + note_h + 8
     if full and not n.external and n.rows:
@@ -214,7 +214,7 @@ def place(model: Model, full: bool) -> dict[str, tuple[float, float, float, floa
         y = 80 + (total - heights[c]) / 2
         for n in stack:
             w, h = size(n)
-            boxes[n.name] = (x, y, w, h)
+            boxes[n.name] = (x, y, widths[c], h)  # one width per column
             y += h + vgap
         x += widths[c] + GAP_X
     return boxes
@@ -334,7 +334,7 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
 
     ly = bottom + 40
     lx = 30.0
-    kinds = ["Hub", "Link", "Satellite"] + (["Reference table"] if any(n.kind == "Reference table" for n in model.nodes) else [])
+    kinds = ["Hub", "Link", "Satellite"]
     for kind in kinds:
         pal = PALETTE[kind]
         _, xml = _vertex(
