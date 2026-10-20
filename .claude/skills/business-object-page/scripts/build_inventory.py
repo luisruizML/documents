@@ -1,5 +1,5 @@
 """Vault objects inventory: the Vault objects table of every Business Object page, with Owner domain and Object
-added as the two left columns. Prints Markdown; the Index carries the result under "## Vault objects inventory".
+added as the two left columns. Prints Markdown; Rosetta/Business_Objects/Vault_Objects_Inventory.md carries the result.
 
     python build_inventory.py [Rosetta/Business_Objects]
 """
