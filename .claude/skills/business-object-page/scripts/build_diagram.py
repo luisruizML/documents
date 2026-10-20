@@ -611,7 +611,8 @@ def main(argv: list[str] | None = None) -> int:
     model = load_model(page.read_text(encoding="utf-8"), context)
     for full, kind, scale in ((False, "Simplified", 3), (True, "Full", 2)):
         title = f"SILVER: {model.title} cluster (Data Vault 2.0)" + (", full" if full else "")
-        drawio = page.with_name(f"Diagrams_{page.stem}_{kind}.drawio")
+        drawio = page.parent / "drawio" / f"Diagrams_{page.stem}_{kind}.drawio"
+        drawio.parent.mkdir(exist_ok=True)
         xml = to_drawio(model, full, title)
         drawio.write_text(xml, encoding="utf-8", newline="\n")
         print("wrote", drawio)
@@ -620,7 +621,8 @@ def main(argv: list[str] | None = None) -> int:
             if not exe:
                 print("draw.io Desktop not found; set DRAWIO_EXE or use --no-export", file=sys.stderr)
                 return 1
-            png = drawio.with_suffix(".png")
+            png = page.parent / "images" / f"{drawio.stem}.png"
+            png.parent.mkdir(exist_ok=True)
             export_png(exe, drawio, png, fit_scale(xml, scale))
             print("wrote", png)
     return 0

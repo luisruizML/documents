@@ -301,9 +301,9 @@ In a jurisdiction that forbids keeping the corrected value, `sat_natural_person_
 
 ## Diagram
 
-![Natural Person cluster](Diagrams_Natural_Person_Simplified.png)
+![Natural Person cluster](images/Diagrams_Natural_Person_Simplified.png)
 
-![Natural Person cluster, full](Diagrams_Natural_Person_Full.png)
+![Natural Person cluster, full](images/Diagrams_Natural_Person_Full.png)
 
 ## Open decisions
 

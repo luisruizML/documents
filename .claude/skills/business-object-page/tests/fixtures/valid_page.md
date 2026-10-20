@@ -97,9 +97,9 @@ An illustrative order placed in Samoa.
 
 ## Diagram
 
-![Sample Order cluster](Diagrams_Sample_Order_Simplified.png)
+![Sample Order cluster](images/Diagrams_Sample_Order_Simplified.png)
 
-![Sample Order cluster, full](Diagrams_Sample_Order_Full.png)
+![Sample Order cluster, full](images/Diagrams_Sample_Order_Full.png)
 
 ## Open decisions
 

@@ -232,7 +232,7 @@ class WidthTests(unittest.TestCase):
             page.write_text(FIXTURE.read_text(encoding="utf-8"), encoding="utf-8")
             self.assertEqual(bd.main([str(page), "--no-export"]), 0)
             self.assertEqual(
-                sorted(p.name for p in Path(d).glob("*.drawio")),
+                sorted(p.name for p in (Path(d) / "drawio").glob("*.drawio")),
                 ["Diagrams_Sample_Order_Full.drawio", "Diagrams_Sample_Order_Simplified.drawio"],
             )
 

@@ -173,9 +173,9 @@ Here a person in `PNG` can be recorded only as male or female, and a person in `
 
 ## Diagram
 
-![Code List cluster](Diagrams_Code_List_Simplified.png)
+![Code List cluster](images/Diagrams_Code_List_Simplified.png)
 
-![Code List cluster, full](Diagrams_Code_List_Full.png)
+![Code List cluster, full](images/Diagrams_Code_List_Full.png)
 
 ## Open decisions
 

@@ -74,9 +74,9 @@ Illustrative data. A tax account in any jurisdiction points to `hub_party` throu
 
 ## Diagram
 
-![Party cluster](Diagrams_Party_Simplified.png)
+![Party cluster](images/Diagrams_Party_Simplified.png)
 
-![Party cluster, full](Diagrams_Party_Full.png)
+![Party cluster, full](images/Diagrams_Party_Full.png)
 
 ## Open decisions
 

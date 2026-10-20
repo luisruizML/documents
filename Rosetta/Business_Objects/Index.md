@@ -92,11 +92,11 @@ Arrows run from the child to its parent: a Satellite points to its Hub or Link, 
 
 The simple version, to see the shape:
 
-![Natural Person cluster](Diagrams_Natural_Person_Simplified.png)
+![Natural Person cluster](images/Diagrams_Natural_Person_Simplified.png)
 
 The full version, with the Fields table of every object:
 
-![Natural Person cluster, full](Diagrams_Natural_Person_Full.png)
+![Natural Person cluster, full](images/Diagrams_Natural_Person_Full.png)
 
 ## Vault object types and grain
 

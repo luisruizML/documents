@@ -9,6 +9,8 @@ description: Use whenever creating or editing ANY diagram, chart, or image for t
 
 Mandatory visual identity for every diagram or chart that goes into a document. It governs the **look** (fonts, colors, shapes, connectors). Tool-specific skills (`drawio`, `lucid-diagram-conventions`) still govern **mechanics** (layout, file format, containment). If a topic-specific palette elsewhere conflicts with this skill, this skill wins unless the user says otherwise.
 
+**Where the files go (Rosetta Business Objects):** `.drawio` sources in a `drawio/` subfolder and `.png` exports in an `images/` subfolder next to the page, named `Diagrams_<Object>_<Simplified|Full>`. The page links `images/<name>.png`. Other folders keep their current layout until they are migrated.
+
 ## When to Use
 
 Any time a document needs a diagram, chart, or image: drawio (`.drawio`/`.png`), Lucid, Mermaid, PlantUML, or generated charts. Apply it before choosing a single color or font.
