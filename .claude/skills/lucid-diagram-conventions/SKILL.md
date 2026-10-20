@@ -45,15 +45,30 @@ Top-to-bottom for layered/architectural diagrams (zones stacked by tier); left-t
 
 ## Color: Match the Source Topic
 
-No single unified palette across Nexus — each topic keeps the semantic colors its `drawio` version already established, for visual continuity between the two. Extend this table as topics get ported:
+**First apply the `brand-design-system` skill** (fonts, core palette, contrast, connectors). Where the table below conflicts with it, the brand skill wins; the table only records legacy per-topic colors from existing drawio diagrams. Each topic keeps the semantic colors its `drawio` version already established, for visual continuity between the two. Extend this table as topics get ported:
 
 | Topic | Colors |
 |---|---|
-| Data Vault 2.0 | Hub `#6A1B9A` (fill `#F3E5F5`) · Link `#00796B` (fill `#E0F2F1`) · Satellite `#EF6C00` (fill `#FFE0B2`) |
-| Medallion Architecture | Bronze `#B0B7C6` · Silver `#45E3CD` · Gold `#D4AF37` · Platinum `#1F2A44` |
+| Data Vault 2.0 (generic, Nexus) | Hub `#6A1B9A` (fill `#F3E5F5`) · Link `#00796B` (fill `#E0F2F1`) · Satellite `#EF6C00` (fill `#FFE0B2`) |
+| Rosetta Business Objects | See "Data-model diagrams" below: Hub `#8F63F4`, Link `#A2F1E6`, Satellite `#FCB3D5`, in place `#FEDBEB` |
+| Medallion Architecture | Superseded: use the Bronze/Silver/Gold metallic colors in `brand-design-system` section 3b (legacy: Bronze `#B0B7C6` · Silver `#45E3CD` · Gold `#D4AF37` · Platinum `#1F2A44`) |
 | Golden Triad | `#F72586` · `#45E3CD` · `#3A0CA3` |
 
 A brand-new topic with no `drawio` precedent: ask before inventing a palette, or borrow the nearest related topic's colors if the concepts overlap.
+
+## Data-model diagrams (Hubs, Links, Satellites): proven recipe
+
+Built by `business-object-page/scripts/build_lucid_global.py`; this is the house style for any Vault diagram in Lucid and it **overrides the assisted-layout checklist above**.
+
+- **Straight lines only** (`lineType: "straight"`), unlike drawio, which routes elbows. Pin `position` on both endpoints and use `assisted layout: false`. With no elbows to hide a bad layout, arrange the boxes so no two lines cross and none passes through another box (the tests check this).
+- **Colors**, same hues as drawio with a lighter background and the drawio fill as border: Hub fill `#8F63F4` / border `#3A0CA3`; Link `#A2F1E6` / `#45E3CD`; Satellite, history (default) `#FCB3D5` / `#F72586`; Satellite, in place (exception) `#FEDBEB` / `#FCB3D5`.
+- **Box size = text + 10 pt on each side** (Lucid units are 160 per 72 pt). Compute the width from the longest line and the height from the line count, one font size for all objects (name bold 11 pt, grain italic 8 pt). Twin Satellites (`x` and `x_history`) share the wider width and sit together, default first, joined by a dashed line without arrowheads.
+- **Grain inside each box**, as an italic second line (`<b>`, `<i>`, `<span style="font-size:8pt">`, `<br>` all work). Arrows run child to parent, with arrowheads.
+- **Bands by owner domain** (`roundedRectangleContainer`, fill `#F6F4FC`), a four-entry legend, and a note.
+- **Ids must be short** (`n1`, `e1`): ids of about 49 characters make the import fail with HTTP 400. Keep the real object name in `customData`.
+- The API sometimes answers "Internal server error"; retry. Preflight "text-fit" and "shape-clearance" warnings are advisory when font sizes are explicit.
+- Do not import large field tables; keep one shape per object. Always export a PNG and look at it before handing over, then create a view-only share link (`role: "view"`).
+- Lucid documents cannot be deleted by the tools; create a new document per version and leave the old ones.
 
 ## Prefer Named Shapes for Tech/Cloud Components
 
@@ -64,6 +79,7 @@ Nexus diagrams reference Kubernetes, Iceberg, brokers, AWS/GCP/Azure services. U
 - Setting relative `position` on only one line endpoint — import fails; set both or neither.
 - Shape touching/crossing a container's edge — assisted layout won't pull it in; add padding.
 - Inventing a new color per diagram instead of reusing the topic's established palette above.
+- Long shape or line ids (import fails with HTTP 400), and boxes wider than their text (the text looks small).
 - Disabling assisted layout just because the prompt implied a position — AL still honors it.
 
 ## Evolving This Skill

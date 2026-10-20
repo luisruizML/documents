@@ -116,6 +116,8 @@ Diagrams of Data Vault objects color the object by type, **instead of** the Meda
 
 Set `fontFamily`, fill, and line colors per shape from the tables above; keep rounded shapes (`roundedRectangleContainer`, rounded rectangle) and smart lines.
 
+**Exception for Data Vault object diagrams in Lucid:** lines are straight (the section 4 "never diagonal" rule is a drawio rule), and the object colors are the lighter Lucid set in `lucid-diagram-conventions` ("Data-model diagrams"): the same hues as section 3c, a lighter background and the drawio fill as border, with an even lighter fill for in-place Satellites.
+
 ## Common Mistakes
 
 - Dark text on `#3A0CA3` / `#F72586`, or white text on `#45E3CD`.

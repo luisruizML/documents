@@ -58,6 +58,7 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 
 - `build_diagram.py` reads the page and writes `<Object>.drawio`, `<Object>_Full.drawio` and the two PNGs. `--context` names objects defined on other pages, which are drawn with a note and no table.
 - Colors: Hub `#3A0CA3`, Link `#45E3CD`, Satellite `#F72586`. A Satellite updated in place is drawn lighter with a dashed border, so the history default stands out. The skill `brand-design-system` (section 3c) owns the rules.
+- **Global Lucidchart diagram** of every Hub, Link and Satellite on the pages: `python .claude/skills/business-object-page/scripts/build_lucid_global.py out.json` reads the pages (so it cannot drift from them) and writes Lucid Standard Import JSON. Upload it with `lucid_create_diagram_from_specification` (`product: lucidchart`, `use_assisted_layout: false`), export a PNG and check it. The Lucid rules are in the skill `lucid-diagram-conventions` ("Data-model diagrams"). Regenerate and upload a new document whenever a page adds or changes a Vault object.
 - Run the validator before reporting done. The validator checks form only. Whether the model is right is a human review.
 
 ## What to do with each validator error
