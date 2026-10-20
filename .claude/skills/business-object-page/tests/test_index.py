@@ -39,8 +39,10 @@ class IndexTests(unittest.TestCase):
         self.assertIn("(Natural_Person.png)", self.text)
         self.assertIn("(Natural_Person_Full.png)", self.text)
 
-    def test_index_does_not_link_to_a_lucid_model(self):
-        self.assertNotIn("lucid.app", self.text)
+    def test_index_shows_the_global_lucid_model(self):
+        self.assertIn("(Global_Model.png)", self.text)
+        self.assertIn("lucid.app/lucidchart/", self.text)
+        self.assertTrue((INDEX.parent / "Global_Model.png").exists())
 
     def test_every_table_header_is_bold(self):
         self.assertEqual(vp.check_bold_headers(self.text), [])

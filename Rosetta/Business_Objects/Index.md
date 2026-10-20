@@ -19,6 +19,21 @@ What the platform owns and every domain uses, such as configuration, has its own
 | Code List | Platform | Registries, Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Code List](Code_List.md) |
 | Load Configuration | Platform | Registries, Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Load Configuration](Load_Configuration.md) |
 
+## The full picture
+
+Every Hub, Link and Satellite of the five pages in one diagram, drawn in Lucidchart: [open it in Lucid](https://lucid.app/lucidchart/b909e6d0-1702-4068-b1cb-1caa95ac479f/view). Registries and Platform are drawn as separate bands, the grain is written inside each box, and arrows run from the child to its parent.
+
+![Global model: Hubs, Links and Satellites of all Business Objects](Global_Model.png)
+
+| **Color** | **Object** |
+| --- | --- |
+| Violet | Hub |
+| Light teal | Link |
+| Pink | Satellite that keeps history, the default |
+| Lighter pink | Satellite updated in place, the exception. It is drawn next to its `_history` twin and joined to it by a dashed line |
+
+The page diagrams below use the stronger colors of the drawio files; here the backgrounds are lighter so the text stays readable at this size. Lines are straight and do not cross.
+
 ## What every page contains
 
 Eleven sections, always in this order.
