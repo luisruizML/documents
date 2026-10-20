@@ -17,7 +17,7 @@
 
 A Party is any actor that interacts with the State through the system, is subject to governance, or holds legal rights and obligations. It groups, without mixing them, the two kinds of actor that use the system to pay taxes or ask for a benefit: Natural Persons and Legal Entities.
 
-A Party is a family, not a place to store attributes. All identification and description live in the two specific objects, [Natural Person](Natural_Person.md) and Legal Entity.
+A Party is a family, not a place to store attributes. All identification and description live in the two specific objects, [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md).
 
 ## Why it is its own object
 
