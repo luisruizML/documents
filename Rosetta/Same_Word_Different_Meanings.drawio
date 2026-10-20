@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram name="Page-1" id="0">
+        <mxGraphModel dx="1243" dy="694" grid="1" gridSize="8" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="648" background="#FFFFFF" math="1" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="WITHOUT a common definition — the same word, four meanings (illustrative)" style="text;html=1;whiteSpace=wrap;labelBackgroundColor=none;fillColor=none;strokeColor=none;strokeWidth=0;fontColor=#3A0CA3;fontSize=16;fontFamily=Mulish;align=center;verticalAlign=top;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="102" y="87" width="780" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="&lt;b&gt;Registry&lt;br&gt;&lt;/b&gt;&quot;Taxpayer&quot; =&lt;br&gt;anyone holding a TIN" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#F72586;strokeColor=#F72586;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="40" y="128" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="&lt;b&gt;Filing&lt;/b&gt;&lt;br&gt;&quot;Taxpayer&quot; =&lt;br&gt;who must file a return" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#F72586;strokeColor=#F72586;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="291" y="128" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="&lt;b&gt;Payment&lt;/b&gt;&lt;br&gt;&quot;Taxpayer&quot; =&lt;br&gt;who owes a balance" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#F72586;strokeColor=#F72586;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="543" y="128" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="&lt;b&gt;Insight&lt;br&gt;&lt;/b&gt;&quot;Taxpayer&quot; =&lt;br&gt;who appears in a report" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#F72586;strokeColor=#F72586;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="794" y="128" width="150" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="7" value="Four systems, four answers — data moves, meaning changes" style="text;html=1;whiteSpace=wrap;labelBackgroundColor=none;fillColor=none;strokeColor=none;strokeWidth=0;fontColor=#F72586;fontSize=13;fontFamily=Mulish;align=center;verticalAlign=top;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="184" y="230" width="616" height="28" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="WITH a common definition — one meaning, every system" style="text;html=1;whiteSpace=wrap;labelBackgroundColor=none;fillColor=none;strokeColor=none;strokeWidth=0;fontColor=#3A0CA3;fontSize=16;fontFamily=Mulish;align=center;verticalAlign=top;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="160" y="273" width="664" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="Taxpayer&lt;br&gt;one definition · one English name · one key · one authoritative place" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#3A0CA3;strokeColor=#3A0CA3;strokeWidth=1.5;fontColor=#FFFFFF;fontSize=13;fontFamily=Arial;verticalAlign=middle;align=center;fontStyle=1" parent="1" vertex="1">
+                    <mxGeometry x="40" y="310" width="904" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="&lt;b&gt;Registry&lt;br&gt;&lt;/b&gt;&quot;Taxpayer&quot; = same meaning" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#000000;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="40" y="445" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="11" value="&lt;b&gt;Filing&lt;br&gt;&lt;/b&gt;&quot;Taxpayer&quot; = same meaning" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#000000;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="291" y="445" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="12" value="&lt;b&gt;Payment&lt;br&gt;&lt;/b&gt;&quot;Taxpayer&quot; = same meaning" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#000000;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="543" y="445" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="13" value="&lt;b&gt;Insight&lt;/b&gt;&lt;br&gt;&quot;Taxpayer&quot; = same meaning" style="rounded=1;arcSize=8;html=1;whiteSpace=wrap;fillColor=#45E3CD;strokeColor=#45E3CD;strokeWidth=1.5;fontColor=#000000;fontSize=12;fontFamily=Arial;verticalAlign=middle;align=center" parent="1" vertex="1">
+                    <mxGeometry x="794" y="445" width="150" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="14" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3A0CA3;strokeWidth=2;endArrow=open;endFill=0;endSize=12;exitX=0.1116;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=8" parent="1" source="9" target="10" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3A0CA3;strokeWidth=2;endArrow=open;endFill=0;endSize=12;exitX=0.3705;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=8" parent="1" source="9" target="11" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3A0CA3;strokeWidth=2;endArrow=open;endFill=0;endSize=12;exitX=0.6295;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=8" parent="1" source="9" target="12" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3A0CA3;strokeWidth=2;endArrow=open;endFill=0;endSize=12;exitX=0.8884;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;jumpStyle=arc;jumpSize=8" parent="1" source="9" target="13" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
