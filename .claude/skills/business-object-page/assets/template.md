@@ -84,9 +84,9 @@ No endpoints declared yet
 
 *Two pictures, generated from this page with `scripts/build_diagram.py`: the simple one and the full one with the tables.*
 
-![<<Object name>> cluster](<<Object_Name>>.png)
+![<<Object name>> cluster](Diagrams_<<Object_Name>>_Simplified.png)
 
-![<<Object name>> cluster, full](<<Object_Name>>_Full.png)
+![<<Object name>> cluster, full](Diagrams_<<Object_Name>>_Full.png)
 
 ## Open decisions
 

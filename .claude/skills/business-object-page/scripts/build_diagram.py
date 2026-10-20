@@ -3,8 +3,11 @@
 The diagrams are generated from the page itself, so the tables in the picture
 are the tables of the document. Output, next to the page:
 
-    <Page>.drawio / .png         simple version: name and grain of each object
-    <Page>_Full.drawio / .png    full version: each object also shows its Fields table
+    Diagrams_<Page>_Simplified.drawio / .png   simple version: name and grain of each object
+    Diagrams_<Page>_Full.drawio / .png         full version: each object also shows its Fields table
+
+Every object is as wide as its own content: the simple version from the name (250 minimum),
+the full version from the Fields table (see column_widths).
 
 Usage:
     python build_diagram.py <page.md> [--context lnk_a__b,lnk_c__d] [--no-export]
@@ -161,29 +164,102 @@ def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
 
 # ---------------------------------------------------------------- layout
 
-SIMPLE_W = 340
-COL_WIDTHS = [190, 44, 96, 44, 44, 60, 320]
-TABLE_W = sum(COL_WIDTHS)
-FULL_W = TABLE_W + 16
+SIMPLE_MIN_W = 250      # the narrowest simple object
+NAME_PAD = 10           # the name's width plus this is the object width when it is wider than the minimum
+HEAD_INSET = 24         # 8 pt left spacing + the collapse arrow, both inside the header
+DESC_W = 250            # Description column of the full table, word wrap on
+CELL_PAD = 14           # 4 pt spacing each side of a cell + 6 pt slack, draw.io renders text slightly wider than Pillow measures it
+FRAME_PAD = 16          # 8 pt margin each side of the table inside its object
 HEAD_H = 28
 GAP_X = 130
 
+# Pillow measures text with the fonts draw.io renders; without them the per-character widths below are used.
+FONT_FILES = {"mono": "cour.ttf", "mono_bold": "courbd.ttf", "sans": "arial.ttf", "sans_bold": "arialbd.ttf", "sans_italic": "ariali.ttf"}
+FALLBACK_EM = {"mono": 0.6, "mono_bold": 0.6, "sans": 0.52, "sans_bold": 0.56, "sans_italic": 0.52}
+_FONT_DIRS = [Path(os.environ.get("WINDIR", r"C:\Windows")) / "Fonts", Path("/usr/share/fonts/truetype/msttcorefonts")]
+_fonts: dict[tuple[str, int], object] = {}
 
-def _lines(text: str, width: int, char_px: float = 5.6) -> int:
-    per_line = max(10, int((width - 16) / char_px))
-    return max(1, math.ceil(len(text) / per_line))
+
+def _font(kind: str, size: int):
+    key = (kind, size)
+    if key not in _fonts:
+        font = None
+        try:
+            from PIL import ImageFont
+            for d in _FONT_DIRS:
+                if (d / FONT_FILES[kind]).is_file():
+                    font = ImageFont.truetype(str(d / FONT_FILES[kind]), size)
+                    break
+        except ImportError:
+            pass
+        _fonts[key] = font
+    return _fonts[key]
+
+
+def measure(text: str, kind: str, size: int) -> float:
+    """Width in points of the text on one line."""
+    font = _font(kind, size)
+    return font.getlength(text) if font else len(text) * size * FALLBACK_EM[kind]
+
+
+def wrap(text: str, kind: str, size: int, width: float) -> list[str]:
+    """Greedy word wrap; a word wider than the width stays whole on its own line."""
+    lines: list[str] = []
+    line = ""
+    for word in text.split():
+        trial = f"{line} {word}".strip()
+        if line and measure(trial, kind, size) > width:
+            lines.append(line)
+            line = word
+        else:
+            line = trial
+    return lines + [line] if line or not lines else lines
+
+
+SMALL = ("Role", "Null", "PII")
+
+
+def _cell_font(name: str, header: bool) -> tuple[str, int]:
+    if header:
+        return "sans_bold", 10
+    if name in ("Column", "Type"):
+        return "mono", 10
+    return "sans", 12 if name == "Role" else 10
+
+
+def column_widths(rows: list[dict[str, str]]) -> list[int]:
+    """Widths of the seven Fields columns: Description is fixed, Role, Null and PII share the smallest width that
+    fits the widest of them, and Column, Type and Default fit their longest text."""
+    def fit(name: str) -> int:
+        texts = [(name, True)] + [(r.get(name, ""), False) for r in rows]
+        return math.ceil(max(measure(t, *_cell_font(name, h)) for t, h in texts)) + CELL_PAD
+
+    small = max(fit(n) for n in SMALL)
+    return [DESC_W if n == "Description" else small if n in SMALL else fit(n) for n in FIELD_COLUMNS]
 
 
 def _row_h(row: dict[str, str]) -> int:
-    return 20 + 13 * (_lines(row.get("Description", ""), COL_WIDTHS[-1], 5.2) - 1)
+    return 20 + 13 * (len(wrap(row.get("Description", ""), "sans", 10, DESC_W - CELL_PAD)) - 1)
+
+
+def _note_h(n: Node, w: float) -> int:
+    return 14 * len(wrap(n.note, "sans_italic", 11, w - 16)) + 6
+
+
+def _simple_w(n: Node) -> int:
+    return max(SIMPLE_MIN_W, math.ceil(measure(n.name, "mono_bold", 12) + HEAD_INSET + NAME_PAD))
+
+
+def _has_table(n: Node, full: bool) -> bool:
+    return full and not n.external and bool(n.rows)
 
 
 def _size(n: Node, full: bool, degree: int = 0) -> tuple[int, int]:
-    w = FULL_W if (full and not n.external) else SIMPLE_W
-    w = max(w, int(len(n.name) * 7.8) + 36)  # a long name must fit its header
-    note_h = 14 * _lines(n.note, w) + 6
-    h = HEAD_H + note_h + 8
-    if full and not n.external and n.rows:
+    w = _simple_w(n)
+    if _has_table(n, full):
+        w = max(w, sum(column_widths(n.rows)) + FRAME_PAD)
+    h = HEAD_H + _note_h(n, w) + 8
+    if _has_table(n, full):
         h += 4 + 20 + sum(_row_h(r) for r in n.rows) + 4
     return w, max(h, 20 * (degree + 1))  # room to spread the arrows that meet here
 
@@ -225,13 +301,16 @@ def place(model: Model, full: bool) -> dict[str, tuple[float, float, float, floa
     widths = [max(size(n)[0] for n in s) if s else 0 for s in stacks]
     heights = [sum(size(n)[1] for n in s) + vgap * (len(s) - 1) if s else 0 for s in stacks]
     total = max(heights)
+    hub_col = next((c for c, s in enumerate(stacks) if any(n.kind == "Hub" and not n.external for n in s)), 0)
     boxes: dict[str, tuple[float, float, float, float]] = {}
     x = 30.0
     for c, stack in enumerate(stacks):
         y = 80 + (total - heights[c]) / 2
         for n in stack:
             w, h = size(n)
-            boxes[n.name] = (x, y, widths[c], h)  # one width per column
+            # every object keeps its own width; the column lines its boxes up toward the Hubs
+            dx = widths[c] - w if c < hub_col else (widths[c] - w) / 2 if c == hub_col else 0
+            boxes[n.name] = (x + dx, y, w, h)
             y += h + vgap
         x += widths[c] + GAP_X
     return boxes
@@ -262,6 +341,8 @@ def _vertex(ids: _Ids, parent: str, value: str, style: str, x: float, y: float, 
 
 
 def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: float, y: float) -> list[str]:
+    col_w = column_widths(rows)
+    table_w = sum(col_w)
     line = derive_line(pal["fill"])
     head_fill = pal["fill"] if pal is PALETTE["Satellite (in place)"] else line  # the lighter table stays light
     head_text = _contrast_text(head_fill)
@@ -270,7 +351,7 @@ def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: flo
     tid, xml = _vertex(
         ids, parent, "",
         f"shape=table;startSize=0;container=1;collapsible=0;childLayout=tableLayout;fillColor=none;strokeColor={line};",
-        x, y, TABLE_W, sum(heights),
+        x, y, table_w, sum(heights),
     )
     out.append(xml)
     cy = 0.0
@@ -280,12 +361,12 @@ def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: flo
             ids, tid, "",
             "shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;"
             "collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;",
-            0, cy, TABLE_W, height,
+            0, cy, table_w, height,
         )
         out.append(xml)
         cx = 0.0
         for c_i, name in enumerate(FIELD_COLUMNS):
-            width = COL_WIDTHS[c_i]
+            width = col_w[c_i]
             if h is None:
                 value, fill, color, bold = name, head_fill, head_text, "fontStyle=1;"
                 font = "Arial"
@@ -294,7 +375,7 @@ def _table(ids: _Ids, parent: str, rows: list[dict[str, str]], pal: dict, x: flo
                 font = "Courier New" if name in ("Column", "Type") else "Arial"
             align = "left" if name in ("Column", "Type", "Description") else "center"
             style = (
-                "shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;overflow=hidden;"
+                f"shape=partialRectangle;html=1;whiteSpace={'wrap' if name == 'Description' else 'nowrap'};connectable=0;overflow=hidden;"
                 f"fillColor={fill};strokeColor={line};top=1;left=1;bottom=1;right=1;"
                 f"fontFamily={font};fontSize={12 if name == 'Role' and h is not None else 10};fontColor={color};{bold}align={align};spacingLeft=4;spacingRight=4;"
             )
@@ -338,7 +419,7 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
         )
         node_id[n.name] = cid
         cells.append(xml)
-        note_h = 14 * _lines(n.note, int(w)) + 6
+        note_h = _note_h(n, w)
         _, xml = _vertex(
             ids, cid, n.note,
             f"text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontFamily=Arial;fontSize=11;fontStyle=2;"
@@ -410,12 +491,15 @@ def _edges(model: Model, boxes: dict, node_id: dict[str, str], ids: _Ids) -> lis
         left, right = (e.child, e.parent) if col[e.child] < col[e.parent] else (e.parent, e.child)
         gaps.setdefault(lo, []).append((e, attach[(id(e), left, "right")], attach[(id(e), right, "left")]))
     mid_x: dict[int, float] = {}
+    col_right: dict[int, float] = {}
+    col_left: dict[int, float] = {}
+    for name, (bx, _, bw, _) in boxes.items():  # one middle per gap between columns, so the bands never cross
+        col_right[col[name]] = max(col_right.get(col[name], bx + bw), bx + bw)
+        col_left[col[name]] = min(col_left.get(col[name], bx), bx)
     for e_list in gaps.values():
         for e, _, _ in e_list:
             left, right = (e.child, e.parent) if col[e.child] < col[e.parent] else (e.parent, e.child)
-            lx, _, lw, _ = boxes[left]
-            rx, _, _, _ = boxes[right]
-            mid_x[id(e)] = (lx + lw + rx) / 2
+            mid_x[id(e)] = (col_right[col[left]] + col_left[col[right]]) / 2
     wx: dict[int, float] = {}
     step = 12.0
     for e_list in gaps.values():
@@ -497,9 +581,9 @@ def main(argv: list[str] | None = None) -> int:
     page = Path(args.page)
     context = [c.strip() for c in args.context.split(",") if c.strip()]
     model = load_model(page.read_text(encoding="utf-8"), context)
-    for full, suffix, scale in ((False, "", 3), (True, "_Full", 2)):
+    for full, kind, scale in ((False, "Simplified", 3), (True, "Full", 2)):
         title = f"SILVER: {model.title} cluster (Data Vault 2.0)" + (", full" if full else "")
-        drawio = page.with_name(page.stem + suffix + ".drawio")
+        drawio = page.with_name(f"Diagrams_{page.stem}_{kind}.drawio")
         xml = to_drawio(model, full, title)
         drawio.write_text(xml, encoding="utf-8", newline="\n")
         print("wrote", drawio)

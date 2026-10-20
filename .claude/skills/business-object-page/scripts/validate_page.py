@@ -426,12 +426,18 @@ def check_diagram(page: Page, base_dir: Path | None) -> list[str]:
     body = chr(10).join(page.sections.get("Diagram", []))
     images = IMAGE_RE.findall(body)
     if not images:
-        return ["diagram: the Diagram section needs an image link like ![text](Name.png)"]
+        return ["diagram: the Diagram section needs an image link like ![text](Diagrams_Name_Simplified.png)"]
     full = [i for i in images if i.endswith("_Full.png")]
-    simple = [i for i in images if not i.endswith("_Full.png")]
+    simple = [i for i in images if i.endswith("_Simplified.png")]
     errs: list[str] = []
     if not simple or not full:
-        errs.append("diagram: the Diagram section needs the simple image (Name.png) and the full image (Name_Full.png)")
+        errs.append(
+            "diagram: the Diagram section needs the simplified image (Diagrams_Name_Simplified.png) "
+            "and the full image (Diagrams_Name_Full.png)"
+        )
+    for image in images:
+        if not image.startswith("Diagrams_"):
+            errs.append(f"diagram: image '{image}' must be named Diagrams_<Object>_<Simplified|Full>.png")
     if base_dir is not None:
         for image in images:
             if not (base_dir / image).is_file():

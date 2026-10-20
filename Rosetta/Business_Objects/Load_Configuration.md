@@ -102,9 +102,9 @@ Illustrative data. Every group is loaded with history by default. One jurisdicti
 
 ## Diagram
 
-![Load Configuration cluster](Load_Configuration.png)
+![Load Configuration cluster](Diagrams_Load_Configuration_Simplified.png)
 
-![Load Configuration cluster, full](Load_Configuration_Full.png)
+![Load Configuration cluster, full](Diagrams_Load_Configuration_Full.png)
 
 ## Open decisions
 

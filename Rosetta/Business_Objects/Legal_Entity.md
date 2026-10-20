@@ -223,9 +223,9 @@ Illustrative data. The first example is a formal company; the second is an infor
 
 ## Diagram
 
-![Legal Entity cluster](Legal_Entity.png)
+![Legal Entity cluster](Diagrams_Legal_Entity_Simplified.png)
 
-![Legal Entity cluster, full](Legal_Entity_Full.png)
+![Legal Entity cluster, full](Diagrams_Legal_Entity_Full.png)
 
 ## Open decisions
 

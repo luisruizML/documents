@@ -181,5 +181,61 @@ class DrawioTests(unittest.TestCase):
                     self.assertTrue(apart, f"{a} overlaps {b}")
 
 
+def widths(xml):
+    return {c.get("value"): float(c.find("mxGeometry").get("width")) for c in styled(xml, "swimlane")}
+
+
+class WidthTests(unittest.TestCase):
+    def setUp(self):
+        self.model = bd.load_model(FIXTURE.read_text(encoding="utf-8"))
+        self.simple = bd.to_drawio(self.model, full=False, title="t")
+        self.full = bd.to_drawio(self.model, full=True, title="t")
+
+    def test_simple_object_is_at_least_250_wide(self):
+        self.assertTrue(all(w >= 250 for w in widths(self.simple).values()))
+        self.assertEqual(widths(self.simple)["hub_sample_order"], 250)
+
+    def test_simple_object_with_a_long_name_is_name_width_plus_10(self):
+        node = bd.Node("sat_" + "very_long_name_" * 4 + "x", "Satellite", "one row per parent key")
+        expected = bd.measure(node.name, "mono_bold", 12) + bd.HEAD_INSET + bd.NAME_PAD
+        self.assertGreater(expected, 250)
+        self.assertEqual(bd._simple_w(node), int(expected) + 1 if expected % 1 else int(expected))
+
+    def test_notes_wrap_inside_the_object(self):
+        w = bd._simple_w(self.model.node("hub_sample_order"))
+        long = bd.Node("hub_x", "Hub", "one row per business key " * 6)
+        self.assertGreater(len(bd.wrap(long.note, "sans_italic", 11, w - 16)), 1)
+
+    def test_full_object_is_table_width_plus_margins(self):
+        node = self.model.node("sat_sample_order__pricing")
+        table = sum(bd.column_widths(node.rows))
+        self.assertEqual(widths(self.full)[node.name], max(table + bd.FRAME_PAD, bd._simple_w(node)))
+
+    def test_description_is_250_and_role_null_pii_share_one_width(self):
+        cols = dict(zip(bd.FIELD_COLUMNS, bd.column_widths(self.model.node("hub_sample_order").rows)))
+        self.assertEqual(cols["Description"], 250)
+        self.assertEqual(len({cols["Role"], cols["Null"], cols["PII"]}), 1)
+
+    def test_column_type_default_fit_their_longest_text(self):
+        rows = [{"Column": "a", "Type": "string", "Default": "x"}, {"Column": "a_much_longer_column_name", "Type": "t", "Default": "y"}]
+        cols = dict(zip(bd.FIELD_COLUMNS, bd.column_widths(rows)))
+        self.assertGreater(cols["Column"], cols["Type"])
+        self.assertEqual(cols["Column"], int(bd.measure("a_much_longer_column_name", "mono", 10) + 0.999) + bd.CELL_PAD)
+
+    def test_objects_of_a_diagram_do_not_all_share_one_width(self):
+        self.assertGreater(len(set(widths(self.full).values())), 1)
+
+    def test_outputs_are_named_diagrams_object_simplified_or_full(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            page = Path(d) / "Sample_Order.md"
+            page.write_text(FIXTURE.read_text(encoding="utf-8"), encoding="utf-8")
+            self.assertEqual(bd.main([str(page), "--no-export"]), 0)
+            self.assertEqual(
+                sorted(p.name for p in Path(d).glob("*.drawio")),
+                ["Diagrams_Sample_Order_Full.drawio", "Diagrams_Sample_Order_Simplified.drawio"],
+            )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -174,18 +174,18 @@ class RemainingSectionTests(unittest.TestCase):
         self.assertEqual([e for e in ok if e.startswith("jurisdictions:")], [])
 
     def test_diagram_needs_image_link(self):
-        self.assertTrue(has(errors("![Sample Order cluster](Sample_Order.png)\n\n![Sample Order cluster, full](Sample_Order_Full.png)", "no picture"), "diagram", "image"))
+        self.assertTrue(has(errors("![Sample Order cluster](Diagrams_Sample_Order_Simplified.png)\n\n![Sample Order cluster, full](Diagrams_Sample_Order_Full.png)", "no picture"), "diagram", "image"))
 
     def test_diagram_needs_simple_and_full_versions(self):
-        errs = errors("\n\n![Sample Order cluster, full](Sample_Order_Full.png)", "")
-        self.assertTrue(has(errs, "diagram", "_Full.png"))
+        errs = errors("\n\n![Sample Order cluster, full](Diagrams_Sample_Order_Full.png)", "")
+        self.assertTrue(has(errs, "diagram", "Diagrams_Name_Full.png"))
 
     def test_diagram_file_must_exist_when_base_dir_given(self):
         import tempfile
         with tempfile.TemporaryDirectory() as d:
-            self.assertTrue(has(vp.validate(page(), base_dir=Path(d)), "diagram", "Sample_Order.png"))
-            (Path(d) / "Sample_Order.png").write_bytes(b"x")
-            (Path(d) / "Sample_Order_Full.png").write_bytes(b"x")
+            self.assertTrue(has(vp.validate(page(), base_dir=Path(d)), "diagram", "Diagrams_Sample_Order_Simplified.png"))
+            (Path(d) / "Diagrams_Sample_Order_Simplified.png").write_bytes(b"x")
+            (Path(d) / "Diagrams_Sample_Order_Full.png").write_bytes(b"x")
             self.assertEqual([e for e in vp.validate(page(), base_dir=Path(d)) if e.startswith("diagram:")], [])
 
     def test_decisions_table_columns(self):

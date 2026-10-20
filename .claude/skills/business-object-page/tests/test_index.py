@@ -36,8 +36,8 @@ class IndexTests(unittest.TestCase):
             self.assertIn(color, self.text)
 
     def test_both_diagrams_of_the_reference_page_are_shown(self):
-        self.assertIn("(Natural_Person.png)", self.text)
-        self.assertIn("(Natural_Person_Full.png)", self.text)
+        self.assertIn("(Diagrams_Natural_Person_Simplified.png)", self.text)
+        self.assertIn("(Diagrams_Natural_Person_Full.png)", self.text)
 
     def test_index_shows_the_global_lucid_model(self):
         self.assertIn("## The full picture", self.text)
