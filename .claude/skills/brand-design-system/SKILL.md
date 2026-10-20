@@ -78,6 +78,7 @@ Diagrams of Data Vault objects color the object by type, **instead of** the Meda
 - **Crossings:** drawio uses line jumps (`jumpStyle=arc`); Lucid uses line hops (`lineJump=arc`). Mermaid: order nodes and use subgraphs to minimize crossings.
 - **Line colors:** `#A6A8AB` regular flows, `#3A0CA3` major control paths, `#F72586` critical dependencies.
 - **Connector labels (annotations on arrows):** always `Courier New`, size 11, text `#000000`, and an **explicit white label background** (`#FFFFFF`). Never rely on the tool's default background: draw.io takes it from the editor theme, so in dark mode the label shows black text on a black background even though the PNG export (always white) looks right.
+- **Connector label position:** a label sits on the **first horizontal segment** of its connector, just after the object it leaves (10 pt of free line before it), and that segment is at least label width + 20 pt long, so the label ends before the first vertical. Never put a label on a vertical segment or on a bend: where connectors bundle toward a Hub, the other lines would cross it. When the gap between two objects is too small for the label, move the objects apart, not the label. The vertical bands start beyond the longest label of the gap and are nested (the connector farthest from the target outermost), so no line crosses a label. In drawio the label cell's `x` (relative, -1 to 1 along the path) is computed from the length of the first segment, not left at a fixed fraction. `business-object-page/scripts/build_diagram.py` does this and widens each gap to fit its labels; `scripts/postprocess_drawio.py` warns about any label that is not on the first horizontal segment.
 
 ## 5. Implementation Templates
 
@@ -123,6 +124,7 @@ Set `fontFamily`, fill, and line colors per shape from the tables above; keep ro
 - Dark text on `#3A0CA3` / `#F72586`, or white text on `#45E3CD`.
 - Using a font outside the three families.
 - Straight diagonal connectors or sharp-cornered boxes.
+- An arrow label on a vertical segment or a bend, or a gap between objects too narrow for the label on the first horizontal segment.
 - Arrow labels in Arial or any theme font, or without an explicit white background (unreadable in the draw.io editor's dark mode).
 - Inventing new hex values for categories instead of tinting the brand colors toward `#FFFFFF` (Medallion layers are the one exception, section 3b).
 - Coloring Medallion layers with indigo/teal/magenta, or swapping the Bronze/Silver/Gold colors between layers.

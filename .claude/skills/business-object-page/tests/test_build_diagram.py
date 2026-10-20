@@ -237,5 +237,76 @@ class WidthTests(unittest.TestCase):
             )
 
 
+class LabelPlacementTests(unittest.TestCase):
+    """A connector label sits on the first horizontal segment, with free line on both sides, before any vertical."""
+
+    def setUp(self):
+        text = (HERE.parents[3] / "Rosetta" / "Business_Objects" / "Natural_Person.md").read_text(encoding="utf-8")
+        self.model = bd.load_model(text)
+        self.xml = bd.to_drawio(self.model, full=False, title="t")
+        root = ET.fromstring(self.xml)
+        self.box = {}
+        ids = {}
+        for c in root.iter("mxCell"):
+            g = c.find("mxGeometry")
+            if "swimlane" in (c.get("style") or "").split(";"):
+                self.box[c.get("value")] = (float(g.get("x")), float(g.get("y")), float(g.get("width")), float(g.get("height")))
+                ids[c.get("id")] = c.get("value")
+        self.edges = []
+        for c in root.iter("mxCell"):
+            if c.get("edge") == "1":
+                g = c.find("mxGeometry")
+                pts = [(float(p.get("x")), float(p.get("y"))) for p in g.iter("mxPoint")]
+                self.edges.append((c, ids[c.get("source")], ids[c.get("target")], pts, float(g.get("x"))))
+
+    def label_span(self, child, parent, pts, label_x, label):
+        cx, _, cw, _ = self.box[child]
+        px, _, pw, _ = self.box[parent]
+        child_left = cx < px
+        x_out = cx + cw if child_left else cx
+        x_in = px if child_left else px + pw
+        x_bend = pts[0][0] if pts else x_in
+        half = bd.label_w(label) / 2
+        centre = x_out + (1 if child_left else -1) * (label_x + 1) / 2 * (abs(x_bend - x_out) + (abs(pts[0][1] - pts[1][1]) + abs(x_in - x_bend) if pts else 0)) if pts else None
+        return x_out, x_bend, half, centre, child_left
+
+    def test_every_label_fits_on_the_first_horizontal_segment(self):
+        checked = 0
+        for cell, child, parent, pts, label_x in self.edges:
+            label = cell.get("value")
+            if not label or not pts:
+                continue
+            x_out, x_bend, half, centre, child_left = self.label_span(child, parent, pts, label_x, label)
+            lo, hi = sorted((x_out, x_bend))
+            self.assertGreaterEqual(centre - half, lo + bd.LABEL_PAD - 1, label)
+            self.assertLessEqual(centre + half, hi - bd.LABEL_PAD + 1, label)
+            checked += 1
+        self.assertGreater(checked, 5)
+
+    def test_no_vertical_band_crosses_a_label(self):
+        spans = []
+        for cell, child, parent, pts, label_x in self.edges:
+            label = cell.get("value")
+            if label and pts:
+                _, _, half, centre, _ = self.label_span(child, parent, pts, label_x, label)
+                spans.append((cell.get("value"), centre - half, centre + half, pts[0][1]))
+        for other, _, _, pts, _ in self.edges:
+            if not pts:
+                continue
+            x = pts[0][0]
+            y0, y1 = sorted((pts[0][1], pts[1][1]))
+            for name, a, b, y in spans:
+                if y0 <= y <= y1:
+                    self.assertFalse(a < x < b, f"a vertical at x={x} crosses the label {name}")
+
+    def test_the_gap_between_columns_grows_with_the_longest_label(self):
+        short = bd.gap_widths(self.model, bd._columns(self.model))
+        for e in self.model.edges:
+            if e.label:
+                e.label = e.label + "_a_much_longer_descriptor_than_any_other"
+        long = bd.gap_widths(self.model, bd._columns(self.model))
+        self.assertGreater(max(long.values()), max(short.values()))
+
+
 if __name__ == "__main__":
     unittest.main()

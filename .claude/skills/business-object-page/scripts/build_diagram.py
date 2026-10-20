@@ -171,7 +171,9 @@ DESC_W = 250            # Description column of the full table, word wrap on
 CELL_PAD = 14           # 4 pt spacing each side of a cell + 6 pt slack, draw.io renders text slightly wider than Pillow measures it
 FRAME_PAD = 16          # 8 pt margin each side of the table inside its object
 HEAD_H = 28
-GAP_X = 130
+GAP_X = 130             # the narrowest gap between two columns
+LABEL_PAD = 10          # free line on each side of a connector label
+EDGE_STEP = 12.0        # distance between two neighbouring vertical bands
 
 # Pillow measures text with the fonts draw.io renders; without them the per-character widths below are used.
 FONT_FILES = {"mono": "cour.ttf", "mono_bold": "courbd.ttf", "sans": "arial.ttf", "sans_bold": "arialbd.ttf", "sans_italic": "ariali.ttf"}
@@ -264,6 +266,24 @@ def _size(n: Node, full: bool, degree: int = 0) -> tuple[int, int]:
     return w, max(h, 20 * (degree + 1))  # room to spread the arrows that meet here
 
 
+def label_w(label: str) -> float:
+    """Width a connector label needs on its line: Courier New 11 plus slack for the white background."""
+    return measure(label, "mono", 11) + 6 if label else 0.0
+
+
+def gap_widths(model: "Model", col: dict[str, int]) -> dict[int, int]:
+    """Width of the gap after each column: the label of every connector must fit on its first horizontal
+    segment, with the vertical bands of the group beyond it."""
+    need: dict[int, float] = {}
+    groups: dict[tuple[int, bool], list[Edge]] = {}
+    for e in model.edges:
+        groups.setdefault((min(col[e.child], col[e.parent]), col[e.child] < col[e.parent]), []).append(e)
+    for (lo, _), es in groups.items():
+        z = max(label_w(e.label) for e in es) + 2 * LABEL_PAD
+        need[lo] = need.get(lo, 0.0) + z + len(es) * EDGE_STEP + 10
+    return {lo: max(GAP_X, math.ceil(n + 20)) for lo, n in need.items()}
+
+
 def _columns(model: Model) -> dict[str, int]:
     col: dict[str, int] = {}
     for n in model.nodes:
@@ -301,6 +321,7 @@ def place(model: Model, full: bool) -> dict[str, tuple[float, float, float, floa
     widths = [max(size(n)[0] for n in s) if s else 0 for s in stacks]
     heights = [sum(size(n)[1] for n in s) + vgap * (len(s) - 1) if s else 0 for s in stacks]
     total = max(heights)
+    gaps = gap_widths(model, col)
     hub_col = next((c for c, s in enumerate(stacks) if any(n.kind == "Hub" and not n.external for n in s)), 0)
     boxes: dict[str, tuple[float, float, float, float]] = {}
     x = 30.0
@@ -312,7 +333,7 @@ def place(model: Model, full: bool) -> dict[str, tuple[float, float, float, floa
             dx = widths[c] - w if c < hub_col else (widths[c] - w) / 2 if c == hub_col else 0
             boxes[n.name] = (x + dx, y, w, h)
             y += h + vgap
-        x += widths[c] + GAP_X
+        x += widths[c] + gaps.get(c, GAP_X)
     return boxes
 
 
@@ -484,31 +505,29 @@ def _edges(model: Model, boxes: dict, node_id: dict[str, str], ids: _Ids) -> lis
         for i, e in enumerate(sorted(edges, key=far)):
             attach[(id(e), name, side)] = y + (i + 1) * h / (len(edges) + 1)
 
-    # waypoints per gap: edges that go down and edges that go up use separate bands, ordered so they do not cross
-    gaps: dict[int, list[tuple[Edge, float, float]]] = {}
+    # Each group is the connectors that leave boxes on the same side of one gap. The label sits on the first
+    # horizontal segment, just after the box; the vertical bands start beyond the longest label and are nested
+    # (outermost = the connector farthest from the Hub), so no line crosses a label.
+    groups: dict[tuple[int, bool], list[Edge]] = {}
     for e in model.edges:
-        lo = min(col[e.child], col[e.parent])
-        left, right = (e.child, e.parent) if col[e.child] < col[e.parent] else (e.parent, e.child)
-        gaps.setdefault(lo, []).append((e, attach[(id(e), left, "right")], attach[(id(e), right, "left")]))
-    mid_x: dict[int, float] = {}
-    col_right: dict[int, float] = {}
-    col_left: dict[int, float] = {}
-    for name, (bx, _, bw, _) in boxes.items():  # one middle per gap between columns, so the bands never cross
-        col_right[col[name]] = max(col_right.get(col[name], bx + bw), bx + bw)
-        col_left[col[name]] = min(col_left.get(col[name], bx), bx)
-    for e_list in gaps.values():
-        for e, _, _ in e_list:
-            left, right = (e.child, e.parent) if col[e.child] < col[e.parent] else (e.parent, e.child)
-            mid_x[id(e)] = (col_right[col[left]] + col_left[col[right]]) / 2
+        groups.setdefault((min(col[e.child], col[e.parent]), col[e.child] < col[e.parent]), []).append(e)
     wx: dict[int, float] = {}
-    step = 12.0
-    for e_list in gaps.values():
-        down = sorted([t for t in e_list if t[1] < t[2] - 0.5], key=lambda t: t[1])
-        up = sorted([t for t in e_list if t[1] > t[2] + 0.5], key=lambda t: t[1])
-        for j, (e, _, _) in enumerate(down):
-            wx[id(e)] = mid_x[id(e)] - GAP_X / 6 + ((len(down) - 1) / 2 - j) * step
-        for j, (e, _, _) in enumerate(up):
-            wx[id(e)] = mid_x[id(e)] + GAP_X / 6 + (j - (len(up) - 1) / 2) * step
+    for (lo, child_left), es in groups.items():
+        sign = 1 if child_left else -1
+        side = "right" if child_left else "left"
+        far_side = "left" if child_left else "right"
+        edge_x = {id(e): boxes[e.child][0] + (boxes[e.child][2] if child_left else 0) for e in es}
+        ref = max(edge_x.values()) if child_left else min(edge_x.values())
+        z = max(label_w(e.label) for e in es) + 2 * LABEL_PAD
+        y_near = {id(e): attach[(id(e), e.child, side)] for e in es}
+        y_far = {id(e): attach[(id(e), e.parent, far_side)] for e in es}
+        down = sorted([e for e in es if y_near[id(e)] < y_far[id(e)] - 0.5], key=lambda e: y_near[id(e)])
+        up = sorted([e for e in es if y_near[id(e)] > y_far[id(e)] + 0.5], key=lambda e: -y_near[id(e)])
+        for j, e in enumerate(down):
+            wx[id(e)] = ref + sign * (z + (len(down) - 1 - j) * EDGE_STEP)
+        base = z + (len(down) * EDGE_STEP + 10 if down else 0)
+        for j, e in enumerate(up):
+            wx[id(e)] = ref + sign * (base + (len(up) - 1 - j) * EDGE_STEP)
 
     out: list[str] = []
     for e in model.edges:
@@ -525,12 +544,21 @@ def _edges(model: Model, boxes: dict, node_id: dict[str, str], ids: _Ids) -> lis
         else:
             exit_x, exit_y, entry_x, entry_y = 0, frac(right, y_right), 1, frac(left, y_left)
         points = ""
-        if abs(y_left - y_right) > 0.5:
+        bend = abs(y_left - y_right) > 0.5
+        if bend:
             x = wx[id(e)]
             pts = [(x, y_left), (x, y_right)]
             if e.child != left:
                 pts.reverse()
             points = '<Array as="points">' + "".join(f'<mxPoint x="{px:g}" y="{py:g}"/>' for px, py in pts) + "</Array>"
+        # the label centre is LABEL_PAD + half its width along the path from the child, on the first segment
+        cx, cw = boxes[e.child][0], boxes[e.child][2]
+        px, pw = boxes[e.parent][0], boxes[e.parent][2]
+        x_out = cx + cw if e.child == left else cx
+        x_in = px if e.child == left else px + pw
+        length = (abs(wx[id(e)] - x_out) + abs(y_left - y_right) + abs(x_in - wx[id(e)])) if bend else abs(x_in - x_out)
+        along = LABEL_PAD + label_w(e.label) / 2
+        label_x = round(max(-1.0, min(1.0, 2 * along / length - 1)), 4) if length else 0
         style = (
             "edgeStyle=orthogonalEdgeStyle;rounded=1;jumpStyle=arc;jumpSize=8;html=1;"
             f"strokeColor={EDGE_COLOR};strokeWidth=2;endArrow=block;endFill=1;"
@@ -541,7 +569,7 @@ def _edges(model: Model, boxes: dict, node_id: dict[str, str], ids: _Ids) -> lis
         out.append(
             f'<mxCell id="{eid}" value="{_q(e.label)}" style="{style}" edge="1" parent="1" '
             f'source="{node_id[e.child]}" target="{node_id[e.parent]}">'
-            f'<mxGeometry x="-0.4" relative="1" as="geometry">{points}</mxGeometry></mxCell>'
+            f'<mxGeometry x="{label_x:g}" relative="1" as="geometry">{points}</mxGeometry></mxCell>'
         )
     return out
 
