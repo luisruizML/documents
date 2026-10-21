@@ -30,6 +30,11 @@ class VaultWidthTests(unittest.TestCase):
     def test_business_key_and_definition_have_the_same_width(self):
         self.assertEqual(self.w[4], self.w[2])
 
+    def test_definition_is_the_widest_of_the_columns_that_wrap(self):
+        type_w, name_w, definition, grain, business = self.w
+        self.assertGreaterEqual(definition, grain)
+        self.assertGreaterEqual(definition, business)
+
     def test_grain_is_the_wildcard(self):
         type_w, name_w, definition, grain, business = self.w
         self.assertEqual(grain, tl.PAGE_WIDTH - definition - business - type_w - name_w)
@@ -102,6 +107,7 @@ class TableIntegrityTests(unittest.TestCase):
             self.assertEqual(sum(widths["vault"]), tl.PAGE_WIDTH, name)
             self.assertEqual(sum(widths["fields"]), tl.PAGE_WIDTH, name)
             self.assertEqual(widths["vault"][2], widths["vault"][4], name)
+            self.assertGreaterEqual(widths["vault"][2], widths["vault"][3], name)
             self.assertGreater(widths["fields"][6], max(widths["fields"][:6]), name)
 
 

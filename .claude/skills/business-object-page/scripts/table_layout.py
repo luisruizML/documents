@@ -75,7 +75,7 @@ def header_widths(body: list[list[str]]) -> list[int]:
 def vault_widths(body: list[list[str]], total: int = PAGE_WIDTH) -> list[int]:
     type_w = fit("Type", [r[0] for r in body])
     name_w = fit("Name", [r[1] for r in body])
-    definition = int((total - type_w - name_w) / 3)  # Definition = Business key = Grain, the widest each can be
+    definition = math.ceil((total - type_w - name_w) / 3)  # Definition = Business key, as wide as Grain at most; rounding goes to Definition
     business = definition
     grain = total - type_w - name_w - definition - business
     return [type_w, name_w, definition, grain, business]
