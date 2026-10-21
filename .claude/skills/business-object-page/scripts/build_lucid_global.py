@@ -136,14 +136,14 @@ def box_html(box: Box) -> str:
 def load_all(pages_dir: Path | None = None) -> tuple[dict[str, bd.Node], list[bd.Edge]]:
     pages_dir = pages_dir or REPO / "Rosetta" / "Business_Objects"
     nodes: dict[str, bd.Node] = {}
-    edges: dict[tuple[str, str], bd.Edge] = {}
+    edges: dict[tuple[str, str, str], bd.Edge] = {}
     for page in PAGES:
         model = bd.load_model((pages_dir / f"{page}.md").read_text(encoding="utf-8"))
         for n in model.nodes:
             if n.name not in nodes or (nodes[n.name].external and not n.external):
                 nodes[n.name] = n
         for e in model.edges:
-            edges[(e.child, e.parent)] = e
+            edges[(e.child, e.parent, e.label)] = e
     return nodes, list(edges.values())
 
 
@@ -230,21 +230,32 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     lc_sats = sats_of("hub_load_configuration", nodes, edges)
     chain = ["hub_natural_person", "lnk_natural_person__party", "hub_party", "lnk_legal_entity__party", "hub_legal_entity"]
     link_np_name = "lnk_legal_entity__natural_person"
+    rel_link, rel_sat = "lnk_natural_person__natural_person_relation", "sat_natural_person__natural_person_relation__relationship"
+    own_link, own_sat = "lnk_legal_entity__party_owner", "sat_legal_entity__party_owner__ownership"
 
     def width(names):
         return max(L.boxes[n].w for n in names)
 
     wL = width(np_singles + rep + [link_np_name])
-    wM = width(chain)
-    wR = width(np_pairs + le_sats)
+    wM = width(chain + [rel_link])
+    wR = width(np_pairs + le_sats + [own_link, rel_sat])
+    wS = width([own_sat])
     xL = BAND_PAD
     xM = xL + wL + GAP_X
     xR = xM + wM + GAP_X
-    reg_w = BAND_PAD * 2 + wL + wM + wR + 2 * GAP_X
+    xS = xR + wR + GAP_X
+    reg_w = BAND_PAD * 2 + wL + wM + wR + wS + 3 * GAP_X
 
     # ---- Registries band
     by = 60.0
-    top = by + 110
+    # first row: the relationship between two people, above the Natural Person Hub
+    rl, rs = L.boxes[rel_link], L.boxes[rel_sat]
+    row_top = by + 110
+    row_h = max(rl.h, rs.h)
+    rl.x, rl.y = xM + (wM - rl.w) / 2, row_top + (row_h - rl.h) / 2
+    rs.x, rs.y = xR, row_top + (row_h - rs.h) / 2
+    _line(L, rel_sat, rel_link, (0.0, 0.5), (1.0, 0.5))
+    top = row_top + row_h + 110
     bottom_r = _stack(L, np_pairs, xR, top, wR, "left")
     h_l = sum(L.boxes[n].h for n in np_singles) + GAP_ROW * (len(np_singles) - 1)
     l_top = top + ((bottom_r - top) - h_l) / 2
@@ -252,6 +263,9 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     hub_np = L.boxes["hub_natural_person"]
     hub_np.x = xM + (wM - hub_np.w) / 2
     hub_np.y = (top + bottom_r) / 2 - hub_np.h / 2
+    for dx, label_x in ((-40, "subject"), (40, "related")):
+        ax = hub_np.cx + dx
+        _line(L, rel_link, "hub_natural_person", ((ax - rl.x) / rl.w, 1.0), ((ax - hub_np.x) / hub_np.w, 0.0))
     n_left = len(np_singles) + 1
     for i, s in enumerate(np_singles):
         _line(L, s, "hub_natural_person", (1.0, 0.5), (0.0, (i + 0.5) / n_left))
@@ -268,7 +282,13 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
         y += b.h + GAP_CHAIN
     hub_le = L.boxes["hub_legal_entity"]
     hub_le.x = xM + (wM - hub_le.w) / 2
-    le_top = max(bottom_r + 90, y + hub_le.h / 2 - ((len(le_sats) * 140) / 2))
+    ol, os_ = L.boxes[own_link], L.boxes[own_sat]
+    ol.x, ol.y = xR, bottom_r + 90
+    os_.x, os_.y = xS, ol.y + (ol.h - os_.h) / 2
+    _line(L, own_sat, own_link, (0.0, 0.5), (1.0, 0.5))
+    _line(L, own_link, "hub_party", (0.0, 0.3), (1.0, 0.5))
+    _line(L, own_link, "hub_legal_entity", (0.0, 0.7), (1.0, 0.02))
+    le_top = max(ol.y + ol.h + 90, y + hub_le.h / 2 - ((len(le_sats) * 140) / 2))
     le_bottom = _stack(L, le_sats, xR, le_top, wR, "left")
     hub_le.y = max((le_top + le_bottom) / 2 - hub_le.h / 2, y)
     for i, s in enumerate(le_sats):
@@ -289,7 +309,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, "lnk_legal_entity__party", "hub_party", (0.5, 0.0), (0.5, 1.0))
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
-    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h) + BAND_PAD
+    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h) + BAND_PAD
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 
     # ---- Platform band, to the right of the Registries band

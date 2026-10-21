@@ -68,6 +68,32 @@ class ModelTests(unittest.TestCase):
         self.assertIn(("lnk_customer__sample_order", "hub_sample_order"), pairs)
 
 
+class RoleLinkTests(unittest.TestCase):
+    """A Link whose name carries a role suffix still joins the Hubs named in its Business key cell."""
+
+    def model(self, name, business_key):
+        text = FIXTURE.read_text(encoding="utf-8")
+        text = text.replace("`lnk_customer__sample_order`", f"`{name}`").replace("`hub_customer`, `hub_sample_order` |", business_key + " |", 1)
+        return bd.load_model(text)
+
+    def test_hubs_come_from_the_business_key_not_from_the_name(self):
+        model = self.model("lnk_customer__sample_order_owner", "`hub_customer`, `hub_sample_order`")
+        pairs = {(e.child, e.parent) for e in model.edges}
+        self.assertIn(("lnk_customer__sample_order_owner", "hub_sample_order"), pairs)
+        self.assertFalse(model.has("hub_sample_order_owner"))
+
+    def test_one_object_in_two_roles_gets_two_labelled_edges(self):
+        model = self.model("lnk_customer__customer_relation", "`hub_customer` (subject), `hub_customer` (related)")
+        edges = [(e.parent, e.label) for e in model.edges if e.child == "lnk_customer__customer_relation"]
+        self.assertEqual(sorted(edges), [("hub_customer", "related"), ("hub_customer", "subject")])
+
+    def test_diagram_builds_with_two_edges_to_one_hub(self):
+        model = self.model("lnk_customer__customer_relation", "`hub_customer` (subject), `hub_customer` (related)")
+        for full in (False, True):
+            xml = bd.to_drawio(model, full=full, title="t")
+            self.assertEqual(len([c for c in cells(xml) if c.get("edge") == "1"]), len(model.edges))
+
+
 class InPlaceSatelliteTests(unittest.TestCase):
     """A Satellite updated in place is the exception to the history default, so it is drawn lighter."""
 

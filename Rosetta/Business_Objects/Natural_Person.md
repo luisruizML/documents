@@ -34,6 +34,7 @@ If a Natural Person were merged into a single Party table, every registry would 
 | --- | --- | --- | --- |
 | Hub | `hub_natural_person` | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
 | Link | `lnk_natural_person__party` | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
+| Link | `lnk_natural_person__natural_person_relation` | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
 | Satellite | `sat_natural_person__name` | one row per parent key and name type, for each time its values change | — |
 | Satellite | `sat_natural_person__identification` | one row per parent key and identification document (type and number), for each time its values change | — |
 | Satellite | `sat_natural_person__registration` | one row per parent key and registration basis, for each time its values change | — |
@@ -44,6 +45,7 @@ If a Natural Person were merged into a single Party table, every registry would 
 | Satellite | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
 | Satellite | `sat_natural_person__community_affiliation` | one row per parent key, replaced in place when its values change | — |
 | Satellite | `sat_natural_person__community_affiliation_history` | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__natural_person_relation__relationship` | one row per parent key and relationship type, for each time its values change | — |
 
 The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `natural_person_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
@@ -200,6 +202,35 @@ The default: keeps its history, and every change adds a row (SCD Type 2). Specia
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
+### lnk_natural_person__natural_person_relation
+
+A relationship between two people. The **subject** is the person the relationship type describes, and the **related** person is the other side: for the type `parent`, the subject is the parent and the related person is the child. A relationship that is the same from both sides, such as a marriage, is stored once, with the lower hash key as the subject.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `subject_natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the person the relationship type describes |
+| `related_natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the other person |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+
+### sat_natural_person__natural_person_relation__relationship
+
+The kind of relationship, its state and the reason it started or ended are dimensions of one fact, so they share a Satellite. Each relationship type is its own row: two people can be spouses and, at the same time, one can be the legal guardian of the other.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lnk_natural_person__natural_person_relation_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `relationship_type_code` | | `string` | No | Yes | — | What the subject is to the related person: e.g. `spouse`, `parent`, `legal_guardian` |
+| `relationship_status_code` | | `string` | No | Yes | — | One of `active`, `ended` |
+| `end_reason_code` | | `string` | Yes | Yes | null | Why the relationship ended; empty while it is active: e.g. `divorce`, `majority`, `death` |
+| `responsibility_basis_code` | | `string` | Yes | Yes | null | Why the subject is responsible for the related person; empty when the type carries no responsibility, such as a marriage: e.g. `minority`, `disability`, `court_appointment` |
+| `effective_date` | | `date` | No | Yes | — | First day this state applies |
+| `end_date` | | `date` | Yes | Yes | null | Last day this state applies; empty while it still applies |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the evidence held in Digital Artifact, such as a marriage certificate or a court order; only the pointer is stored: e.g. `artifact://marriage/m-2201`, `artifact://court/c-889`, `artifact://birth/b-1204`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
 ## Sources and mapping
 
 No endpoints declared yet
@@ -217,6 +248,9 @@ No endpoints declared yet
 | Gender recorded with three or more values, then two | A jurisdiction that narrows its definition | Same as above; a value no longer in the list stays readable in the earlier rows | New rows in `sat_natural_person__demographics_history` |
 | Gender recorded with two values only | A jurisdiction that never widens its definition | Either satellite, with a shorter list | `sat_natural_person__demographics` or `sat_natural_person__demographics_history`, as configured |
 | Race, ethnicity, tribe or religion | Jurisdictions differ: some forbid collecting it, others rely on it, for example customary-law communities | Collected only where the jurisdiction allows it; every column may be empty; the values come from a Code List with restricted access | `sat_natural_person__community_affiliation` or `sat_natural_person__community_affiliation_history`, as configured; no row where it is not collected |
+| Two people who marry, and later divorce | Any jurisdiction | The relationship is never deleted: the marriage is a row, and the divorce is a new row that ends it | Two rows in `sat_natural_person__natural_person_relation__relationship`, `relationship_status_code` `active` and then `ended` with `end_reason_code` `divorce` |
+| A parent responsible for a child until the child comes of age | Any jurisdiction; the age is a rule of the jurisdiction | The responsibility has a basis; when the child comes of age a row ends it | `responsibility_basis_code` `minority`, then a row with `end_reason_code` `majority` |
+| Responsibility that continues because of a disability | Any jurisdiction | A new row with the basis `disability` replaces the ending of the earlier one, with no end date | A row with `responsibility_basis_code` `disability`; earlier rows stay as history |
 | Passport first, then residence permit, then national identity number | Any jurisdiction with a naturalization route | Each document is a new identification row; the person's key never changes | New rows in `sat_natural_person__identification` |
 
 ## Examples
@@ -285,6 +319,22 @@ Illustrative data. The first example is a person with no document; the second is
 
 In a jurisdiction that forbids keeping the corrected value, `sat_natural_person__community_affiliation` holds one row (`enga`, `row_version` 2) and the earlier value is removed by maintenance.
 
+**Two people who marry and later divorce.** The relationship type `spouse` is stored once for the pair, so there is one Link row and two rows in the Satellite.
+
+`sat_natural_person__natural_person_relation__relationship`
+
+| **relationship_type_code** | **relationship_status_code** | **end_reason_code** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| spouse | active | (empty) | 2012-05-20 | 2021-09-30 |
+| spouse | ended | divorce | 2021-10-01 | (empty) |
+
+**A parent responsible for a child, extended by a disability.** The child `P-5` is the related person; the parent `P-1` is the subject.
+
+| **relationship_type_code** | **relationship_status_code** | **responsibility_basis_code** | **end_reason_code** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- | --- |
+| parent | active | minority | (empty) | 2008-03-14 | 2026-03-13 |
+| parent | active | disability | (empty) | 2026-03-14 | (empty) |
+
 ## Modeling considerations
 
 - **Identifiers are facts, not keys.** Passports, permits and national numbers live in `sat_natural_person__identification` and are used to find and match a person. The business key is the source's own person identifier, so adding or replacing a document never changes a key.
@@ -297,6 +347,11 @@ In a jurisdiction that forbids keeping the corrected value, `sat_natural_person_
 - **The allowed values of a code belong to a Code List, not to the column.** Codes such as `gender_code`, `jurisdiction_code` and `key_type_code` take their values from the Code List object, which holds them per jurisdiction with validity dates. The column stays a string, so a change of list never changes the table. Codes that the logic depends on (`status_code`, `origin_event_code`, `termination_event_code`) and `blood_type_code` are closed lists written in the Description.
 - **Derived values are not stored (R13).** Age and age group are computed from the birth date in the Gold layer; this page keeps only the date (`origin_date`).
 - **A person is never deleted.** A confirmed death inactivates the record through `sat_natural_person__lifecycle`.
+- **A relationship between people has its own Link.** A marriage or a custody can only exist between two people, so the Link joins the Natural Person Hub to itself. It is not the Party Link: a generic Party-to-Party Link would let a marriage join two companies and would leave the whole meaning to a type code.
+- **Direction.** The relationship type says what the subject is to the related person (`parent`, `legal_guardian`). A type that is the same from both sides (`spouse`) is stored once, with the lower hash key as the subject. The opposite reading (`child`) is derived in the Gold layer, never stored.
+- **One Satellite, several dimensions.** The type, the state, the end reason and the basis of the responsibility are one fact, so a change of any of them is one new row. The relationship type is part of the grain: the same two people can have several relationships at once.
+- **Responsibility is not stored as a flag.** Whether someone is responsible today, and when a child comes of age, are worked out in the Gold layer from the birth date, the rule of the jurisdiction and these rows (R13). An extension for a disability is a new row, never an edit.
+- **Family data is personal data.** Every descriptive column is marked PII, the Satellite is kept apart from the Hub, and the evidence is only a pointer (`artifact_uri`).
 - **Government Authority is not a Party.** Only citizens and legal entities that use the system are parties.
 
 ## Diagram
@@ -305,7 +360,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 1 Link and 10 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 2 Links and 11 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
 
 ![Natural Person cluster, simplified](images/Diagrams_Natural_Person_Simplified.png)
 
@@ -321,6 +376,9 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | --- | --- | --- | --- |
 | How biometric templates attach to a person | Data Architecture Engineer and Data Product Owner | Only a pointer is stored here (`artifact_uri` in `sat_natural_person__registration`); the Digital Artifact page defines the artifact and its link | Before the Digital Artifact page is reviewed |
 | Whether the attesting authority of a testimony is a link to Government Authority | Data Architecture Engineer and Data Product Owner | Decided when the Government Authority page is written | Before the first mapping that needs it |
+| Whether the direction rule (the type names what the subject is to the related person, symmetric types stored once) is the one the benefits rules need | Data Architecture Engineer and Data Product Owner | Decided with Benefits, from the first benefit that depends on a family relationship | Before the first mapping that needs it |
+| Which relationship types and end reasons become Code List values | Data Architecture Engineer | The Code List object holds them; the rule for which codes qualify is decided with that page | Before the Code List page is reviewed |
+| Whether a Legal Entity can be responsible for a person, such as a guardian that is an institution | Data Product Owner | Decided with Benefits; it would be a different Link, because this one joins two people | Before the first mapping that needs it |
 | The name of the same-as Link between two Natural Person records | Data Architecture Engineer and Data Product Owner | They decide the name, following the Link rules in the Principles | Before the first mapping that needs it |
 | Configuration for a source whose primary key is a document number | Data Architecture Engineer | A key change is treated as a re-key event and recorded with a same-as link | When such a source is onboarded |
 | Which Natural Person codes become Code List values | Data Architecture Engineer | The Code List object holds them; the rule for which codes qualify is decided with that page | Before the Code List page is reviewed |

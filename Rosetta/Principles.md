@@ -62,7 +62,7 @@ This convention makes R8 and R9 mechanical. Its one rule: **every element of a s
 | --- | --- | --- |
 | Bronze table | `bronze.<source>__<endpoint>` | `bronze.registry__taxpayers` |
 | Hub | `hub_<object>` | `hub_taxpayer` |
-| Link | `lnk_<object_a>__<object_b>`, objects in alphabetical order | `lnk_address__taxpayer` |
+| Link | `lnk_<object_a>__<object_b>`, objects in alphabetical order; a role is a suffix of the part that plays it | `lnk_address__taxpayer`, `lnk_legal_entity__party_owner` |
 | Satellite | `sat_<parent>__<descriptor>` | `sat_taxpayer__registration` |
 | Current view | `cur_<parent>__<descriptor>` | `cur_taxpayer__registration` |
 
@@ -83,6 +83,12 @@ This convention makes R8 and R9 mechanical. Its one rule: **every element of a s
 **A Satellite on a Link.** The parent name then contains a `__` of its own: the Satellite for `lnk_address__taxpayer` is `sat_address__taxpayer__contact_period`. The rule for reading a Satellite name is therefore fixed: **the descriptor is everything after the last `__`**, and the parent is what remains after removing `sat_`. That keeps every Satellite name readable by the same rule.
 
 The same separator is used wherever a name joins two independent parts: a Bronze table (`<source>__<endpoint>`) and a Link (`<object_a>__<object_b>`). The rule is therefore one rule to remember: **a double underscore always divides two parts that can each contain their own underscores.**
+
+**A Link with a role.** When a Link joins two roles of the same object (a person related to another person), or a second Link joins the same two objects (a Party that owns a Legal Entity, next to the Link that identifies the Legal Entity as a Party), the role is a **suffix of the part that plays it**, joined with a single underscore: `lnk_legal_entity__party_owner`, `lnk_natural_person__natural_person_relation`. Three rules keep it readable:
+
+* The parts are still in alphabetical order of the **objects**, ignoring the suffix.
+* The Business key cell of the Vault objects table lists the Hubs the Link joins, in order. When the same Hub is joined twice, each side names its role in brackets: `hub_natural_person` (subject), `hub_natural_person` (related). That cell, not the name, tells a tool which Hubs are joined.
+* The hash-key column of each side is named by the role when the object repeats (`subject_natural_person_hk`, `related_natural_person_hk`), and by the role when it differs from the Hub (`owner_party_hk`).
 
 **Why alphabetical order in Links.** A relationship exists once. Without a fixed order, two teams can create `taxpayer__address` and `address__taxpayer` for the same relationship.
 
@@ -188,6 +194,7 @@ The representation term of a column (see *Column names*) fixes its type:
 | `_date` | `date` |
 | `_dts` | `timestamptz` |
 | `_amount` | `decimal(P,S)`, with `_currency_code` beside it |
+| `_percent` | `decimal(P,S)`, a share from 0 to 100 |
 | `_flag` | `boolean` |
 | `_count` | `int`, or `long` when it can grow beyond that |
 
@@ -331,7 +338,6 @@ Not everything can be defined at this stage, and it does not need to be. What ma
 | **Approving a new name or a change of name** | Data Team: Data Architecture Engineer, Data Engineers, BI Engineers and Data Product Owner | Reviewed by the team before the name is used in Silver | Before the object reaches Silver |
 | **The approved abbreviation list** | Data Architecture Engineer and Data Product Owner | Each abbreviation is added to the list by agreement of both | Before the first use of that abbreviation |
 | **How jurisdiction scenarios are recorded:** as Satellites, as separate Hubs, or both (R7) | Decided per feature | The feature specification states it. Unless it says otherwise, a scenario is a Satellite of the same Hub | When the feature specification is written |
-| **How a Link between two roles of the same object is named,** for example a person who represents another person | Data Architecture Engineer and Data Product Owner | They decide the name, following the Link rules in this document | Before the first mapping that needs it |
 | **How events and transactions are named** | Data Architecture Engineer and Data Product Owner | An event or a transaction is named with an object name that represents it. Whether it is modelled as a Hub or a Link is decided by the same two roles | Before the first mapping that needs it |
 | **Which business key anchors each Hub** | Platform configuration | Set in the Nexus configuration, according to the rules of each jurisdiction. Names never contain the business key, so a change of key never renames an object (R9) | When a jurisdiction is configured |
 | **How long the window is for moving from a deprecated attribute or table to its replacement** | Data Architecture Engineer and Data Product Owner | Agreed for each change, according to who consumes the attribute or table | When the change is announced |

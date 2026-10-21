@@ -65,6 +65,19 @@ class VaultObjectTests(unittest.TestCase):
         errs = errors("| Hub | `hub_sample_order` |", "| Hub | `hub_sample__order` |")
         self.assertTrue(has(errs, "name", "hub_sample__order"))
 
+    def test_role_suffix_on_a_link_part_is_accepted(self):
+        text = page().replace("lnk_customer__sample_order", "lnk_customer__sample_order_owner")
+        self.assertEqual([e for e in vp.validate(text) if e.startswith("name:")], [])
+
+    def test_role_suffix_does_not_change_the_alphabetical_check(self):
+        text = page().replace("`lnk_customer__sample_order` | one", "`lnk_sample_order__customer_owner` | one")
+        self.assertTrue(has(vp.validate(text), "name", "alphabetical"))
+
+    def test_link_may_join_one_object_in_two_roles(self):
+        text = page().replace("lnk_customer__sample_order", "lnk_customer__customer_relation").replace(
+            "`hub_customer`, `hub_sample_order` |", "`hub_customer` (subject), `hub_customer` (related) |", 1)
+        self.assertEqual([e for e in vp.validate(text) if e.startswith("name:")], [])
+
     def test_link_parts_must_be_alphabetical(self):
         errs = errors("`lnk_customer__sample_order` | one", "`lnk_sample_order__customer` | one")
         self.assertTrue(has(errs, "name", "alphabetical"))

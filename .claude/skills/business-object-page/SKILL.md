@@ -33,6 +33,7 @@ Do these in order.
 - Party is a thin Hub (`hub_party`). Natural Person and Legal Entity are separate Hubs, each with its own business key; each joins Party with a Link (`lnk_natural_person__party`, `lnk_legal_entity__party`).
 - The business key of an object that several jurisdictions identify differently is `jurisdiction_code` + `key_type_code` + the normalized `<object>_bk`.
 - Government Authority is not a Party. It is a Platform object.
+- A Link with a role (a person related to a person, or a Party that owns a Legal Entity) names the role as a suffix of the part that plays it: `lnk_legal_entity__party_owner`. The Business key cell lists the Hubs it joins, in order, and names the role in brackets when the same Hub is joined twice. A Satellite whose rows are keyed by a type (holding type, relationship type) states it in the grain: "one row per parent key and holding type". Ownership of a Legal Entity is `lnk_legal_entity__party_owner`, not `lnk_legal_entity__party`, which says that a Legal Entity is a Party.
 - Payment objects belong to Finance.
 - Platform objects (configuration, Code List, Government Authority) are listed in the Platform section of the index and on `Platform.md`.
 - Source endpoints are declared by the author, never discovered. With none given, write `No endpoints declared yet`.

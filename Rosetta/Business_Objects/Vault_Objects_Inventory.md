@@ -18,8 +18,10 @@ Every Hub, Link and Satellite of the [Business Objects](Index.md) pages, one tab
 | **Owner domain** | **Object** | **Name** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
 | Registries | Natural Person | `lnk_natural_person__party` | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
+| Registries | Natural Person | `lnk_natural_person__natural_person_relation` | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
 | Registries | Legal Entity | `lnk_legal_entity__party` | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
 | Registries | Legal Entity | `lnk_legal_entity__natural_person` | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
+| Registries | Legal Entity | `lnk_legal_entity__party_owner` | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
 | Platform | Code List | `lnk_code_list__code_value` | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
 
 ## Non-historized Links
@@ -37,11 +39,13 @@ None yet.
 | Registries | Natural Person | `sat_natural_person__demographics_history` | one row per parent key, for each time its values change | — |
 | Registries | Natural Person | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
 | Registries | Natural Person | `sat_natural_person__community_affiliation_history` | one row per parent key, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__natural_person_relation__relationship` | one row per parent key and relationship type, for each time its values change | — |
 | Registries | Legal Entity | `sat_legal_entity__name` | one row per parent key and name type, for each time its values change | — |
 | Registries | Legal Entity | `sat_legal_entity__identification` | one row per parent key and identification (type and number), for each time its values change | — |
 | Registries | Legal Entity | `sat_legal_entity__classification` | one row per parent key, for each time its values change | — |
 | Registries | Legal Entity | `sat_legal_entity__lifecycle` | one row per parent key, for each time its values change | — |
 | Registries | Legal Entity | `sat_legal_entity__natural_person__representation` | one row per parent key and role, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__party_owner__ownership` | one row per parent key and holding type, for each time its values change | — |
 | Platform | Code List | `sat_code_value__label` | one row per parent key, for each time its values change | — |
 | Platform | Code List | `sat_code_value__applicability` | one row per parent key and jurisdiction, for each time its values change | — |
 | Platform | Code List | `sat_code_list__usage` | one row per parent key and column that uses the list, for each time its values change | — |

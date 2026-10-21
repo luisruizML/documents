@@ -134,6 +134,21 @@ def _clean(cell: str) -> str:
     return cell.replace(chr(96), "").strip()
 
 
+def _link_hubs(name: str, business_key: str) -> list[tuple[str, str]]:
+    """The Hubs a Link joins, with the role each plays when the Business key cell names one, as in
+    `hub_natural_person` (subject), `hub_natural_person` (related). Without Hubs in the cell, the parts of the name."""
+    found = []
+    for piece in business_key.replace(chr(96), "").split(","):
+        hub = re.search(r"hub_[a-z0-9_]+", piece)
+        if hub:
+            role = re.search(r"[(]([^)]+)[)]", piece)
+            found.append((hub.group(0), role.group(1).strip() if role else ""))
+    if found:
+        repeated = len({h for h, _ in found}) < len(found)  # a role label is only needed to tell two edges apart
+        return [(h, r if repeated else "") for h, r in found]
+    return [("hub_" + part, "") for part in name[len("lnk_"):].split("__")]
+
+
 def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
     page = vp.parse_page(text)
     model = Model(title=page.title)
@@ -145,13 +160,13 @@ def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
     for name in context:
         if not model.has(name):
             model.nodes.append(Node(name, _kind_from_name(name), external=True))
+    business_keys = {_clean(r["Name"]): r.get("Business key", "") for r in page.tables("Vault objects")[0]}
     for n in list(model.nodes):
         if n.kind in ("Link", "Non-historized Link"):
-            for part in n.name[len("lnk_"):].split("__"):
-                hub = "hub_" + part
+            for hub, role in _link_hubs(n.name, business_keys.get(n.name, "")):
                 if not model.has(hub):
                     model.nodes.append(Node(hub, "Hub", external=True))
-                model.edges.append(Edge(n.name, hub))
+                model.edges.append(Edge(n.name, hub, role))
     for n in model.nodes:
         if n.kind == "Satellite":
             parent, _, descriptor = n.name[len("sat_"):].rpartition("__")

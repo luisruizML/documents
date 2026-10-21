@@ -183,6 +183,17 @@ TERM_TYPES = {
 }
 
 
+def link_objects(parts: list[str], business_key: str) -> list[str]:
+    """The object each link part stands for. A part may carry a role suffix (`party_owner` is the object `party`
+    in the role of owner); the Hubs listed in the Business key cell say which prefix is the object."""
+    hubs = [h[len("hub_"):] for h in re.findall(rf"hub_{SNAKE}", business_key)]
+    out = []
+    for part in parts:
+        match = [h for h in hubs if part == h or part.startswith(h + "_")]
+        out.append(max(match, key=len) if match else part)
+    return out
+
+
 def _strip(cell: str) -> str:
     return cell.strip().strip("`").strip()
 
@@ -261,8 +272,10 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
             errs.append(f"name: '{name}' is longer than 63 characters")
         if kind in ("Link", "Non-historized Link") and NAME_RE[kind].match(name):
             parts = name[len("lnk_"):].split("__")
-            if parts != sorted(parts):
-                errs.append(f"name: '{name}' link parts must be in alphabetical order: {'__'.join(sorted(parts))}")
+            bases = link_objects(parts, row.get("Business key", ""))
+            if bases != sorted(bases):
+                order = "__".join(p for _, p in sorted(zip(bases, parts), key=lambda bp: bp[0]))
+                errs.append(f"name: '{name}' link parts must be in alphabetical order: {order}")
         body = name[len(PREFIX[kind]):] if name.startswith(PREFIX[kind]) else name
         for token in (t for t in body.split("_") if t):
             if len(token) <= 3 and token not in ALLOWED_SHORT and token not in approved:
