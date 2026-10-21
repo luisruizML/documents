@@ -177,10 +177,18 @@ class DrawioTests(unittest.TestCase):
             self.assertNotIn("collapsible=0", c.get("style"))
 
     def test_notes_are_italic(self):
-        notes = [c for c in styled(self.simple, "text;") if (c.get("value") or "").startswith("one row per")]
+        notes = [c for c in styled(self.simple, "text;") if (c.get("value") or "").startswith("The table that")]
         self.assertTrue(notes)
         for c in notes:
             self.assertIn("fontStyle=2", c.get("style"))
+
+    def test_simple_note_is_the_definition_and_full_note_is_definition_then_grain(self):
+        simple = [c.get("value") for c in styled(self.simple, "text;")]
+        full = [c.get("value") for c in styled(self.full, "text;")]
+        node = self.model.node("hub_sample_order")
+        self.assertIn(node.definition, simple)
+        self.assertNotIn(node.grain, simple)
+        self.assertIn(node.definition + "<br><br>" + node.grain, full)
 
     def test_containers_use_the_type_colors(self):
         fills = {c.get("value"): c.get("style") for c in styled(self.simple, "swimlane")}

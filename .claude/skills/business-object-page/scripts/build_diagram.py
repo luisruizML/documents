@@ -3,7 +3,7 @@
 The diagrams are generated from the page itself, so the tables in the picture
 are the tables of the document. Output, next to the page:
 
-    Diagrams_<Page>_Simplified.drawio / .png   simple version: name and grain of each object
+    Diagrams_<Page>_Simplified.drawio / .png   simple version: name and definition of each object
     Diagrams_<Page>_Full.drawio / .png         full version: each object also shows its Fields table
 
 Every object is as wide as its own content: the simple version from the name (250 minimum),
@@ -96,6 +96,7 @@ class Node:
     grain: str = ""
     rows: list[dict[str, str]] | None = None
     external: bool = False
+    definition: str = ""
 
     @property
     def in_place(self) -> bool:
@@ -103,7 +104,16 @@ class Node:
 
     @property
     def note(self) -> str:
-        return self.grain if not self.external else (self.grain or "Defined on its own page")
+        """The text under the name on the Simplified and the Lucid diagram: the Definition (the grain when there is none)."""
+        if self.external:
+            return self.grain or "Defined on its own page"
+        return self.definition or self.grain
+
+    def paragraphs(self, full: bool) -> list[str]:
+        """The Full version shows the Definition, then the grain; the other versions show `note` only."""
+        if full and not self.external and self.definition and self.grain:
+            return [self.definition, self.grain]
+        return [self.note]
 
 
 @dataclass
@@ -156,7 +166,7 @@ def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
     for row in page.tables("Vault objects")[0]:
         name = _clean(row["Name"])
         rows = [{k: _clean(v) for k, v in r.items()} for r in fields.get(name, [])]
-        model.nodes.append(Node(name, row["Type"], _clean(row["Grain"]), rows))
+        model.nodes.append(Node(name, row["Type"], _clean(row["Grain"]), rows, definition=_clean(row.get("Definition", ""))))
     for name in context:
         if not model.has(name):
             model.nodes.append(Node(name, _kind_from_name(name), external=True))
@@ -259,8 +269,10 @@ def _row_h(row: dict[str, str]) -> int:
     return 20 + 13 * (len(wrap(row.get("Description", ""), "sans", 10, DESC_W - CELL_PAD)) - 1)
 
 
-def _note_h(n: Node, w: float) -> int:
-    return 14 * len(wrap(n.note, "sans_italic", 11, w - 16)) + 6
+def _note_h(n: Node, w: float, full: bool = False) -> int:
+    paragraphs = n.paragraphs(full)
+    lines = sum(len(wrap(p, "sans_italic", 11, w - 16)) for p in paragraphs)
+    return 14 * lines + 14 * (len(paragraphs) - 1) + 6  # a blank line between two paragraphs
 
 
 def _simple_w(n: Node) -> int:
@@ -275,7 +287,7 @@ def _size(n: Node, full: bool, degree: int = 0) -> tuple[int, int]:
     w = _simple_w(n)
     if _has_table(n, full):
         w = max(w, sum(column_widths(n.rows)) + FRAME_PAD)
-    h = HEAD_H + _note_h(n, w) + 8
+    h = HEAD_H + _note_h(n, w, full) + 8
     if _has_table(n, full):
         h += 4 + 20 + sum(_row_h(r) for r in n.rows) + 4
     return w, max(h, 20 * (degree + 1))  # room to spread the arrows that meet here
@@ -455,9 +467,9 @@ def to_drawio(model: Model, full: bool, title: str = "") -> str:
         )
         node_id[n.name] = cid
         cells.append(xml)
-        note_h = _note_h(n, w)
+        note_h = _note_h(n, w, full)
         _, xml = _vertex(
-            ids, cid, n.note,
+            ids, cid, "<br><br>".join(escape(p) for p in n.paragraphs(full)),
             f"text;html=1;whiteSpace=wrap;align=left;verticalAlign=top;fontFamily=Arial;fontSize=11;fontStyle=2;"
             "fontColor=#000000;spacingLeft=8;spacingRight=8;",
             0, HEAD_H + 2, w, note_h,

@@ -125,11 +125,21 @@ class GlobalDiagramTests(unittest.TestCase):
             self.assertTrue(b.in_place)
             self.assertFalse(a.in_place)
 
-    def test_each_box_carries_its_grain_in_italic(self):
+    def test_each_box_carries_its_definition_in_italic(self):
         by_id = self.by_name
-        self.assertIn("<i>one row per business key", by_id["hub_party"]["text"])
+        self.assertIn("<i>The table that", by_id["hub_party"]["text"])
         plain = by_id["sat_natural_person__demographics"]["text"].replace("<br>", " ")
-        self.assertIn("replaced in place when its values change", plain)
+        self.assertIn("replaced when it changes", plain)
+        self.assertNotIn("one row per", plain)
+
+    def test_the_name_of_every_object_is_one_line(self):
+        for name, box in self.layout.boxes.items():
+            self.assertEqual(box.name_lines, [name])
+            self.assertIn(f"<b>{name}</b>", self.by_name[name]["text"])
+
+    def test_a_box_is_wide_enough_for_its_name(self):
+        for name, box in self.layout.boxes.items():
+            self.assertGreaterEqual(box.w, g._w(name, g.NAME_PT, g.BOLD_EM) + g.PAD - 1)
 
     def test_spec_is_valid_json_and_has_the_four_legend_entries(self):
         json.dumps(self.spec)

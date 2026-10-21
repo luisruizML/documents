@@ -26,6 +26,10 @@ class ConvertTests(unittest.TestCase):
         self.assertIn("<th><p><strong>A</strong></p></th>", out)
         self.assertIn("<td><p><code>x</code></p></td>", out)
 
+    def test_an_empty_cell_stays_a_cell(self):
+        out = ms.convert("| **A** | **B** | **C** |" + chr(10) + "| --- | --- | --- |" + chr(10) + "| x | | z |" + chr(10))
+        self.assertIn("<td><p>x</p></td><td><p></p></td><td><p>z</p></td>", out)
+
     def test_lists(self):
         self.assertEqual(ms.convert("- one" + chr(10) + "- two"), "<ul><li><p>one</p></li><li><p>two</p></li></ul>")
 
@@ -69,6 +73,14 @@ class SyncTests(unittest.TestCase):
         self.assertIn("documentId=new", params["macroMetadata"]["placeholder"][0]["data"]["url"])
         self.assertEqual(sc.point_index_at_lucid(adf, "new"), 0)
 
+
+    def test_the_snapshot_date_of_the_embed_is_moved(self):
+        params = {"macroParams": {"documentId": {"value": "d"}, "lastSnapshotDate": {"value": "Tue, 20 Oct 2026 15:55:09 GMT"}},
+                  "macroMetadata": {"placeholder": [{"data": {"url": "https://l/ac?lastSnapshotDate=Tue%2C+20+Oct+2026+15%3A55%3A09+GMT&documentId=d"}}]}}
+        adf = {"content": [{"type": "extension", "attrs": {"extensionKey": "lucidchart", "parameters": params}}]}
+        self.assertEqual(sc.point_index_at_lucid(adf, "d", "Wed, 21 Oct 2026 10:00:00 GMT"), 1)
+        self.assertEqual(params["macroParams"]["lastSnapshotDate"]["value"], "Wed, 21 Oct 2026 10:00:00 GMT")
+        self.assertIn("Wed%2C+21+Oct+2026+10%3A00%3A00+GMT", params["macroMetadata"]["placeholder"][0]["data"]["url"])
 
 if __name__ == "__main__":
     unittest.main()

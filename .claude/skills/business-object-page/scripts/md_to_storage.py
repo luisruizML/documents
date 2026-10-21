@@ -80,7 +80,7 @@ def convert(markdown: str, header_colors: dict[str, tuple[str, str]] | None = No
         if line.startswith("|"):
             rows = []
             while i < len(lines) and lines[i].startswith("|"):
-                rows.append([c.strip() for c in lines[i].rstrip("\r").strip().strip("|").split(" | ")])
+                rows.append([c.strip() for c in lines[i].rstrip("\r").strip()[1:-1].split("|")])  # an empty cell stays a cell
                 i += 1
             head, body = rows[0], rows[2:]
             fill, ink = (header_colors or {}).get(heading_text, (None, None))

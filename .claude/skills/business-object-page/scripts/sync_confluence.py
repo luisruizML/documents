@@ -19,7 +19,9 @@ import hashlib
 import json
 import os
 import sys
+from email.utils import formatdate
 from pathlib import Path
+from urllib.parse import quote_plus
 
 import md_to_storage
 import sync_confluence_images as images
@@ -34,8 +36,10 @@ def build_inventory_colors():
     return [(heading, fill, ink) for heading, fill, ink in build_inventory.TYPES.values()]
 
 
-def point_index_at_lucid(adf: dict, document_id: str) -> int:
-    """Point the Lucidchart embed of the index page at a Lucid document. Returns how many embeds changed."""
+def point_index_at_lucid(adf: dict, document_id: str, snapshot: str | None = None) -> int:
+    """Point the Lucidchart embed of the index page at a Lucid document, and with `snapshot` (an HTTP date such as
+    "Wed, 21 Oct 2026 10:00:00 GMT") move its last snapshot date, which Confluence shows as the picture until the viewer
+    loads the live diagram. Returns how many embeds changed."""
     changed = 0
 
     def walk(node):
@@ -45,6 +49,14 @@ def point_index_at_lucid(adf: dict, document_id: str) -> int:
             if node.get("type") == "extension" and attrs.get("extensionKey") == "lucidchart":
                 params = attrs["parameters"]
                 old = params["macroParams"]["documentId"]["value"]
+                if snapshot and params["macroParams"]["lastSnapshotDate"]["value"] != snapshot:
+                    previous = params["macroParams"]["lastSnapshotDate"]["value"]
+                    params["macroParams"]["lastSnapshotDate"]["value"] = snapshot
+                    for item in params.get("macroMetadata", {}).get("placeholder", []):
+                        url = item.get("data", {}).get("url")
+                        if url:
+                            item["data"]["url"] = url.replace(quote_plus(previous), quote_plus(snapshot))
+                    changed += 1
                 if old != document_id:
                     params["macroParams"]["documentId"]["value"] = document_id
                     for item in params.get("macroMetadata", {}).get("placeholder", []):
@@ -115,7 +127,7 @@ def main(argv: list[str] | None = None) -> int:
         index_id = config["index_page"]
         page = api.session.get(f"{api.base}/rest/api/content/{index_id}?expand=body.atlas_doc_format,version").json()
         adf = json.loads(page["body"]["atlas_doc_format"]["value"])
-        changed = point_index_at_lucid(adf, args.lucid)
+        changed = point_index_at_lucid(adf, args.lucid, formatdate(usegmt=True))
         print(f"{'would point' if args.dry_run else 'pointed'} {changed} Lucidchart embed(s) of the index at {args.lucid}")
         if changed and not args.dry_run:
             api.session.put(f"{api.base}/rest/api/content/{index_id}", {

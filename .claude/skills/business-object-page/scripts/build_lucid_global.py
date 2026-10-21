@@ -61,10 +61,7 @@ def _lh(pt: float) -> float:
 
 
 def name_lines(name: str) -> list[str]:
-    """A long name is broken after its double underscore, so the box stays narrow."""
-    if name.startswith(("sat_", "lnk_")) and "__" in name:
-        head, _, tail = name.rpartition("__")
-        return [head + "__", tail]
+    """The name of an object is always one line, however long: the box grows to fit it."""
     return [name]
 
 
@@ -427,7 +424,7 @@ def to_spec(L: Layout, title: str = "PSS Data Objects") -> dict:
     shapes.append({
         "id": "legend_note", "type": "text",
         "boundingBox": {"x": 60, "y": ly + 50, "w": 2400, "h": 36},
-        "text": '<p style="font-size:9pt;text-align:left">Arrows run from the child to its parent. A dashed line joins the two Satellites of a twin pair. The grain, one row per ..., is written in each box.</p>',
+        "text": '<p style="font-size:9pt;text-align:left">Arrows run from the child to its parent. A dashed line joins the two Satellites of a twin pair. The definition of each object is written in its box.</p>',
     })
     return {"version": 1, "pages": [{"id": "page1", "title": title, "shapes": shapes, "lines": lines}]}
 
