@@ -29,15 +29,15 @@ One object holds every list. A new list is a new row, never a new table, so the 
 
 ## Vault objects
 
-| **Type** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- |
-| Hub | `hub_code_list` | one row per business key | `code_list_bk`: the name of the list, such as `gender`. It is assigned once and never changed |
-| Hub | `hub_code_value` | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
-| Link | `lnk_code_list__code_value` | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
-| Satellite | `sat_code_value__label` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_code_value__applicability` | one row per parent key and jurisdiction, for each time its values change | — |
-| Satellite | `sat_code_list__usage` | one row per parent key and column that uses the list, for each time its values change | — |
-| Satellite | `sat_code_list__access` | one row per parent key and role, for each time its values change | — |
+| **Type** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- |
+| Hub | `hub_code_list` | The table that holds the name of each list of allowed values, such as gender, jurisdiction or key type. A new list is a new entry here, never a new table. | one row per business key | `code_list_bk`: the name of the list, such as `gender`. It is assigned once and never changed |
+| Hub | `hub_code_value` | The table that holds each value that can appear in a list, identified by the list name and the code, such as gender:female. The same code in two lists is two different values. | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
+| Link | `lnk_code_list__code_value` | The table that records which values belong to which list. | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
+| Satellite | `sat_code_value__label` | The table that records the name shown to people for each value, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
+| Satellite | `sat_code_list__usage` | The table that records where a list is used: which object and which column take their values from it. | one row per parent key and column that uses the list, for each time its values change | — |
+| Satellite | `sat_code_list__access` | The table that records which roles may see the values of a list, and how much each may see, for lists that only some roles may read. | one row per parent key and role, for each time its values change | — |
 
 The hash keys `code_list_hk` and `code_value_hk` are computed from the normalized business key, as for every Hub. A value's code is part of its business key, so the same code in two lists is two values.
 

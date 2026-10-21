@@ -29,13 +29,13 @@
 
 ## Vault objects
 
-*One row per vault object. Names follow the naming convention (R9); every grain starts with the "one row per" of its type (R12).*
+*One row per vault object. Names follow the naming convention (R9); every grain starts with the "one row per" of its type (R12). Every Definition starts with "The table that" and says in business words what the table is for.*
 
-| **Type** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- |
-| Hub | `hub_<<object>>` | one row per business key | `<<object>>_bk`: <<how the key is chosen>> |
-| Link | `lnk_<<a>>__<<b>>` | one row per distinct combination of <<a and b>> | `hub_<<a>>`, `hub_<<b>>` |
-| Satellite | `sat_<<parent>>__<<descriptor>>` | one row per parent key, for each time its values change | — |
+| **Type** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- |
+| Hub | `hub_<<object>>` | The table that holds the identifier by which <<the source>> knows each <<object>>. It carries no description of the <<object>>. | one row per business key | `<<object>>_bk`: <<how the key is chosen>> |
+| Link | `lnk_<<a>>__<<b>>` | The table that records that <<a>> is related to <<b>> and what the relation means. | one row per distinct combination of <<a and b>> | `hub_<<a>>`, `hub_<<b>>` |
+| Satellite | `sat_<<parent>>__<<descriptor>>` | The table that records <<what>> about <<the parent>> over time. | one row per parent key, for each time its values change | — |
 
 ## Fields
 

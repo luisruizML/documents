@@ -27,9 +27,9 @@ A thin Hub gives them one thing to point to. It is thin on purpose: a Natural Pe
 
 ## Vault objects
 
-| **Type** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- |
-| Hub | `hub_party` | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
+| **Type** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- |
+| Hub | `hub_party` | The table that holds the identifier Nexus assigns to every party, whether it is a natural person or a legal entity. It is the one thing other objects point to when they mean "whoever owes or asks"; it carries no description of the party. | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
 
 The links from the two specific objects to `hub_party` are defined on their own pages: `lnk_natural_person__party` on Natural Person and `lnk_legal_entity__party` on Legal Entity.
 

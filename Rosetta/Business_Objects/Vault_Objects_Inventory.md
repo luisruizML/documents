@@ -4,25 +4,25 @@ Every Hub, Link and Satellite of the [Business Objects](Index.md) pages, one tab
 
 ## Hubs
 
-| **Owner domain** | **Object** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- | --- |
-| Registries | Party | `hub_party` | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
-| Registries | Natural Person | `hub_natural_person` | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
-| Registries | Legal Entity | `hub_legal_entity` | one row per business key | `legal_entity_bk`: the primary identifier of the entity in the source of record, assigned once and never changed. It is a registration or tax number for a formal entity and a registry code for an informal one |
-| Platform | Code List | `hub_code_list` | one row per business key | `code_list_bk`: the name of the list, such as `gender`. It is assigned once and never changed |
-| Platform | Code List | `hub_code_value` | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
-| Platform | Load Configuration | `hub_load_configuration` | one row per business key | `load_configuration_bk`: the jurisdiction and the attribute group joined by a colon, such as `WSM:natural_person__demographics`. The jurisdiction is `any` for the default of every jurisdiction |
+| **Owner domain** | **Object** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- | --- |
+| Registries | Party | `hub_party` | The table that holds the identifier Nexus assigns to every party, whether it is a natural person or a legal entity. It is the one thing other objects point to when they mean "whoever owes or asks"; it carries no description of the party. | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
+| Registries | Natural Person | `hub_natural_person` | The table that holds the identifier by which the source of record knows each individual person in the platform. It carries no description of the person; that is kept in the tables around it. | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
+| Registries | Legal Entity | `hub_legal_entity` | The table that holds the identifier by which the source of record knows each organization, association or collective recognized by the State: a registration or tax number for a formal entity, a registry code for an informal one. It carries no description of the entity. | one row per business key | `legal_entity_bk`: the primary identifier of the entity in the source of record, assigned once and never changed. It is a registration or tax number for a formal entity and a registry code for an informal one |
+| Platform | Code List | `hub_code_list` | The table that holds the name of each list of allowed values, such as gender, jurisdiction or key type. A new list is a new entry here, never a new table. | one row per business key | `code_list_bk`: the name of the list, such as `gender`. It is assigned once and never changed |
+| Platform | Code List | `hub_code_value` | The table that holds each value that can appear in a list, identified by the list name and the code, such as gender:female. The same code in two lists is two different values. | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
+| Platform | Load Configuration | `hub_load_configuration` | The table that holds each setting of how an attribute group is loaded for a jurisdiction, identified by the jurisdiction and the attribute group, with "any" for the default of every jurisdiction. It carries no choice itself; the choice is in `sat_load_configuration__mechanism`. | one row per business key | `load_configuration_bk`: the jurisdiction and the attribute group joined by a colon, such as `WSM:natural_person__demographics`. The jurisdiction is `any` for the default of every jurisdiction |
 
 ## Links
 
-| **Owner domain** | **Object** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- | --- |
-| Registries | Natural Person | `lnk_natural_person__party` | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
-| Registries | Natural Person | `lnk_natural_person__natural_person_relation` | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
-| Registries | Legal Entity | `lnk_legal_entity__party` | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
-| Registries | Legal Entity | `lnk_legal_entity__natural_person` | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
-| Registries | Legal Entity | `lnk_legal_entity__party_owner` | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
-| Platform | Code List | `lnk_code_list__code_value` | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
+| **Owner domain** | **Object** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- | --- |
+| Registries | Natural Person | `lnk_natural_person__party` | The table that places every natural person in the same universe as the legal entities, which together are the Parties. Any object that must point to "whoever owes or asks", of either kind, goes through the Party. | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
+| Registries | Natural Person | `lnk_natural_person__natural_person_relation` | The table that records that one person is related to another, such as spouses or a parent and a child. It says who is related; what the relationship is, and whether it still applies, is recorded in `sat_natural_person__natural_person_relation__relationship`. | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
+| Registries | Legal Entity | `lnk_legal_entity__party` | The table that places every legal entity in the same universe as the natural persons, which together are the Parties. It says that a legal entity is a party; who owns it is recorded in `lnk_legal_entity__party_owner`. | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
+| Registries | Legal Entity | `lnk_legal_entity__natural_person` | The table that records that a natural person acts for a legal entity, such as a director, a representative or a tribal chief. The role and the dates are recorded in `sat_legal_entity__natural_person__representation`. | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
+| Registries | Legal Entity | `lnk_legal_entity__party_owner` | The table that records that a party owns a legal entity. The owner can be a natural person or another legal entity, and one entity can have many owners; the share and the state of each holding are recorded in `sat_legal_entity__party_owner__ownership`. It is not the identity table `lnk_legal_entity__party`. | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
+| Platform | Code List | `lnk_code_list__code_value` | The table that records which values belong to which list. | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
 
 ## Non-historized Links
 
@@ -30,32 +30,32 @@ None yet.
 
 ## Satellites
 
-| **Owner domain** | **Object** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- | --- |
-| Registries | Natural Person | `sat_natural_person__name` | one row per parent key and name type, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__identification` | one row per parent key and identification document (type and number), for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__registration` | one row per parent key and registration basis, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__lifecycle` | one row per parent key, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__demographics_history` | one row per parent key, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__community_affiliation_history` | one row per parent key, for each time its values change | — |
-| Registries | Natural Person | `sat_natural_person__natural_person_relation__relationship` | one row per parent key and relationship type, for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__name` | one row per parent key and name type, for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__identification` | one row per parent key and identification (type and number), for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__classification` | one row per parent key, for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__lifecycle` | one row per parent key, for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__natural_person__representation` | one row per parent key and role, for each time its values change | — |
-| Registries | Legal Entity | `sat_legal_entity__party_owner__ownership` | one row per parent key and holding type, for each time its values change | — |
-| Platform | Code List | `sat_code_value__label` | one row per parent key, for each time its values change | — |
-| Platform | Code List | `sat_code_value__applicability` | one row per parent key and jurisdiction, for each time its values change | — |
-| Platform | Code List | `sat_code_list__usage` | one row per parent key and column that uses the list, for each time its values change | — |
-| Platform | Code List | `sat_code_list__access` | one row per parent key and role, for each time its values change | — |
-| Platform | Load Configuration | `sat_load_configuration__mechanism` | one row per parent key, for each time its values change | — |
+| **Owner domain** | **Object** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- | --- |
+| Registries | Natural Person | `sat_natural_person__name` | The table that records the names a person is known by, such as a legal name, an alias or a tribal title, and the writing system of each. A person can have several. | one row per parent key and name type, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__identification` | The table that records the documents and numbers that identify a person, such as a passport, a residence permit or a national identity number, and when each stops being valid. | one row per parent key and identification document (type and number), for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__registration` | The table that records why and when a person was registered (a document, a biometric, a testimony or a census) and points to the evidence. | one row per parent key and registration basis, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__lifecycle` | The table that records whether a person is active and the events that began and ended that status: birth or immigration, and confirmed death. | one row per parent key, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__demographics_history` | The table that records every gender recorded for a person over time, so earlier values stay. It is the default; `sat_natural_person__demographics` is the exception. | one row per parent key, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__physical_traits_history` | The table that records every height and blood type recorded for a person over time, so earlier values stay. It is the default; `sat_natural_person__physical_traits` is the exception. | one row per parent key, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__community_affiliation_history` | The table that records every ethnicity, tribe and religion recorded for a person over time, so earlier values stay. It is the default. This is special-category data: it is collected only where the jurisdiction allows it and seen only by the roles that may. | one row per parent key, for each time its values change | — |
+| Registries | Natural Person | `sat_natural_person__natural_person_relation__relationship` | The table that records the kind, the state and the end of each relationship between two people over time: a marriage and its divorce, or a parent's responsibility for a child until the child comes of age and beyond it for a disability. | one row per parent key and relationship type, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__name` | The table that records the names a legal entity is known by, such as its legal name, a trading name or a community name, and the writing system of each. | one row per parent key and name type, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__identification` | The table that records the identifiers of a legal entity, such as a tax number, a company registration number or a community registry code, who issued each and, for an informal entity, the village or community it is tied to. | one row per parent key and identification (type and number), for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__classification` | The table that records whether a legal entity is corporate or collective and its legal form in the jurisdiction, such as a limited liability company or an indigenous council. | one row per parent key, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__lifecycle` | The table that records whether a legal entity is active and the events that began and ended that status: incorporation or formal recognition, and dissolution, bankruptcy or merger. | one row per parent key, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__natural_person__representation` | The table that records how a natural person acts for a legal entity: the role, and when the person took it and left it. A person can hold several roles. | one row per parent key and role, for each time its values change | — |
+| Registries | Legal Entity | `sat_legal_entity__party_owner__ownership` | The table that records each holding by which a party owns a legal entity: the legal nature of the title, the share, any restriction on distributions or disposal, and whether the award is fully vested, with the dates each applies. Each type of holding is its own entry, and a change is a new entry, so the earlier ones stay. | one row per parent key and holding type, for each time its values change | — |
+| Platform | Code List | `sat_code_value__label` | The table that records the name shown to people for each value, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key, for each time its values change | — |
+| Platform | Code List | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
+| Platform | Code List | `sat_code_list__usage` | The table that records where a list is used: which object and which column take their values from it. | one row per parent key and column that uses the list, for each time its values change | — |
+| Platform | Code List | `sat_code_list__access` | The table that records which roles may see the values of a list, and how much each may see, for lists that only some roles may read. | one row per parent key and role, for each time its values change | — |
+| Platform | Load Configuration | `sat_load_configuration__mechanism` | The table that records, for each jurisdiction and attribute group, whether the loader keeps history, which is the default, or updates the value in place, which is the exception, which table it writes and from what date. A change is a new entry, and the earlier one stays. | one row per parent key, for each time its values change | — |
 
 ## Satellites with row versioning
 
-| **Owner domain** | **Object** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- | --- |
-| Registries | Natural Person | `sat_natural_person__demographics` | one row per parent key, replaced in place when its values change | — |
-| Registries | Natural Person | `sat_natural_person__physical_traits` | one row per parent key, replaced in place when its values change | — |
-| Registries | Natural Person | `sat_natural_person__community_affiliation` | one row per parent key, replaced in place when its values change | — |
+| **Owner domain** | **Object** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- | --- |
+| Registries | Natural Person | `sat_natural_person__demographics` | The table that holds only the current gender of a person, replaced when it changes. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__demographics_history` is the default. | one row per parent key, replaced in place when its values change | — |
+| Registries | Natural Person | `sat_natural_person__physical_traits` | The table that holds only the current height and blood type of a person, replaced when they change. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__physical_traits_history` is the default. | one row per parent key, replaced in place when its values change | — |
+| Registries | Natural Person | `sat_natural_person__community_affiliation` | The table that holds only the current ethnicity, tribe and religion of a person, replaced when they change. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__community_affiliation_history` is the default. | one row per parent key, replaced in place when its values change | — |

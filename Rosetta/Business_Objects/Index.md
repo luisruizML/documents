@@ -43,7 +43,7 @@ Eleven sections, always in this order.
 | **Header** | Object, parent object, owner domain, shared-with domains, scope, status, version, date | Know who owns the object and how settled it is |
 | **Definition** | What the object is, in business words, and where its scope ends | Agree on the meaning |
 | **Why it is its own object** | The reasons it is not an attribute of another object | Understand the design choice |
-| **Vault objects** | The Hubs, Links and Satellites of the object, with the grain and the business key of each | See the whole cluster at a glance |
+| **Vault objects** | The Hubs, Links and Satellites of the object, with what each one is for, its grain and its business key | See the whole cluster at a glance |
 | **Fields** | One table per vault object: every column with role, type, null, PII, default and description | Know exactly what is stored |
 | **Sources and mapping** | The source endpoints declared for the object, or the statement that none are declared yet | Trace where the data comes from |
 | **Jurisdictions map** | Edge cases that need a different approach, the jurisdictions where they happen, and the vault effect | See why the model bends for some countries |

@@ -56,21 +56,23 @@ class CoreTests(unittest.TestCase):
         self.assertEqual([e for e in errs if e.startswith("header:")], [])
 
 
-def with_definitions(text: str, definition="The table that records the sample orders of the platform.") -> str:
-    """The fixture with a Definition column added to its Vault objects table."""
-    out, inside, first = [], False, True
-    for line in text.split(chr(10)):
+DEFAULT_DEFINITION = "The table that records the sample orders of the platform."
+
+
+def with_definition(definition: str) -> str:
+    """The fixture with the Definition of every Vault object replaced."""
+    return page().replace(DEFAULT_DEFINITION, definition)
+
+
+def without_definition_column() -> str:
+    """The fixture as it was before the column existed."""
+    out, inside = [], False
+    for line in page().split(chr(10)):
         if line.startswith("## "):
-            inside, first = line == "## Vault objects", True
+            inside = line == "## Vault objects"
         elif inside and line.startswith("|"):
             cells = line.split(" | ")
-            if line.startswith("| **Type**"):
-                cell = "**Definition**"
-            elif line.startswith("| ---"):
-                cell = "---"
-            else:
-                cell = definition
-            cells.insert(2, cell)
+            del cells[2]
             line = " | ".join(cells)
         out.append(line)
     return chr(10).join(out)
@@ -80,33 +82,33 @@ class DefinitionTests(unittest.TestCase):
     def tags(self, text):
         return [e for e in vp.validate(text) if e.startswith("definition:")]
 
-    def test_the_column_is_optional_by_default(self):
+    def test_the_fixture_has_good_definitions(self):
         self.assertEqual(self.tags(page()), [])
 
-    def test_a_good_definition_is_accepted(self):
-        self.assertEqual([e for e in vp.validate(with_definitions(page())) if not e.startswith("diagram:")], [])
+    def test_the_column_is_mandatory(self):
+        self.assertTrue(has(self.tags(without_definition_column()), "definition", "needs a Definition"))
 
-    def test_the_column_can_be_made_mandatory(self):
-        vp.REQUIRE_DEFINITION = True
+    def test_the_requirement_can_be_switched_off(self):
+        vp.REQUIRE_DEFINITION = False
         try:
-            self.assertTrue(has(self.tags(page()), "definition", "needs a Definition"))
+            self.assertEqual(self.tags(without_definition_column()), [])
         finally:
-            vp.REQUIRE_DEFINITION = False
+            vp.REQUIRE_DEFINITION = True
 
     def test_empty_definition_is_reported_with_the_object_name(self):
-        self.assertTrue(has(self.tags(with_definitions(page(), " ")), "definition", "hub_sample_order"))
+        self.assertTrue(has(self.tags(with_definition(" ")), "definition", "hub_sample_order"))
 
     def test_definition_must_start_in_the_agreed_form(self):
-        self.assertTrue(has(self.tags(with_definitions(page(), "Stores orders.")), "definition", "must start with"))
+        self.assertTrue(has(self.tags(with_definition("Stores orders.")), "definition", "must start with"))
 
     def test_definition_must_end_with_a_full_stop(self):
-        self.assertTrue(has(self.tags(with_definitions(page(), "The table that records orders")), "definition", "full stop"))
+        self.assertTrue(has(self.tags(with_definition("The table that records orders")), "definition", "full stop"))
 
     def test_definition_must_be_short(self):
-        self.assertTrue(has(self.tags(with_definitions(page(), "The table that " + "x" * 400 + ".")), "definition", "characters"))
+        self.assertTrue(has(self.tags(with_definition("The table that " + "x" * 400 + ".")), "definition", "characters"))
 
     def test_definition_avoids_technical_words(self):
-        self.assertTrue(has(self.tags(with_definitions(page(), "The table that holds the hash of an order.")), "definition", "hash"))
+        self.assertTrue(has(self.tags(with_definition("The table that holds the hash of an order.")), "definition", "hash"))
 
 
 class VaultObjectTests(unittest.TestCase):
@@ -123,7 +125,7 @@ class VaultObjectTests(unittest.TestCase):
         self.assertEqual([e for e in vp.validate(text) if e.startswith("name:")], [])
 
     def test_role_suffix_does_not_change_the_alphabetical_check(self):
-        text = page().replace("`lnk_customer__sample_order` | one", "`lnk_sample_order__customer_owner` | one")
+        text = page().replace("`lnk_customer__sample_order` | " + DEFAULT_DEFINITION, "`lnk_sample_order__customer_owner` | " + DEFAULT_DEFINITION)
         self.assertTrue(has(vp.validate(text), "name", "alphabetical"))
 
     def test_link_may_join_one_object_in_two_roles(self):
@@ -132,7 +134,7 @@ class VaultObjectTests(unittest.TestCase):
         self.assertEqual([e for e in vp.validate(text) if e.startswith("name:")], [])
 
     def test_link_parts_must_be_alphabetical(self):
-        errs = errors("`lnk_customer__sample_order` | one", "`lnk_sample_order__customer` | one")
+        errs = errors("`lnk_customer__sample_order` | " + DEFAULT_DEFINITION, "`lnk_sample_order__customer` | " + DEFAULT_DEFINITION)
         self.assertTrue(has(errs, "name", "alphabetical"))
 
     def test_link_to_hub_on_another_page_is_accepted(self):
@@ -336,7 +338,7 @@ class TemplateTests(unittest.TestCase):
         text = (HERE.parent / "assets" / "template.md").read_text(encoding="utf-8")
         parsed = vp.parse_page(text)
         self.assertEqual(parsed.order, vp.SECTIONS)
-        self.assertEqual(list(parsed.tables("Vault objects")[0][0].keys()), ["Type", "Name", "Grain", "Business key"])
+        self.assertEqual(list(parsed.tables("Vault objects")[0][0].keys()), ["Type", "Name", "Definition", "Grain", "Business key"])
         self.assertEqual(list(parsed.tables("Jurisdictions map")[0][0].keys()), vp.JURISDICTION_COLUMNS)
         self.assertEqual(list(parsed.tables("Open decisions")[0][0].keys()), vp.DECISION_COLUMNS)
         fields = vp._fields_tables(parsed)

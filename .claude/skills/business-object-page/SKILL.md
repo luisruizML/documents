@@ -16,7 +16,7 @@ Do these in order.
 1. **Classify** each thing in the draft into a Hub, a Link, a Non-historized Link or a Satellite. A draft that says "a Hub or a Link" is forced to one decision, and the decision is recorded.
 2. **Name** every vault object by the convention (`hub_<object>`, `lnk_<a>__<b>` in alphabetical order, `sat_<parent>__<descriptor>`). Draft names such as `Hub_Tax_Account` become `hub_tax_account`. List each rename for the author.
 3. **Type** every column from the allowed list, by representation term. Money is `decimal(P,S)`, identifiers are `string`, moments are `timestamptz`.
-4. **State the grain** of every vault object, starting with the "one row per" of its type.
+4. **Define and state the grain** of every vault object. The Definition says in business words what the table is for (rules below); the grain starts with the "one row per" of its type.
 5. **Split** personal data into its own Satellite. Special-category data (race or ethnicity, tribe, religion, health) goes in its own Satellite too.
 6. **Keep history by default.** An attribute group whose rows are not meant to be kept in place is delivered as a pair: the `_history` Satellite, which is the default, and an in-place Satellite with `row_version`, loaded only where a jurisdiction forbids keeping previous values. The current value is the view `cur_<parent>__<descriptor>`, never a stored copy. Do not choose in place for performance.
 7. **Do not store what can be computed** (R13). Age, age group and "valid today" are Gold objects. Keep the date.
@@ -26,6 +26,16 @@ Do these in order.
 11. **Collect** everything you could not decide into Open decisions, with owner, how it is decided and by when.
 12. **Link across pages.** A Link may join a Hub defined on another page; the Hub is drawn as defined elsewhere and has no Fields table here. A Satellite on a Link is named `sat_<link name without lnk_>__<descriptor>`. A relationship you cannot name yet, such as a Link between two roles of the same object, is not invented: it goes in Open decisions.
 13. **Write** the page from `assets/template.md`, then **validate**, then **draw**, then **update the index**.
+
+## Writing a Definition
+
+Every row of the Vault objects table has a Definition. The validator (`definition` errors) checks the form; the meaning is a human review.
+
+1. One or two sentences, starting with "The table that", in business words, at most 400 characters.
+2. It says what the table records and why a reader cares. It does not say how it is stored: no hash, no Hub, Link or Satellite jargon.
+3. A Hub says which identifier it holds and that it carries no description of the object. A Link says which two things it joins and what the join means, and names its Satellite for the details. A Satellite says what it records; if it is one of a pair it says whether it is the default (keeps history) or the exception (updated in place, loaded only where a jurisdiction forbids keeping previous values), and names its twin.
+4. When two tables could be confused, the Definition says which is which: the identity table `lnk_legal_entity__party` and the ownership table `lnk_legal_entity__party_owner`.
+5. It states only what the page states elsewhere; it never adds a rule.
 
 ## Fixed decisions
 
@@ -72,6 +82,7 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 | `format` | Make every table header bold (`**Header**`). |
 | `name` | Rename to the pattern; for a Link, put the parts in alphabetical order; for a Satellite, make sure its parent is on the page. A `ref_` name is not a type: use the Code List object. |
 | `grain` | Start the grain with the "one row per" of its type. |
+| `definition` | Add the Definition column and give every row a sentence that starts with "The table that", ends with a full stop, has at most 400 characters and uses no technical word. |
 | `fields` | Give the table the seven columns; Null and PII are Yes or No; Default is never empty; Role matches the column; `_code` columns show three or more `e.g.` values or `One of`. |
 | `type` | Use a type from the list; a `decimal` needs `(P,S)`; the representation term fixes the type. |
 | `diagram` | Build both images with `build_diagram.py` and reference both. |

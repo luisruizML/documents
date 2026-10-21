@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ORDER = ["Party", "Natural_Person", "Legal_Entity", "Code_List", "Load_Configuration"]
-COLUMNS = ["Owner domain", "Object", "Name", "Grain", "Business key"]
+COLUMNS = ["Owner domain", "Object", "Name", "Definition", "Grain", "Business key"]
 
 # (heading, fill, text) per type. Hub, Link and Satellite are the brand colours of section 3c; a Non-historized Link
 # and a Satellite with row versioning are the 65 % tint of their parent colour.
@@ -42,8 +42,8 @@ def rows(folder: Path) -> dict[str, list[list[str]]]:
         section = text.split("## Vault objects", 1)[1].split("\n## ", 1)[0]
         for line in section.splitlines():
             if line.startswith("| ") and not line.startswith(("| **", "| ---")):
-                type_, name, grain, key = _cells(line)
-                out[kind(type_, grain)].append([owner, stem.replace("_", " "), name, grain, key])
+                type_, name, definition, grain, key = _cells(line)
+                out[kind(type_, grain)].append([owner, stem.replace("_", " "), name, definition, grain, key])
     return out
 
 

@@ -30,18 +30,18 @@ If a Legal Entity were a Satellite of Party, every Satellite of Party would have
 
 ## Vault objects
 
-| **Type** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- |
-| Hub | `hub_legal_entity` | one row per business key | `legal_entity_bk`: the primary identifier of the entity in the source of record, assigned once and never changed. It is a registration or tax number for a formal entity and a registry code for an informal one |
-| Link | `lnk_legal_entity__party` | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
-| Link | `lnk_legal_entity__natural_person` | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
-| Link | `lnk_legal_entity__party_owner` | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
-| Satellite | `sat_legal_entity__name` | one row per parent key and name type, for each time its values change | — |
-| Satellite | `sat_legal_entity__identification` | one row per parent key and identification (type and number), for each time its values change | — |
-| Satellite | `sat_legal_entity__classification` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_legal_entity__lifecycle` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_legal_entity__natural_person__representation` | one row per parent key and role, for each time its values change | — |
-| Satellite | `sat_legal_entity__party_owner__ownership` | one row per parent key and holding type, for each time its values change | — |
+| **Type** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- |
+| Hub | `hub_legal_entity` | The table that holds the identifier by which the source of record knows each organization, association or collective recognized by the State: a registration or tax number for a formal entity, a registry code for an informal one. It carries no description of the entity. | one row per business key | `legal_entity_bk`: the primary identifier of the entity in the source of record, assigned once and never changed. It is a registration or tax number for a formal entity and a registry code for an informal one |
+| Link | `lnk_legal_entity__party` | The table that places every legal entity in the same universe as the natural persons, which together are the Parties. It says that a legal entity is a party; who owns it is recorded in `lnk_legal_entity__party_owner`. | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
+| Link | `lnk_legal_entity__natural_person` | The table that records that a natural person acts for a legal entity, such as a director, a representative or a tribal chief. The role and the dates are recorded in `sat_legal_entity__natural_person__representation`. | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
+| Link | `lnk_legal_entity__party_owner` | The table that records that a party owns a legal entity. The owner can be a natural person or another legal entity, and one entity can have many owners; the share and the state of each holding are recorded in `sat_legal_entity__party_owner__ownership`. It is not the identity table `lnk_legal_entity__party`. | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
+| Satellite | `sat_legal_entity__name` | The table that records the names a legal entity is known by, such as its legal name, a trading name or a community name, and the writing system of each. | one row per parent key and name type, for each time its values change | — |
+| Satellite | `sat_legal_entity__identification` | The table that records the identifiers of a legal entity, such as a tax number, a company registration number or a community registry code, who issued each and, for an informal entity, the village or community it is tied to. | one row per parent key and identification (type and number), for each time its values change | — |
+| Satellite | `sat_legal_entity__classification` | The table that records whether a legal entity is corporate or collective and its legal form in the jurisdiction, such as a limited liability company or an indigenous council. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_legal_entity__lifecycle` | The table that records whether a legal entity is active and the events that began and ended that status: incorporation or formal recognition, and dissolution, bankruptcy or merger. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_legal_entity__natural_person__representation` | The table that records how a natural person acts for a legal entity: the role, and when the person took it and left it. A person can hold several roles. | one row per parent key and role, for each time its values change | — |
+| Satellite | `sat_legal_entity__party_owner__ownership` | The table that records each holding by which a party owns a legal entity: the legal nature of the title, the share, any restriction on distributions or disposal, and whether the award is fully vested, with the dates each applies. Each type of holding is its own entry, and a change is a new entry, so the earlier ones stay. | one row per parent key and holding type, for each time its values change | — |
 
 The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `legal_entity_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 

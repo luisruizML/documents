@@ -49,9 +49,9 @@ TYPES = [
     "fixed(L)", "binary", "variant", "geometry", "geography", "unknown",
     "struct", "list", "map",
 ]
-# The business meaning of each Vault object. The column is optional while the pages are being written one by one;
-# when it is present every row is checked, and REQUIRE_DEFINITION makes it mandatory.
-REQUIRE_DEFINITION = False
+# The business meaning of each Vault object, in the Vault objects table. Every row is checked; REQUIRE_DEFINITION makes
+# the column mandatory.
+REQUIRE_DEFINITION = True
 DEFINITION_START = "The table that"
 DEFINITION_MAX = 400
 DEFINITION_BANNED = ("hash",)
@@ -278,7 +278,7 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     errs: list[str] = []
     tables = page.tables("Vault objects")
     if not tables:
-        return ["name: the Vault objects section needs a table with Type, Name, Grain and Business key"]
+        return ["name: the Vault objects section needs a table with Type, Name, Definition, Grain and Business key"]
     rows = tables[0]
     names: dict[str, str] = {}  # name -> type
     for row in rows:
