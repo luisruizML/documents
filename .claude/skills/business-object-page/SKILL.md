@@ -104,4 +104,4 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 
 ## When you finish
 
-Report the page, the renames you made, the decisions you recorded as open, and anything you could not validate. Publishing to Confluence is a separate step the user asks for. Confluence images are attached by hand.
+Report the page, the renames you made, the decisions you recorded as open, and anything you could not validate. Publishing to Confluence is a separate step the user asks for: `python .claude/skills/business-object-page/scripts/sync_confluence.py` publishes the five pages and the inventory and uploads the PNG files as new versions of their attachments, skipping whatever has not changed (`--dry-run` first; `--page <Object>` for one page; `--lucid <document id>` points the index embed at a Lucid document). It needs `CONFLUENCE_EMAIL` and `CONFLUENCE_API_TOKEN` in the environment or in the `.env` of the repository root, which git ignores. The index page is not rewritten by the script, because it holds the Lucidchart embed.

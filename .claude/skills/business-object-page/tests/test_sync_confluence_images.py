@@ -76,6 +76,34 @@ class PlanTests(unittest.TestCase):
         self.assertEqual([s["file"] for s in steps if s["action"] == "missing"], [])
 
 
+class RetargetTests(unittest.TestCase):
+    def adf(self):
+        media = {"type": "media", "attrs": {"id": "old", "alt": "a.png", "width": 1, "height": 1, "collection": "c"}}
+        return {"type": "doc", "content": [{"type": "mediaSingle", "content": [media]}]}
+
+    def test_a_picture_is_pointed_at_the_current_file_and_size(self):
+        adf = self.adf()
+        self.assertEqual(sync.retarget_media(adf, {"a.png": "new"}, {"a.png": (30, 20)}), 1)
+        attrs = adf["content"][0]["content"][0]["attrs"]
+        self.assertEqual((attrs["id"], attrs["width"], attrs["height"]), ("new", 30, 20))
+
+    def test_a_picture_that_is_already_current_is_left_alone(self):
+        adf = self.adf()
+        sync.retarget_media(adf, {"a.png": "new"}, {"a.png": (30, 20)})
+        self.assertEqual(sync.retarget_media(adf, {"a.png": "new"}, {"a.png": (30, 20)}), 0)
+
+    def test_a_picture_with_another_name_is_not_touched(self):
+        adf = self.adf()
+        self.assertEqual(sync.retarget_media(adf, {"b.png": "new"}, {"b.png": (1, 1)}), 0)
+
+    def test_png_size_is_read_from_the_header(self):
+        import struct
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "x.png"
+            path.write_bytes(bytes.fromhex("89504e470d0a1a0a") + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", 640, 480))
+            self.assertEqual(sync.png_size(path), (640, 480))
+
+
 class UploadTests(unittest.TestCase):
     def test_attach_posts_to_the_page_and_update_posts_to_the_attachment(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -93,7 +121,7 @@ class UploadTests(unittest.TestCase):
     def test_attachments_are_listed_by_file_name_with_their_comment(self):
         page = {"results": [{"id": "att1", "title": "a.png", "metadata": {"comment": "sha256:1"}}], "_links": {}}
         api = sync.Confluence("https://x.atlassian.net/wiki", FakeSession([page]))
-        self.assertEqual(api.attachments("42"), {"a.png": {"id": "att1", "comment": "sha256:1"}})
+        self.assertEqual(api.attachments("42"), {"a.png": {"id": "att1", "comment": "sha256:1", "file_id": None}})
 
 
 if __name__ == "__main__":

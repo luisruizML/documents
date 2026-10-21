@@ -3,8 +3,8 @@
     python sync_confluence_images.py [--page Natural_Person] [--dry-run]
 
 The Atlassian connector of the assistant cannot upload files, so this script uses the Confluence REST API with the
-credentials of the person who runs it. Set two environment variables once (the token is made at
-https://id.atlassian.com/manage-profile/security/api-tokens and is never written in a file or in a chat):
+credentials of the person who runs it. They are read from the environment or from the `.env` file in the repository
+root, which git ignores (the token is made at https://id.atlassian.com/manage-profile/security/api-tokens):
 
     CONFLUENCE_EMAIL        the Atlassian account e-mail
     CONFLUENCE_API_TOKEN    the API token
@@ -15,7 +15,10 @@ For every image of every page (Rosetta/Business_Objects/images/Diagrams_<Object>
     reference in the page body stays valid;
   * the SHA-256 of the file is kept in the attachment comment, and an image that has not changed is skipped, so the
     script can be run after every change and only uploads what is new.
-A page body that refers to an attachment by its file id keeps working, because a new version keeps the file id.
+A new version of an attachment gets a NEW file id, and the picture on a page points at a file id. So after the
+upload the script reads the page body, points every picture whose file name matches at the current file id (and the
+size of the new PNG), and saves the page. That step also runs when nothing was uploaded, so a page whose body was
+rewritten with an older id is put right.
 """
 from __future__ import annotations
 
@@ -27,6 +30,7 @@ import os
 import sys
 import urllib.request
 import uuid
+import struct
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
@@ -36,6 +40,17 @@ KINDS = ("Simplified", "Full")
 COMMENT_PREFIX = "sha256:"
 
 
+def load_env(path: Path = REPO / ".env") -> None:
+    """Read KEY=VALUE lines of the repository .env (which git ignores) into the environment, without overriding it."""
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, _, value = line.partition("=")
+            os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
+
+
 def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -43,6 +58,37 @@ def digest(path: Path) -> str:
 def load_pages(path: Path = PAGES_FILE) -> dict:
     """{"base_url": ..., "pages": {"Natural_Person": "1996029956", ...}}"""
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def png_size(path: Path) -> tuple[int, int]:
+    """Width and height of a PNG, read from its header."""
+    return struct.unpack(">II", path.read_bytes()[16:24])
+
+
+def retarget_media(adf: dict, file_ids: dict[str, str], sizes: dict[str, tuple[int, int]]) -> int:
+    """Point every `media` node whose alt text is a known file name at that file's current id and size.
+    Returns how many nodes changed."""
+    changed = 0
+
+    def walk(node):
+        nonlocal changed
+        if isinstance(node, dict):
+            attrs = node.get("attrs")
+            if node.get("type") == "media" and isinstance(attrs, dict) and attrs.get("alt") in file_ids:
+                name = attrs["alt"]
+                width, height = sizes[name]
+                new = {"id": file_ids[name], "width": width, "height": height}
+                if any(attrs.get(k) != v for k, v in new.items()):
+                    attrs.update(new)
+                    changed += 1
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+
+    walk(adf)
+    return changed
 
 
 def plan(pages: dict[str, str], existing: dict[str, dict[str, dict]], images: Path = IMAGES) -> list[dict]:
@@ -92,6 +138,11 @@ class Session:
     def get(self, url: str):
         return self._open(urllib.request.Request(url, headers={"Accept": "application/json"}))
 
+    def put(self, url: str, body: dict):
+        request = urllib.request.Request(url, data=json.dumps(body).encode(), method="PUT",
+                                         headers={"Content-Type": "application/json", "Accept": "application/json"})
+        return self._open(request)
+
     def post(self, url: str, headers=None, files=None, data=None):
         boundary = uuid.uuid4().hex
         crlf = chr(13) + chr(10)
@@ -118,11 +169,12 @@ class Confluence:
 
     def attachments(self, page_id: str) -> dict[str, dict]:
         found: dict[str, dict] = {}
-        url = f"{self.base}/rest/api/content/{page_id}/child/attachment?limit=200&expand=metadata"
+        url = f"{self.base}/rest/api/content/{page_id}/child/attachment?limit=200&expand=metadata,extensions"
         while url:
             data = self.session.get(url).json()
             for item in data.get("results", []):
-                found[item["title"]] = {"id": item["id"], "comment": (item.get("metadata") or {}).get("comment", "")}
+                found[item["title"]] = {"id": item["id"], "comment": (item.get("metadata") or {}).get("comment", ""),
+                                        "file_id": (item.get("extensions") or {}).get("fileId")}
             nxt = data.get("_links", {}).get("next")
             url = (self.base.rsplit("/wiki", 1)[0] + nxt) if nxt else None
         return found
@@ -142,6 +194,23 @@ class Confluence:
         response.raise_for_status()
 
 
+def retarget_page(api: Confluence, page_id: str, attachments: dict[str, dict], images: Path, names: list[str],
+                  dry_run: bool) -> int:
+    """Point the pictures of one page at the current attachments. Returns the number of pictures changed."""
+    file_ids = {n: attachments[n]["file_id"] for n in names if n in attachments and attachments[n].get("file_id")}
+    sizes = {n: png_size(images / n) for n in file_ids}
+    page = api.session.get(f"{api.base}/rest/api/content/{page_id}?expand=body.atlas_doc_format,version").json()
+    adf = json.loads(page["body"]["atlas_doc_format"]["value"])
+    changed = retarget_media(adf, file_ids, sizes)
+    if changed and not dry_run:
+        api.session.put(f"{api.base}/rest/api/content/{page_id}", {
+            "id": page_id, "type": "page", "title": page["title"],
+            "version": {"number": page["version"]["number"] + 1, "message": "Pictures: current versions of the diagrams"},
+            "body": {"atlas_doc_format": {"value": json.dumps(adf, ensure_ascii=False), "representation": "atlas_doc_format"}},
+        })
+    return changed
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--page", help="only this page, for example Natural_Person")
@@ -153,6 +222,7 @@ def main(argv: list[str] | None = None) -> int:
     if not pages:
         print(f"no page named {args.page}", file=sys.stderr)
         return 2
+    load_env()
     email, token = os.environ.get("CONFLUENCE_EMAIL"), os.environ.get("CONFLUENCE_API_TOKEN")
     if not email or not token:
         print("Set CONFLUENCE_EMAIL and CONFLUENCE_API_TOKEN first (see the top of this file).", file=sys.stderr)
@@ -164,6 +234,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{step['action']:8} {step['page']:20} {step['file']}")
         if step["action"] in ("attach", "update") and not args.dry_run:
             api.upload(step)
+    for stem, page_id in pages.items():
+        attachments = api.attachments(page_id)
+        names = [f"Diagrams_{stem}_{kind}.png" for kind in KINDS]
+        changed = retarget_page(api, page_id, attachments, IMAGES, names, args.dry_run)
+        print(f"{'would point' if args.dry_run else 'pointed'} {changed} picture(s) of {stem} at the current files")
     missing = [s for s in steps if s["action"] == "missing"]
     return 1 if missing else 0
 
