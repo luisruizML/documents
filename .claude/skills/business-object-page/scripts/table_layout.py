@@ -16,8 +16,7 @@ from __future__ import annotations
 import math
 import re
 
-PAGE_WIDTH = 1440       # width of a table on a page in the wide appearance, in px; read from a screenshot of the page, where
-                        # Confluence scaled a table stored at 1800 px down to 1440 (a wider window only widens the columns)
+PAGE_WIDTH = 1800       # width of a table on a page in the wide appearance, in px (a screenshot of such a table was 1800 px wide)
 HEADER_WIDTH = 760      # width of the Header table (default layout), in px
 FONT_SCALE = 1.15       # Confluence's text is wider than Arial; "Owner domain" wrapped at 1.0 and at 1.12
 MONO_CHAR = 8.2         # width of one character of code in Confluence, in px, read from a screenshot
