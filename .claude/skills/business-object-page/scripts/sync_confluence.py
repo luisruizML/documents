@@ -83,6 +83,31 @@ def page_action(current_message: str, storage: str) -> str:
     return "skip" if current_message == MESSAGE_PREFIX + checksum(storage) else "update"
 
 
+APPEARANCE_KEYS = ("content-appearance-draft", "content-appearance-published")
+APPEARANCE = "full-width"  # the editor calls it Wide
+
+
+def appearance_changes(properties: list[dict]) -> list[tuple[str, int | None]]:
+    """The appearance properties of a page that are not Wide yet, as (key, current version or None when missing)."""
+    found = {p["key"]: p for p in properties}
+    return [(key, found[key]["version"]["number"] if key in found else None)
+            for key in APPEARANCE_KEYS if key not in found or found[key]["value"] != APPEARANCE]
+
+
+def set_wide(api: images.Confluence, page_id: str, dry_run: bool) -> int:
+    """Set the page to the wide appearance, so the tables can cover its width. Returns how many properties changed."""
+    url = f"{api.base}/rest/api/content/{page_id}/property"
+    changes = appearance_changes(api.session.get(url + "?expand=version").json()["results"])
+    for key, version in changes:
+        if dry_run:
+            continue
+        if version is None:
+            api.session.post_json(url, {"key": key, "value": APPEARANCE})
+        else:
+            api.session.put(f"{url}/{key}", {"key": key, "value": APPEARANCE, "version": {"number": version + 1}})
+    return len(changes)
+
+
 def publish(api: images.Confluence, page_id: str, storage: str) -> None:
     current = api.session.get(f"{api.base}/rest/api/content/{page_id}?expand=version").json()
     api.session.put(f"{api.base}/rest/api/content/{page_id}", {
@@ -146,6 +171,9 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{action:8} {stem}")
         if action == "update" and not args.dry_run:
             publish(api, page_id, storage)
+        changed = set_wide(api, page_id, args.dry_run)
+        if changed:
+            print(f"{'would set' if args.dry_run else 'set'} {changed} appearance propert(ies) of {stem} to Wide")
     return code
 
 

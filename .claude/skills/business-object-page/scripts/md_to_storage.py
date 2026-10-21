@@ -12,6 +12,8 @@ import re
 import sys
 from pathlib import Path
 
+import table_layout as layout
+
 # Page file -> title in Confluence
 TITLES = {
     "Natural_Person.md": "Natural Person",
@@ -59,8 +61,38 @@ def image(alt: str, src: str) -> str:
             f'<ri:attachment ri:filename="{html.escape(name)}"/></ac:image></p>')
 
 
+VALIGN = ' style="vertical-align: middle;"'
+
+
+def table_xml(head: list[str], body: list[list[str]], heading_text: str, header_colors, widths: dict[str, list[int]]) -> str:
+    """One table. The Header, Vault objects and Fields tables get column widths (table_layout.py); long Definition and
+    Description cells are split into paragraphs."""
+    k = layout.kind(head)
+    names = [layout.plain(h).strip() for h in head]
+    fill, ink = (header_colors or {}).get(heading_text, (None, None))
+    if fill:
+        cells = "".join(f'<th data-highlight-colour="{fill}"{VALIGN}><p><span style="color: {ink};">{inline(c)}</span></p></th>' for c in head)
+    else:
+        cells = "".join(f"<th{VALIGN}><p>{inline(c)}</p></th>" for c in head)
+    if k == "header":
+        opening = f'<table data-layout="default" data-table-width="{layout.HEADER_WIDTH}">' + layout.colgroup(widths["header"])
+    elif k in ("vault", "fields"):
+        opening = f'<table data-layout="full-width" data-table-width="{layout.PAGE_WIDTH}">' + layout.colgroup(widths[k])
+    else:
+        opening = "<table>"
+    xml = opening + "<tbody><tr>" + cells + "</tr>"
+    for row in body:
+        tds = ""
+        for name, cell in zip(names, row):
+            parts = layout.paragraphs(cell) if k in ("vault", "fields") and name in layout.PARAGRAPH_COLUMNS else [cell]
+            tds += f"<td{VALIGN}>" + "".join(f"<p>{inline(x)}</p>" for x in parts) + "</td>"
+        xml += "<tr>" + tds + "</tr>"
+    return xml + "</tbody></table>"
+
+
 def convert(markdown: str, header_colors: dict[str, tuple[str, str]] | None = None) -> str:
     """`header_colors` maps the text of a heading to (fill, text colour) for the header row of the table that follows."""
+    widths = layout.document_widths(markdown)
     lines = markdown.split("\n")
     out: list[str] = []
     heading_text = ""
@@ -83,15 +115,7 @@ def convert(markdown: str, header_colors: dict[str, tuple[str, str]] | None = No
                 rows.append([c.strip() for c in lines[i].rstrip("\r").strip()[1:-1].split("|")])  # an empty cell stays a cell
                 i += 1
             head, body = rows[0], rows[2:]
-            fill, ink = (header_colors or {}).get(heading_text, (None, None))
-            if fill:
-                cells = "".join(f'<th data-highlight-colour="{fill}"><p><span style="color: {ink};">{inline(c)}</span></p></th>' for c in head)
-            else:
-                cells = "".join(f"<th><p>{inline(c)}</p></th>" for c in head)
-            table = "<table><tbody><tr>" + cells + "</tr>"
-            for row in body:
-                table += "<tr>" + "".join(f"<td><p>{inline(c)}</p></td>" for c in row) + "</tr>"
-            out.append(table + "</tbody></table>")
+            out.append(table_xml(head, body, heading_text, header_colors, widths))
             continue
         if re.match(r"^(\*|-|\d+\.) ", line):
             ordered = line[0].isdigit()

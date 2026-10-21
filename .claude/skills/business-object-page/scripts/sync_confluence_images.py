@@ -143,6 +143,11 @@ class Session:
                                          headers={"Content-Type": "application/json", "Accept": "application/json"})
         return self._open(request)
 
+    def post_json(self, url: str, body: dict):
+        request = urllib.request.Request(url, data=json.dumps(body).encode(), method="POST",
+                                         headers={"Content-Type": "application/json", "Accept": "application/json"})
+        return self._open(request)
+
     def post(self, url: str, headers=None, files=None, data=None):
         boundary = uuid.uuid4().hex
         crlf = chr(13) + chr(10)

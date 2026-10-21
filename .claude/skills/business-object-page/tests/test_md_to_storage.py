@@ -1,3 +1,4 @@
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -23,12 +24,25 @@ class ConvertTests(unittest.TestCase):
     def test_table_has_a_header_row_and_cells(self):
         md = chr(10).join(["| **A** | **B** |", "| --- | --- |", "| 1 | `x` |"])
         out = ms.convert(md)
-        self.assertIn("<th><p><strong>A</strong></p></th>", out)
-        self.assertIn("<td><p><code>x</code></p></td>", out)
+        self.assertIn("<p><strong>A</strong></p></th>", out)
+        self.assertIn("<p><code>x</code></p></td>", out)
 
     def test_an_empty_cell_stays_a_cell(self):
         out = ms.convert("| **A** | **B** | **C** |" + chr(10) + "| --- | --- | --- |" + chr(10) + "| x | | z |" + chr(10))
-        self.assertIn("<td><p>x</p></td><td><p></p></td><td><p>z</p></td>", out)
+        self.assertIn("<p>x</p></td><td style=\"vertical-align: middle;\"><p></p></td><td style=\"vertical-align: middle;\"><p>z</p></td>", out)
+
+    def test_the_header_table_gets_column_widths(self):
+        nl = chr(10)
+        out = ms.convert("| **Field** | **Value** |" + nl + "| --- | --- |" + nl + "| Owner domain | Registries |" + nl + "| Shared with | " + "a long value " * 20 + " |" + nl)
+        widths = [int(w) for w in re.findall(r"width: (\d+)px", out)]
+        self.assertEqual(len(widths), 2)
+        self.assertEqual(sum(widths), ms.layout.HEADER_WIDTH)
+        self.assertLess(widths[0], 160)
+        self.assertGreater(widths[1], widths[0])
+
+    def test_another_table_has_no_column_widths(self):
+        nl = chr(10)
+        self.assertNotIn("colgroup", ms.convert("| **A** | **B** |" + nl + "| --- | --- |" + nl + "| x | y |" + nl))
 
     def test_lists(self):
         self.assertEqual(ms.convert("- one" + chr(10) + "- two"), "<ul><li><p>one</p></li><li><p>two</p></li></ul>")
