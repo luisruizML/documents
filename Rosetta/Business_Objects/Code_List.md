@@ -11,11 +11,11 @@
 | Scope | Global |
 | Status | Draft |
 | Version | 0.1 |
-| Last updated | 2026-10-19 |
+| Last updated | 2026-10-21 |
 
 ## Definition
 
-A Code List is a named set of allowed values for a column, such as gender, jurisdiction or key type, together with the label of each value, the jurisdictions where it applies, the period in which it is valid, where the list is used and who may read it.
+A Code List is a named set of allowed values for a column, such as gender, jurisdiction or key type, together with the label of each value in each language, how the value is read and checked, the jurisdictions where it applies, the period in which it is valid, where the list is used and who may read it.
 
 One object holds every list. A new list is a new row, never a new table, so the model does not grow with each new need.
 
@@ -34,8 +34,9 @@ One object holds every list. A new list is a new row, never a new table, so the 
 | Hub | `hub_code_list` | The table that holds the name of each list of allowed values, such as gender, jurisdiction or key type. A new list is a new entry here, never a new table. | one row per business key | `code_list_bk`: the name of the list, such as `gender`. It is assigned once and never changed |
 | Hub | `hub_code_value` | The table that holds each value that can appear in a list, identified by the list name and the code, such as gender:female. The same code in two lists is two different values. | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
 | Link | `lnk_code_list__code_value` | The table that records which values belong to which list. | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
-| Satellite | `sat_code_value__label` | The table that records the name shown to people for each value, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key, for each time its values change | — |
-| Satellite | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
+| Satellite | `sat_code_value__label` | The table that records the name shown to people for each value in each language, a short name for small screens, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key and language, for each time its values change | — |
+| Satellite | `sat_code_value__validation` | The table that records how a value is to be read and checked: the data type of the value, the usual unit and, for each jurisdiction, the pattern its written form must follow, such as the format of a passport number. | one row per parent key and jurisdiction, for each time its values change | — |
+| Satellite | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction (a country or territory) and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
 | Satellite | `sat_code_list__usage` | The table that records where a list is used: which object and which column take their values from it. | one row per parent key and column that uses the list, for each time its values change | — |
 | Satellite | `sat_code_list__access` | The table that records which roles may see the values of a list, and how much each may see, for lists that only some roles may read. | one row per parent key and role, for each time its values change | — |
 
@@ -74,13 +75,32 @@ The hash keys `code_list_hk` and `code_value_hk` are computed from the normalize
 
 ### sat_code_value__label
 
+One row for each value and language. A jurisdiction with more than one official language has one row for each; a reader asks for a language and, when there is no row, falls back to the default language of the jurisdiction and then to `en`.
+
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `label_name` | | `string` | No | No | — | Name shown to people: e.g. `Female`, `Papua New Guinea`, `Census identifier` |
+| `language_code` | | `string` | No | No | — | Language of the label, BCP 47: e.g. `en`, `fr`, `sm` |
+| `label_short_name` | | `string` | Yes | No | null | Short name for small screens such as a phone: e.g. `F`, `PNG`, `Census id`; empty when `label_name` is short enough |
+| `label_name` | | `string` | No | No | — | Name shown to people on a tablet or a computer: e.g. `Female`, `Papua New Guinea`, `Census identifier` |
 | `description_text` | | `string` | Yes | No | null | What the value means, when the label is not enough |
-| `sort_order` | | `int` | No | No | `0` | Position when the list is shown: e.g. `1`, `2`, `3` |
+| `sort_order` | | `int` | No | No | `0` | Position when the list is shown in this language: e.g. `1`, `2`, `3` |
 | `status_code` | | `string` | No | No | — | One of `draft`, `active`, `retired` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
+### sat_code_value__validation
+
+The data type says which value column a consumer reads (R11): a trait such as `height` is a `decimal`, so its value is read from `value_number`, and a trait such as `blood_type` is a `string`, so it is read from `value_text`. Because the type is declared once here, the load casts each value once and parks a value that does not fit (R8). The pattern is a form check, not proof that the document exists.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) the pattern applies to, ISO 3166-1 alpha-3, or `any`: e.g. `COL`, `CUW`, `any` |
+| `value_data_type_code` | | `string` | No | No | — | Type of the values that use this code. One of `string`, `integer`, `decimal`, `date`, `boolean` |
+| `measure_unit_code` | | `string` | Yes | No | null | Usual unit of a numeric value, a value of the list `measure_unit`: e.g. `cm`, `kg`, `percent`; empty when the value has no unit |
+| `validation_pattern_text` | | `string` | Yes | No | null | Regular expression the written form must match: e.g. `^[A-Z]{2}[0-9]{6}$`, `^[0-9]{6,10}$`; empty when there is no rule |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -90,9 +110,9 @@ The hash keys `code_list_hk` and `code_value_hk` are computed from the normalize
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction where the value is allowed, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `PNG`, `WSM`, `any` |
-| `valid_from_date` | | `date` | No | No | — | First day the value is allowed there |
-| `valid_to_date` | | `date` | Yes | No | null | Last day the value is allowed there; empty while it is still allowed |
+| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) where the value is allowed, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `PNG`, `WSM`, `any` |
+| `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the value is allowed there; `1900-01-01` when it has always been allowed |
+| `valid_to_date` | | `date` | No | No | `9999-12-31` | Last day the value is allowed there; `9999-12-31` while it is still allowed. When a newer row starts for the same value and jurisdiction, the loader sets this to the day before it starts |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -130,6 +150,8 @@ No endpoints declared yet
 | A list with two values in one jurisdiction and more in another | Any jurisdiction that defines a list on its own | The values are the same rows; each jurisdiction has its own applicability rows (R7) | `sat_code_value__applicability`, one row for each jurisdiction |
 | A jurisdiction widens its list, then narrows it | Any jurisdiction that changes a definition | The value gets an end date; a value that returns gets a new applicability row | New rows in `sat_code_value__applicability`; earlier rows stay as history |
 | A value used in old records that is no longer allowed | Any jurisdiction | The value is retired, never deleted, so old rows stay readable | `status_code` changes to `retired` in `sat_code_value__label` |
+| A jurisdiction with more than one official language | Any multilingual country or territory | One label row for each official language; the reader falls back to the default language of the jurisdiction, then to `en` | Rows by `language_code` in `sat_code_value__label` |
+| The format of an identifier differs by country | Any jurisdiction that issues documents, for example a Colombian passport, a United States driver licence or a Curaçao national identity card | The pattern belongs to the value and the jurisdiction; a value that does not match is parked with the reason, not rejected | `validation_pattern_text` in `sat_code_value__validation` |
 | A list whose values only some roles may see | Lists of sensitive attributes | The roles and what each may see are recorded on the list | Rows in `sat_code_list__access` |
 
 ## Examples
@@ -138,21 +160,32 @@ Illustrative data. The list `gender` is allowed with different values in two jur
 
 `hub_code_value` and `sat_code_value__label`
 
-| **code_value_bk** | **label_name** | **status_code** |
-| --- | --- | --- |
-| gender:male | Male | active |
-| gender:female | Female | active |
-| gender:non_binary | Non-binary | active |
+| **code_value_bk** | **language_code** | **label_short_name** | **label_name** | **status_code** |
+| --- | --- | --- | --- | --- |
+| gender:male | en | M | Male | active |
+| gender:female | en | F | Female | active |
+| gender:female | fr | F | Féminin | active |
+| gender:non_binary | en | NB | Non-binary | active |
 
 `sat_code_value__applicability`
 
 | **code_value_bk** | **jurisdiction_code** | **valid_from_date** | **valid_to_date** |
 | --- | --- | --- | --- |
-| gender:male | any | 2000-01-01 | (empty) |
-| gender:female | any | 2000-01-01 | (empty) |
-| gender:non_binary | WSM | 2024-01-01 | (empty) |
+| gender:male | any | 1900-01-01 | 9999-12-31 |
+| gender:female | any | 1900-01-01 | 9999-12-31 |
+| gender:non_binary | WSM | 2024-01-01 | 9999-12-31 |
 
 Here a person in `PNG` can be recorded only as male or female, and a person in `WSM` as male, female or non-binary from 2024.
+
+`sat_code_value__validation` for a passport number and a height
+
+| **code_value_bk** | **jurisdiction_code** | **value_data_type_code** | **validation_pattern_text** |
+| --- | --- | --- | --- |
+| identification_type:passport | any | string | (empty) |
+| identification_type:passport | COL | string | ^[A-Z]{2}[0-9]{6}$ |
+| physical_trait:height | any | decimal | (empty) |
+
+A value that is later given a new rule gets a new row, and the loader closes the previous one the day before. A height is a `decimal`, so the traits Satellite reads it from `value_number`.
 
 `sat_code_list__usage` for the list `gender`
 
@@ -163,13 +196,28 @@ Here a person in `PNG` can be recorded only as male or female, and a person in `
 
 ## Modeling considerations
 
-- **A code is a Code List value when its values can change without changing any logic.** Examples: `gender_code`, `jurisdiction_code`, `key_type_code`, `name_type_code`, `identification_type_code`, `registration_basis_code`, `script_code`. A code on which logic depends is a closed list written in the column's Description with `One of`. Examples: `status_code`, `origin_event_code`, `termination_event_code`, `blood_type_code`.
+- **A code is a Code List value when its values can change without changing any logic.** Examples: `gender_code`, `jurisdiction_code`, `key_type_code`, `name_type_code`, `identification_type_code`, `registration_basis_code`, `script_code`. A code on which logic depends is a closed list written in the column's Description with `One of`. Examples: `status_code`, `event_status_code`, `access_code`, `value_data_type_code`.
 - **A column that uses a list says so in two places.** The Description of the column points to the list, and `sat_code_list__usage` records the exact object and column. A search of either finds the other.
 - **A Code List is never deleted from.** A value that is no longer allowed is retired, because records loaded earlier still carry it (R1).
 - **Applicability is a scenario, not a copy.** The same value is one row; where and when it is allowed is in `sat_code_value__applicability`.
 - **Access is enforced by Platform.** `sat_code_list__access` records the rule; the role-based access control of the platform applies it.
+- **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. The columns of the five pages:
+
+| **Column** | **Where its values live** | **Why** |
+| --- | --- | --- |
+| `jurisdiction_code`, `issuing_jurisdiction_code`, `event_place_jurisdiction_code` | List `jurisdiction` (ISO 3166-1: a country or a territory with its own code) | One list for every column that names a country or territory |
+| `key_type_code`, `name_type_code`, `identification_type_code`, `registration_basis_code`, `issued_by_code` | Lists `key_type`, `name_type`, `identification_type`, `registration_basis`, `issuer` | Each jurisdiction has its own values |
+| `script_code`, `language_code` | Lists `script` (ISO 15924) and `language` (BCP 47) | External standards, loaded as lists |
+| `gender_code`, `affiliation_type_code`, `affiliation_value_code` | Lists `gender`, `affiliation_type`, and one list for each affiliation type (`ethnicity`, `tribe`, `religion`) | Set by each jurisdiction and restricted by role |
+| `trait_code`, `measure_unit_code` | Lists `physical_trait` and `measure_unit` | A new trait or unit is a new value, not a new column |
+| `event_code` | Lists `person_event` and `legal_entity_event` | A new kind of event changes no table |
+| `relationship_type_code`, `end_reason_code`, `responsibility_basis_code` | Lists with the same names without `_code` | The values differ by jurisdiction |
+| `criterion_code`, `classification_code`, `community_code`, `role_code` (representation) | Lists `legal_form`, `classification_criterion`, one list for each criterion, `community`, `representation_role` | A value changes without any rule changing |
+| `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code` | Closed lists, written in the Description | A rule branches on each value |
+
+- **A date range closes the one before it.** In `sat_code_value__applicability` and `sat_code_value__validation` a new row for the same value and jurisdiction closes the open one: its end becomes the day before the new start (Principles, "Validity ranges").
+- **A value has a type.** `value_data_type_code` in `sat_code_value__validation` says whether the values of a code are strings, whole numbers, decimals, dates or booleans, so the load casts once and the Gold layer does not guess (R11).
 - **External standards are still lists.** ISO 3166-1 for jurisdictions and ISO 15924 for scripts are loaded as lists, so every column reads the same way.
-- **Labels are not translated here.** One label for each value; translations are a presentation matter.
 
 ## Diagram
 
@@ -177,7 +225,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 2 Hubs, 1 Link and 4 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 2 Hubs, 1 Link and 5 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
 
 ![Code List cluster, simplified](images/Diagrams_Code_List_Simplified.png)
 
@@ -194,4 +242,6 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | Where the roles of `sat_code_list__access` come from | Platform | Decided with the role-based access control design of the platform | Before the first list with restricted values |
 | Whether the rule for which codes become Code List values is added to the Principles | Data Architecture Engineer | Decided in the Principles, from the examples in this page | Before the first review of this page |
 | Whether `usage_object_name` and `usage_column_name` are filled by hand or read from the catalog | Data Architecture Engineer and Platform | Decided when the catalog (R5) is set up | Before the first list is loaded |
+| Whether the validation pattern of a value is a regular expression only, or can name a check rule such as a check digit | Data Architecture Engineer | Decided with the first source that has a check digit | Before the first identification type is loaded |
+| Whether a mapping from an old list to its replacement, such as an old gender list to a new one, is kept as data here | Data Architecture Engineer and Data Product Owner | Decided when the first jurisdiction changes a list that is used in reports | When such a change is announced |
 | Whether a list can have a parent list, such as a region inside a jurisdiction | Data Architecture Engineer | Decided when the first hierarchical list is needed | When such a list is requested |

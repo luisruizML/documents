@@ -113,6 +113,9 @@ Descriptive columns end in a **representation term** (the third part of an ISO/I
 | `_id` | an identifier | `registration_id` |
 | `_code` | a value from a code list | `country_code` |
 | `_name` | a name or label | `taxpayer_name` |
+| `_text` | written text, such as a name as written or a description | `name_text` |
+| `_uri` | a pointer to a stored object | `artifact_uri` |
+| `_number` | an exact number whose unit is in a `_code` column beside it | `value_number` |
 | `_date` | a calendar date | `registration_date` |
 | `_dts` | a date and time | `filed_dts` |
 | `_amount` | money, with a `_currency_code` beside it | `assessed_amount` |
@@ -191,6 +194,9 @@ The representation term of a column (see *Column names*) fixes its type:
 | `_id` | `string`, or `uuid` when the source guarantees a UUID. An identifier is never a number, even when it contains only digits |
 | `_code` | `string` |
 | `_name` | `string` |
+| `_text` | `string` |
+| `_uri` | `string` |
+| `_number` | `decimal(P,S)`, with the unit in a `_code` column beside it |
 | `_date` | `date` |
 | `_dts` | `timestamptz` |
 | `_amount` | `decimal(P,S)`, with `_currency_code` beside it |
@@ -291,6 +297,18 @@ Every attribute group keeps its history unless a rule says otherwise. The Satell
 * **A state, when the group needs one.** The row may carry a `status_flag` (`boolean`, for a yes or no state) or a `status_code` (`string`, for a state with several values such as `active`, `inactive`, `draft`), written under the rules for `_flag` and `_code` columns.
 * **Delivered as a twin.** Each group is delivered with both Satellites, so that a jurisdiction can move from one to the other without changing a grain (see *Changing a grain*). The Load Configuration object (a Platform object) says, for each jurisdiction, which of the two is loaded. Where it has no row, the default is the history Satellite.
 * **Never both for one jurisdiction.** Loading both would keep, in one table, the value that the other table must not keep.
+
+### **Patterns that repeat across objects**
+
+These four patterns are written once here, and the pages point to them.
+
+**Validity ranges.** A row that says from when and until when a state applies carries both dates. The start is `effective_date` or `valid_from_date`; an unknown start is `1900-01-01`. The end is `end_date` or `valid_to_date`; a state that has not ended carries `9999-12-31`, never null. A question such as "what applied on this day" is then `start <= day AND day <= end`, with no test for null. Both columns are `date`, Null No, and the end has the default `9999-12-31`. When a new row starts for the same key and the same type, the loader closes the open row: its end becomes the new start minus one day, so at most one row per key and type is open. A start after its end, or two ranges of one key and type that overlap, is parked by the quality checks from Bronze to Silver (R8). This is only for ranges that a later row closes. A date that is a fact in itself, such as a birth, an expiry or a registration, stays a plain date and may be empty.
+
+**Events as rows.** When the facts about a subject are things that happen on a date, the Satellite holds one row per event: `event_code` (a Code List value), `event_date` and the evidence. It does not hold one column for each kind of date. A new kind of event is a new Code List value and changes no table. The state of the subject, such as whether a person is active, is worked out in Gold from the events in date order (R13). An event recorded by mistake is never deleted: a later row for the same event is marked `voided`.
+
+**Traits as rows.** A group of measurements or classifications that a jurisdiction may extend, such as height, weight and blood type, or ethnicity, tribe and religion, is one row per trait: `trait_code`, `value_text`, `value_number` and `measure_unit_code`. The Code List says, for each trait, which value column is used (`value_data_type_code`: `string`, `date` and `boolean` are written as text in ISO 8601, `integer` and `decimal` are numbers), and the other column stays empty. The load checks the value against that type (R11), so one table holds traits of different types and a new trait is a new Code List value, not a change of table. Typed columns stay right for a group that is small, stable and read by column; they are not used for a group that is open to growth.
+
+**Evidence is a pointer to one stored object.** `artifact_uri` points to one object in Digital Artifact. Two uploads on two dates are two objects with two pointers, never one file replaced, so the earlier one stays as history (R1). A renewed document is a new identification row and a new object, and the old row keeps its own. Digital Artifact keeps a content digest of each object, so the same image uploaded twice can be found later; Nexus stores only the pointer.
 
 ### **Changing a grain**
 

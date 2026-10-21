@@ -178,6 +178,8 @@ PREFIX = {"Hub": "hub_", "Link": "lnk_", "Non-historized Link": "lnk_", "Satelli
 ALLOWED_SHORT = {"id", "hk", "bk", "dts", "of", "to", "by", "in", "on", "no", "is"}
 DECIMAL_RE = re.compile(r"^decimal\(\d+,\d+\)$")
 FIXED_RE = re.compile(r"^fixed\(\d+\)$")
+# The columns that open or close a validity range carry a sentinel, so a range join needs no test for null.
+VALIDITY_SENTINELS = {"end_date": "9999-12-31", "valid_to_date": "9999-12-31", "valid_from_date": "1900-01-01"}
 TERM_TYPES = {
     "_id": {"string", "uuid"},
     "_code": {"string"},
@@ -343,6 +345,10 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
                     errs.append(f"fields: '{name}.{col}' {key} must be Yes or No, found '{r.get(key, '')}'")
             if not r.get("Default", "").strip():
                 errs.append(f"fields: '{name}.{col}' Default must not be empty; write — when there is no default")
+            if col in VALIDITY_SENTINELS:
+                sentinel = VALIDITY_SENTINELS[col]
+                if _strip(r.get("Default", "")) != sentinel or r.get("Null", "") != "No":
+                    errs.append(f"fields: '{name}.{col}' must be Null No with Default `{sentinel}` (an open validity range uses the sentinel)")
             if col.endswith("_code"):
                 errs += _check_examples(name, col, r.get("Description", ""))
             expected = _expected_role(col, kind, name)
@@ -352,9 +358,10 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
             if not _type_ok(typ):
                 errs.append(f"type: '{name}.{col}' type '{typ}' is not on the allowed list (decimal needs decimal(P,S), fixed needs fixed(L))")
                 continue
-            if col.endswith("_amount"):
-                if not DECIMAL_RE.match(typ):
-                    errs.append(f"type: '{name}.{col}' ends in _amount, so its type must be decimal(P,S), found '{typ}'")
+            for term in ("_amount", "_number"):
+                if col.endswith(term) and not DECIMAL_RE.match(typ):
+                    errs.append(f"type: '{name}.{col}' ends in {term}, so its type must be decimal(P,S), found '{typ}'")
+            if col.endswith(("_amount", "_number")):
                 continue
             if col.endswith("_hk") or col == "hashdiff":
                 if typ != "string" and not FIXED_RE.match(typ):

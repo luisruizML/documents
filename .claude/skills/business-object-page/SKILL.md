@@ -44,6 +44,8 @@ Every row of the Vault objects table has a Definition. The validator (`definitio
 - The business key of an object that several jurisdictions identify differently is `jurisdiction_code` + `key_type_code` + the normalized `<object>_bk`.
 - Government Authority is not a Party. It is a Platform object.
 - A Link with a role (a person related to a person, or a Party that owns a Legal Entity) names the role as a suffix of the part that plays it: `lnk_legal_entity__party_owner`. The Business key cell lists the Hubs it joins, in order, and names the role in brackets when the same Hub is joined twice. A Satellite whose rows are keyed by a type (holding type, relationship type) states it in the grain: "one row per parent key and holding type". Ownership of a Legal Entity is `lnk_legal_entity__party_owner`, not `lnk_legal_entity__party`, which says that a Legal Entity is a Party.
+- A validity range carries sentinels: `end_date` and `valid_to_date` are Null No with the default `9999-12-31`, `valid_from_date` has the default `1900-01-01`, and the loader closes the open row the day before a new one starts (Principles, "Validity ranges"). A column ending in `_number` is `decimal(P,S)`.
+- Facts that happen on a date are rows of events (`event_code`, `event_date`), and measurements or classifications that can grow are rows of traits (`trait_code`, `value_text`, `value_number`), not one column each (Principles, "Patterns that repeat across objects"). Evidence is an `artifact_uri` that points to one stored object.
 - Payment objects belong to Finance.
 - Platform objects (configuration, Code List, Government Authority) are listed in the Platform section of the index and on `Platform.md`.
 - Source endpoints are declared by the author, never discovered. With none given, write `No endpoints declared yet`.
@@ -83,7 +85,7 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 | `name` | Rename to the pattern; for a Link, put the parts in alphabetical order; for a Satellite, make sure its parent is on the page. A `ref_` name is not a type: use the Code List object. |
 | `grain` | Start the grain with the "one row per" of its type. |
 | `definition` | Add the Definition column and give every row a sentence that starts with "The table that", ends with a full stop, has at most 400 characters and uses no technical word. |
-| `fields` | Give the table the seven columns; Null and PII are Yes or No; Default is never empty; Role matches the column; `_code` columns show three or more `e.g.` values or `One of`. |
+| `fields` | Give the table the seven columns; an `end_date` or `valid_to_date` is Null No with Default `9999-12-31` and a `valid_from_date` has Default `1900-01-01`; Null and PII are Yes or No; Default is never empty; Role matches the column; `_code` columns show three or more `e.g.` values or `One of`. |
 | `type` | Use a type from the list; a `decimal` needs `(P,S)`; the representation term fixes the type. |
 | `diagram` | Build both images with `build_diagram.py` and reference both. |
 

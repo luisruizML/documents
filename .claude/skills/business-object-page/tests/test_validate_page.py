@@ -111,6 +111,41 @@ class DefinitionTests(unittest.TestCase):
         self.assertTrue(has(self.tags(with_definition("The table that holds the hash of an order.")), "definition", "hash"))
 
 
+class ValidityDateTests(unittest.TestCase):
+    ROW = "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
+
+    def with_row(self, row: str) -> list[str]:
+        return vp.validate(page(self.ROW, self.ROW + chr(10) + row))
+
+    def test_an_open_end_carries_the_sentinel_default(self):
+        ok = "| `end_date` | | `date` | No | No | `9999-12-31` | Last day this state applies; `9999-12-31` while it still applies |"
+        self.assertEqual(self.with_row(ok), [])
+
+    def test_an_end_date_that_is_null_is_reported(self):
+        bad = "| `end_date` | | `date` | Yes | No | null | Last day this state applies |"
+        self.assertTrue(has(self.with_row(bad), "fields", "end_date"))
+
+    def test_a_valid_to_date_without_the_sentinel_is_reported(self):
+        bad = "| `valid_to_date` | | `date` | No | No | — | Last day the value is allowed |"
+        self.assertTrue(has(self.with_row(bad), "fields", "valid_to_date"))
+
+    def test_a_valid_from_date_carries_the_early_sentinel(self):
+        ok = "| `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the value is allowed |"
+        bad = "| `valid_from_date` | | `date` | No | No | — | First day the value is allowed |"
+        self.assertEqual(self.with_row(ok), [])
+        self.assertTrue(has(self.with_row(bad), "fields", "valid_from_date"))
+
+
+class NumberTermTests(unittest.TestCase):
+    ROW = "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
+
+    def test_a_number_is_a_decimal(self):
+        ok = "| `value_number` | | `decimal(18,6)` | Yes | No | null | A value |"
+        bad = "| `value_number` | | `string` | Yes | No | null | A value |"
+        self.assertEqual(vp.validate(page(self.ROW, self.ROW + chr(10) + ok)), [])
+        self.assertTrue(has(vp.validate(page(self.ROW, self.ROW + chr(10) + bad)), "type", "_number"))
+
+
 class VaultObjectTests(unittest.TestCase):
     def test_draft_style_name_is_rejected_with_lowercase_hint(self):
         errs = errors("| Hub | `hub_sample_order` |", "| Hub | `Hub_Sample_Order` |")
