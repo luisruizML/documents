@@ -30,22 +30,22 @@ If a Natural Person were merged into a single Party table, every registry would 
 
 ## Vault objects
 
-| **Type** | **Name** | **Grain** | **Business key** |
-| --- | --- | --- | --- |
-| Hub | `hub_natural_person` | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
-| Link | `lnk_natural_person__party` | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
-| Link | `lnk_natural_person__natural_person_relation` | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
-| Satellite | `sat_natural_person__name` | one row per parent key and name type, for each time its values change | — |
-| Satellite | `sat_natural_person__identification` | one row per parent key and identification document (type and number), for each time its values change | — |
-| Satellite | `sat_natural_person__registration` | one row per parent key and registration basis, for each time its values change | — |
-| Satellite | `sat_natural_person__lifecycle` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_natural_person__demographics` | one row per parent key, replaced in place when its values change | — |
-| Satellite | `sat_natural_person__demographics_history` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_natural_person__physical_traits` | one row per parent key, replaced in place when its values change | — |
-| Satellite | `sat_natural_person__physical_traits_history` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_natural_person__community_affiliation` | one row per parent key, replaced in place when its values change | — |
-| Satellite | `sat_natural_person__community_affiliation_history` | one row per parent key, for each time its values change | — |
-| Satellite | `sat_natural_person__natural_person_relation__relationship` | one row per parent key and relationship type, for each time its values change | — |
+| **Type** | **Name** | **Definition** | **Grain** | **Business key** |
+| --- | --- | --- | --- | --- |
+| Hub | `hub_natural_person` | The table that holds the identifier by which the source of record knows each individual person in the platform. It carries no description of the person; that is kept in the tables around it. | one row per business key | `natural_person_bk`: the primary person identifier of the source of record, assigned once and never changed. It is not an identity document |
+| Link | `lnk_natural_person__party` | The table that places every natural person in the same universe as the legal entities, which together are the Parties. Any object that must point to "whoever owes or asks", of either kind, goes through the Party. | one row per distinct combination of natural person and party | `hub_natural_person`, `hub_party` |
+| Link | `lnk_natural_person__natural_person_relation` | The table that records that one person is related to another, such as spouses or a parent and a child. It says who is related; what the relationship is, and whether it still applies, is recorded in `sat_natural_person__natural_person_relation__relationship`. | one row per distinct combination of subject person and related person | `hub_natural_person` (subject), `hub_natural_person` (related) |
+| Satellite | `sat_natural_person__name` | The table that records the names a person is known by, such as a legal name, an alias or a tribal title, and the writing system of each. A person can have several. | one row per parent key and name type, for each time its values change | — |
+| Satellite | `sat_natural_person__identification` | The table that records the documents and numbers that identify a person, such as a passport, a residence permit or a national identity number, and when each stops being valid. | one row per parent key and identification document (type and number), for each time its values change | — |
+| Satellite | `sat_natural_person__registration` | The table that records why and when a person was registered (a document, a biometric, a testimony or a census) and points to the evidence. | one row per parent key and registration basis, for each time its values change | — |
+| Satellite | `sat_natural_person__lifecycle` | The table that records whether a person is active and the events that began and ended that status: birth or immigration, and confirmed death. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__demographics` | The table that holds only the current gender of a person, replaced when it changes. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__demographics_history` is the default. | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__demographics_history` | The table that records every gender recorded for a person over time, so earlier values stay. It is the default; `sat_natural_person__demographics` is the exception. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__physical_traits` | The table that holds only the current height and blood type of a person, replaced when they change. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__physical_traits_history` is the default. | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__physical_traits_history` | The table that records every height and blood type recorded for a person over time, so earlier values stay. It is the default; `sat_natural_person__physical_traits` is the exception. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__community_affiliation` | The table that holds only the current ethnicity, tribe and religion of a person, replaced when they change. It is the exception, loaded only where a jurisdiction forbids keeping previous values; `sat_natural_person__community_affiliation_history` is the default. | one row per parent key, replaced in place when its values change | — |
+| Satellite | `sat_natural_person__community_affiliation_history` | The table that records every ethnicity, tribe and religion recorded for a person over time, so earlier values stay. It is the default. This is special-category data: it is collected only where the jurisdiction allows it and seen only by the roles that may. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_natural_person__natural_person_relation__relationship` | The table that records the kind, the state and the end of each relationship between two people over time: a marriage and its divorce, or a parent's responsibility for a child until the child comes of age and beyond it for a disability. | one row per parent key and relationship type, for each time its values change | — |
 
 The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `natural_person_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 

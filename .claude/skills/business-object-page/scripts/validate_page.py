@@ -49,6 +49,12 @@ TYPES = [
     "fixed(L)", "binary", "variant", "geometry", "geography", "unknown",
     "struct", "list", "map",
 ]
+# The business meaning of each Vault object. The column is optional while the pages are being written one by one;
+# when it is present every row is checked, and REQUIRE_DEFINITION makes it mandatory.
+REQUIRE_DEFINITION = False
+DEFINITION_START = "The table that"
+DEFINITION_MAX = 400
+DEFINITION_BANNED = ("hash",)
 GRAIN_PREFIX = {
     "Hub": "one row per business key",
     "Link": "one row per distinct combination of",
@@ -248,6 +254,26 @@ def _fields_tables(page: Page) -> dict[str, list[dict[str, str]]]:
     return out
 
 
+def _check_definition(name: str, row: dict[str, str]) -> list[str]:
+    """The Definition says in business words what the table is for."""
+    if "Definition" not in row:
+        return [f"definition: '{name}' needs a Definition; the Vault objects table needs the column"] if REQUIRE_DEFINITION else []
+    text = _strip(row["Definition"])
+    if not text:
+        return [f"definition: '{name}' has an empty Definition"]
+    errs = []
+    if not text.startswith(DEFINITION_START):
+        errs.append(f"definition: '{name}' Definition must start with '{DEFINITION_START}'")
+    if not text.endswith("."):
+        errs.append(f"definition: '{name}' Definition must end with a full stop")
+    if len(text) > DEFINITION_MAX:
+        errs.append(f"definition: '{name}' Definition is {len(text)} characters; keep it to {DEFINITION_MAX} or fewer")
+    for word in DEFINITION_BANNED:
+        if word in text.lower():
+            errs.append(f"definition: '{name}' Definition uses '{word}', a technical word; say it in business words")
+    return errs
+
+
 def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     errs: list[str] = []
     tables = page.tables("Vault objects")
@@ -280,6 +306,7 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
         for token in (t for t in body.split("_") if t):
             if len(token) <= 3 and token not in ALLOWED_SHORT and token not in approved:
                 errs.append(f"name: '{name}' contains '{token}', an abbreviation that is not on the approved list")
+        errs += _check_definition(name, row)
         grain = _strip(row.get("Grain", ""))
         if not grain.startswith(GRAIN_PREFIX[kind]):
             errs.append(f"grain: '{name}' grain must start with '{GRAIN_PREFIX[kind]}'")

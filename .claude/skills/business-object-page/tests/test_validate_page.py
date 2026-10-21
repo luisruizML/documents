@@ -56,6 +56,59 @@ class CoreTests(unittest.TestCase):
         self.assertEqual([e for e in errs if e.startswith("header:")], [])
 
 
+def with_definitions(text: str, definition="The table that records the sample orders of the platform.") -> str:
+    """The fixture with a Definition column added to its Vault objects table."""
+    out, inside, first = [], False, True
+    for line in text.split(chr(10)):
+        if line.startswith("## "):
+            inside, first = line == "## Vault objects", True
+        elif inside and line.startswith("|"):
+            cells = line.split(" | ")
+            if line.startswith("| **Type**"):
+                cell = "**Definition**"
+            elif line.startswith("| ---"):
+                cell = "---"
+            else:
+                cell = definition
+            cells.insert(2, cell)
+            line = " | ".join(cells)
+        out.append(line)
+    return chr(10).join(out)
+
+
+class DefinitionTests(unittest.TestCase):
+    def tags(self, text):
+        return [e for e in vp.validate(text) if e.startswith("definition:")]
+
+    def test_the_column_is_optional_by_default(self):
+        self.assertEqual(self.tags(page()), [])
+
+    def test_a_good_definition_is_accepted(self):
+        self.assertEqual([e for e in vp.validate(with_definitions(page())) if not e.startswith("diagram:")], [])
+
+    def test_the_column_can_be_made_mandatory(self):
+        vp.REQUIRE_DEFINITION = True
+        try:
+            self.assertTrue(has(self.tags(page()), "definition", "needs a Definition"))
+        finally:
+            vp.REQUIRE_DEFINITION = False
+
+    def test_empty_definition_is_reported_with_the_object_name(self):
+        self.assertTrue(has(self.tags(with_definitions(page(), " ")), "definition", "hub_sample_order"))
+
+    def test_definition_must_start_in_the_agreed_form(self):
+        self.assertTrue(has(self.tags(with_definitions(page(), "Stores orders.")), "definition", "must start with"))
+
+    def test_definition_must_end_with_a_full_stop(self):
+        self.assertTrue(has(self.tags(with_definitions(page(), "The table that records orders")), "definition", "full stop"))
+
+    def test_definition_must_be_short(self):
+        self.assertTrue(has(self.tags(with_definitions(page(), "The table that " + "x" * 400 + ".")), "definition", "characters"))
+
+    def test_definition_avoids_technical_words(self):
+        self.assertTrue(has(self.tags(with_definitions(page(), "The table that holds the hash of an order.")), "definition", "hash"))
+
+
 class VaultObjectTests(unittest.TestCase):
     def test_draft_style_name_is_rejected_with_lowercase_hint(self):
         errs = errors("| Hub | `hub_sample_order` |", "| Hub | `Hub_Sample_Order` |")
