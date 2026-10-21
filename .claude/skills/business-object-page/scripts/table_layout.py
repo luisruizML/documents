@@ -3,8 +3,8 @@
 Three tables have a layout of their own (the others keep Confluence's default):
 
   Header         Field is as narrow as its widest text and Value takes the rest; the table keeps the default width.
-  Vault objects  Type and Name fit their texts on one line. Definition is the widest column, Business key is half of
-                 it, and Grain is the wildcard: table width - 1.5 * Definition - Type - Name.
+  Vault objects  Type and Name fit their texts on one line. Definition and Business key have the same width, and
+                 Grain is the wildcard: table width - Definition - Business key - Type - Name.
   Fields         Every Fields table of the page shares the same widths. Column and Type fit their texts on one line,
                  Role, Null, PII and Default share one narrow width, and Description takes the rest.
 
@@ -16,13 +16,14 @@ from __future__ import annotations
 import math
 import re
 
-PAGE_WIDTH = 1800       # width of a table in the full-width layout, in px
+PAGE_WIDTH = 1440       # width of a table on a page in the wide appearance, in px; read from a screenshot of the page, where
+                        # Confluence scaled a table stored at 1800 px down to 1440 (a wider window only widens the columns)
 HEADER_WIDTH = 760      # width of the Header table (default layout), in px
 FONT_SCALE = 1.15       # Confluence's text is wider than Arial; "Owner domain" wrapped at 1.0 and at 1.12
-MONO_SCALE = 1.1        # Confluence's code is wider than Courier New at the same size
+MONO_CHAR = 8.2         # width of one character of code in Confluence, in px, read from a screenshot
+CODE_PADDING = 8        # the box around a code span adds 4 px on each side
 CELL_PADDING = 20       # 8 px of padding on each side of a cell, the border and a little slack
 SANS_PX = 14
-MONO_PX = 12
 
 HEADER = ["Field", "Value"]
 VAULT = ["Type", "Name", "Definition", "Grain", "Business key"]
@@ -38,7 +39,7 @@ def plain(cell: str) -> str:
 def text_width(cell: str, bold: bool = False) -> float:
     import build_diagram as bd
     if "`" in cell:
-        return bd.measure(plain(cell), "mono", MONO_PX) * MONO_SCALE
+        return len(plain(cell)) * MONO_CHAR + CODE_PADDING * cell.count("`") / 2
     return bd.measure(plain(cell), "sans_bold" if bold else "sans", SANS_PX) * FONT_SCALE
 
 
@@ -74,8 +75,8 @@ def header_widths(body: list[list[str]]) -> list[int]:
 def vault_widths(body: list[list[str]], total: int = PAGE_WIDTH) -> list[int]:
     type_w = fit("Type", [r[0] for r in body])
     name_w = fit("Name", [r[1] for r in body])
-    definition = int((total - type_w - name_w) / 2.5)  # Definition = Grain at the widest it can be, Business key is half of it
-    business = definition // 2
+    definition = int((total - type_w - name_w) / 3)  # Definition = Business key = Grain, the widest each can be
+    business = definition
     grain = total - type_w - name_w - definition - business
     return [type_w, name_w, definition, grain, business]
 

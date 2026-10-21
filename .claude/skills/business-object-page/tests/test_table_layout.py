@@ -27,15 +27,15 @@ class VaultWidthTests(unittest.TestCase):
     def test_the_widths_cover_the_page(self):
         self.assertEqual(sum(self.w), tl.PAGE_WIDTH)
 
-    def test_business_key_is_half_of_definition(self):
-        self.assertLessEqual(abs(self.w[4] - self.w[2] / 2), 1)
+    def test_business_key_and_definition_have_the_same_width(self):
+        self.assertEqual(self.w[4], self.w[2])
 
     def test_grain_is_the_wildcard(self):
         type_w, name_w, definition, grain, business = self.w
-        self.assertLessEqual(abs(grain - (tl.PAGE_WIDTH - 1.5 * definition - type_w - name_w)), 2)
+        self.assertEqual(grain, tl.PAGE_WIDTH - definition - business - type_w - name_w)
 
     def test_type_and_name_fit_their_texts(self):
-        self.assertGreaterEqual(self.w[1], tl.text_width(self.body[1][1]))
+        self.assertGreaterEqual(self.w[1], tl.text_width(self.body[1][1]) + tl.CELL_PADDING)
         self.assertLess(self.w[0], 120)
 
 
@@ -101,7 +101,7 @@ class TableIntegrityTests(unittest.TestCase):
             widths = tl.document_widths(page_text(name))
             self.assertEqual(sum(widths["vault"]), tl.PAGE_WIDTH, name)
             self.assertEqual(sum(widths["fields"]), tl.PAGE_WIDTH, name)
-            self.assertGreater(widths["vault"][2], widths["vault"][0], name)
+            self.assertEqual(widths["vault"][2], widths["vault"][4], name)
             self.assertGreater(widths["fields"][6], max(widths["fields"][:6]), name)
 
 
