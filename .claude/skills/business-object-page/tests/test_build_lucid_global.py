@@ -35,12 +35,15 @@ class GlobalDiagramTests(unittest.TestCase):
         cls.layout = g.build_layout(cls.nodes, cls.edges)
         cls.spec = g.to_spec(cls.layout)
         cls.page = cls.spec["pages"][0]
-        cls.by_name = {c["value"]: s for s in cls.page["shapes"] for c in s.get("customData", []) if c["key"] == "name"}
+        everything = {c["value"]: s for s in cls.page["shapes"] for c in s.get("customData", []) if c["key"] == "name"}
+        cls.ghosts = {n for n in everything if ":" in n}
+        cls.by_name = {n: s for n, s in everything.items() if n not in cls.ghosts}
         cls.name_of = {s["id"]: n for n, s in cls.by_name.items()}
 
     def test_one_box_per_vault_object_of_the_five_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 37)
+        self.assertEqual(len(self.by_name), 51)
+        self.assertEqual(self.ghosts, {"hub_party:location"})
 
     def test_ids_are_short_enough_for_lucid(self):
         for s in self.page["shapes"]:
@@ -51,6 +54,7 @@ class GlobalDiagramTests(unittest.TestCase):
     def test_one_arrow_per_child_to_parent_edge(self):
         arrows = [ln for ln in self.page["lines"] if ln["endpoint2"]["style"] == "arrow"]
         self.assertEqual(len(arrows), len(self.edges))
+        self.assertEqual(sum(1 for ln in self.layout.lines if ln["parent"] in self.ghosts), 1)
         for ln in arrows:
             self.assertEqual(ln["lineType"], "straight")
             self.assertIn("position", ln["endpoint1"])
@@ -134,12 +138,13 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_the_name_of_every_object_is_one_line(self):
         for name, box in self.layout.boxes.items():
-            self.assertEqual(box.name_lines, [name])
-            self.assertIn(f"<b>{name}</b>", self.by_name[name]["text"])
+            real = name.split(":")[0]
+            self.assertEqual(box.name_lines, [real])
+            self.assertIn(f"<b>{real}</b>", g.box_html(box))
 
     def test_a_box_is_wide_enough_for_its_name(self):
         for name, box in self.layout.boxes.items():
-            self.assertGreaterEqual(box.w, g._w(name, g.NAME_PT, g.BOLD_EM) + g.PAD - 1)
+            self.assertGreaterEqual(box.w, g._w(name.split(":")[0], g.NAME_PT, g.BOLD_EM) + g.PAD - 1)
 
     def test_spec_is_valid_json_and_has_the_four_legend_entries(self):
         json.dumps(self.spec)
@@ -148,7 +153,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_both_owner_domain_bands_are_drawn(self):
         titles = {s["containerTitle"]["text"] for s in self.page["shapes"] if s["type"] == "roundedRectangleContainer"}
-        self.assertEqual(titles, {"Registries (owner domain)", "Platform (owner domain)"})
+        self.assertEqual(titles, {"Registries (owner domain)", "Registries (owner domain): Location", "Platform (owner domain)"})
 
 
 if __name__ == "__main__":

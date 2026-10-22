@@ -19,6 +19,7 @@ TITLES = {
     "Natural_Person.md": "Natural Person",
     "Party.md": "Party",
     "Legal_Entity.md": "Legal Entity",
+    "Location.md": "Location",
     "Code_List.md": "Code List",
     "Load_Configuration.md": "Load Configuration",
     "Platform.md": "Platform",

@@ -20,7 +20,7 @@ sys.path.insert(0, str(HERE))
 import build_diagram as bd  # noqa: E402
 
 REPO = HERE.parents[3]
-PAGES = ["Party", "Natural_Person", "Legal_Entity", "Code_List", "Load_Configuration"]
+PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Code_List", "Load_Configuration"]
 
 # ---------------------------------------------------------------- style (from the Lucid proposal and the drawio files)
 # Same hues as the drawio files. The background is lighter; the border is the drawio fill.
@@ -207,6 +207,87 @@ def _fan(layout: Layout, sats: list[str], hub: str, side: str):
             _line(layout, s, hub, (0.0, 0.5), (1.0, frac))
 
 
+GHOST_PARTY = "hub_party:location"
+
+
+def _ghost_party(L: Layout) -> Box:
+    """A second drawing of `hub_party` inside the Location band, marked as defined above, so that the Link of a place to
+    its party does not have to cross the Registries band. It is not a vault object: its key holds a colon."""
+    box = Box(GHOST_PARTY, "Hub", False, ["hub_party"], wrap("Defined above, in the Registries band.", 24))
+    name_w = _w("hub_party", NAME_PT, BOLD_EM)
+    grain_w = max(_w(line, GRAIN_PT, ITALIC_EM) for line in box.grain_lines)
+    box.text_w = max(name_w, grain_w)
+    box.text_h = _lh(NAME_PT) + len(box.grain_lines) * _lh(GRAIN_PT)
+    box.w = box.text_w + PAD
+    box.h = box.text_h + PAD
+    L.boxes[GHOST_PARTY] = box
+    return box
+
+
+def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], top: float) -> tuple[float, float]:
+    """The Location cluster, left to right: the descriptions, the three description Hubs, their Links, the umbrella Hub,
+    the Link to Party and its usage Satellite. The zone Hub is the last row, so the Link of its hierarchy sits under
+    the others. Returns the bottom edge and the width of the band."""
+    views = [("hub_address", "sat_address__description", "lnk_address__location"),
+             ("hub_geometry", "sat_geometry__shape", "lnk_geometry__location"),
+             ("hub_administrative_zone", "sat_administrative_zone__description", "lnk_administrative_zone__location")]
+    hier_link = "lnk_administrative_zone__administrative_zone_hierarchy"
+    hier_sat = "sat_administrative_zone__administrative_zone_hierarchy__period"
+    party_link, party_sat = "lnk_location__party", "sat_location__party__usage"
+    B = L.boxes
+
+    def col_w(names):
+        return max(B[n].w for n in names)
+
+    wA = col_w([v[1] for v in views])
+    wB = col_w([v[0] for v in views])
+    wC = col_w([v[2] for v in views] + [hier_link, hier_sat])
+    wD = B["hub_location"].w
+    wE = col_w([party_link, party_sat])
+    ghost = _ghost_party(L)
+    xA = BAND_PAD
+    xB = xA + wA + GAP_X
+    xC = xB + wB + GAP_X
+    xD = xC + wC + GAP_X
+    xE = xD + wD + GAP_X
+    y = top
+    centers = []
+    for hub, sat, lnk in views:
+        h, s, k = B[hub], B[sat], B[lnk]
+        row_h = max(h.h, s.h, k.h)
+        h.x, h.y = xB + wB - h.w, y + (row_h - h.h) / 2
+        s.x, s.y = xA + wA - s.w, y + (row_h - s.h) / 2
+        k.x, k.y = xC + (wC - k.w) / 2, y + (row_h - k.h) / 2
+        _line(L, sat, hub, (1.0, 0.5), (0.0, 0.5))
+        _line(L, lnk, hub, (0.0, 0.3), (1.0, 0.3))
+        centers.append(y + row_h / 2)
+        y += row_h + 110
+    hz = B["hub_administrative_zone"]
+    hl, hs = B[hier_link], B[hier_sat]
+    hl.x = xC + (wC - hl.w) / 2
+    hl.y = y
+    hs.x = xC + (wC - hs.w) / 2
+    hs.y = hl.y + hl.h + 110
+    _line(L, hier_link, "hub_administrative_zone", (0.0, 0.3), (1.0, 0.65))
+    _line(L, hier_link, "hub_administrative_zone", (0.0, 0.7), (1.0, 0.9))
+    _line(L, hier_sat, hier_link, (0.5, 0.0), (0.5, 1.0))
+    hub_loc = B["hub_location"]
+    hub_loc.x = xD
+    hub_loc.y = (centers[0] + centers[-1]) / 2 - hub_loc.h / 2
+    for i, (hub, sat, lnk) in enumerate(views):
+        _line(L, lnk, "hub_location", (1.0, 0.5), (0.0, (i + 0.5) / len(views)))
+    pl, ps = B[party_link], B[party_sat]
+    pl.x, pl.y = xE, hub_loc.cy - pl.h / 2
+    ps.x, ps.y = xE, pl.y + pl.h + 110
+    _line(L, party_link, "hub_location", (0.0, 0.5), (1.0, 0.5))
+    _line(L, party_sat, party_link, (0.5, 0.0), (0.5, 1.0))
+    ghost.x = xE + wE + GAP_X
+    ghost.y = pl.cy - ghost.h / 2
+    _line(L, party_link, GHOST_PARTY, (1.0, 0.5), (0.0, 0.5))
+    bottom = max(hs.y + hs.h, ps.y + ps.h, hub_loc.y + hub_loc.h)
+    return bottom, ghost.x + ghost.w + BAND_PAD
+
+
 def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     L = Layout()
     for name, node in nodes.items():
@@ -321,6 +402,13 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h) + BAND_PAD
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 
+    # ---- Location block: its own band under the Registries band (Location is a Registries object)
+    loc_band_y = reg_bottom + 60
+    loc_bottom, loc_w = _location_block(L, nodes, edges, loc_band_y + 50 + BAND_PAD)
+    L.bands.append({"title": "Registries", "id": "band_location", "label": "Registries (owner domain): Location",
+                    "x": 0.0, "y": loc_band_y, "w": loc_w, "h": loc_bottom + BAND_PAD - loc_band_y})
+    reg_bottom = loc_bottom + BAND_PAD
+
     # ---- Platform band, to the right of the Registries band
     pw_L = width(cl_hub + cv_hub + lc_sats)
     pw_M = width(["hub_code_list", "hub_code_value", "lnk_code_list__code_value", "hub_load_configuration"])
@@ -382,10 +470,10 @@ def to_spec(L: Layout, title: str = "PSS Data Objects") -> dict:
     shapes: list[dict] = []
     for band in L.bands:
         shapes.append({
-            "id": "band_" + band["title"].lower(),
+            "id": band.get("id", "band_" + band["title"].lower()),
             "type": "roundedRectangleContainer",
             "boundingBox": {"x": round(band["x"], 1), "y": round(band["y"], 1), "w": round(band["w"], 1), "h": round(band["h"], 1)},
-            "containerTitle": {"text": band["title"] + " (owner domain)"},
+            "containerTitle": {"text": band.get("label", band["title"] + " (owner domain)")},
             "style": {"fill": {"type": "color", "color": BAND_FILL}, "stroke": {"color": BAND_LINE, "width": 2, "style": "solid"}},
         })
     for box in L.boxes.values():

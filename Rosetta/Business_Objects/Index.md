@@ -9,6 +9,7 @@ An object shared by several domains is one page, listed once with every domain i
 | Party | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI, Platform | Global | Draft | [Party](Party.md) |
 | Natural Person | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Natural Person](Natural_Person.md) |
 | Legal Entity | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Legal Entity](Legal_Entity.md) |
+| Location | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Location](Location.md) |
 
 ### Platform objects
 
@@ -21,9 +22,9 @@ What the platform owns and every domain uses, such as configuration, has its own
 
 ## The full picture
 
-Every Hub, Link and Satellite of the five pages in one diagram, drawn in Lucidchart and embedded below. Registries and Platform are drawn as separate bands, the grain is written inside each box, and arrows run from the child to its parent.
+Every Hub, Link and Satellite of the pages in one diagram, drawn in Lucidchart and embedded below. Registries and Platform are drawn as separate bands, the grain is written inside each box, and arrows run from the child to its parent.
 
-<!-- Confluence only: the Lucid diagram is an embedded Lucidchart macro (document 7b2360f3-961b-48c8-ac80-3e2f71cf331e). Markdown cannot embed it. Link: https://lucid.app/lucidchart/7b2360f3-961b-48c8-ac80-3e2f71cf331e/view -->
+<!-- Confluence only: the Lucid diagram is an embedded Lucidchart macro (document 1f5f222c-b4e4-44e8-869c-534de014ce22). Markdown cannot embed it. Link: https://lucid.app/lucidchart/1f5f222c-b4e4-44e8-869c-534de014ce22/view -->
 
 | **Color** | **Object** |
 | --- | --- |

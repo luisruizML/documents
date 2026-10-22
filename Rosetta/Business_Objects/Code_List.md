@@ -215,6 +215,8 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `event_code` | Lists `person_event` and `legal_entity_event` | A new kind of event changes no table |
 | `relationship_type_code`, `end_reason_code`, `responsibility_basis_code` | Lists with the same names without `_code` | The values differ by jurisdiction |
 | `hierarchy_type_code` | List `legal_entity_hierarchy_type` | Each kind of grouping between legal entities is a value, with its own depth limit |
+| `hierarchy_type_code` (zones) | List `zone_hierarchy_type` | Each kind of division of the territory is a value, with its own depth limit |
+| `zone_scheme_code`, `zone_level_code`, `address_key_type`, `role_code` (place), `geometry_type_code`, `srs_code`, `accuracy_unit_code` | Lists `zone_scheme`, `zone_level`, `address_key_type`, `location_role`, `geometry_type`, `spatial_reference_system`, and the values of `measure_unit` | The Location page: each jurisdiction has its own zones and address keys, and a new kind of place or system is a value |
 | `criterion_code`, `classification_code`, `community_code`, `role_code` (representation) | Lists `legal_form`, `classification_criterion`, one list for each criterion, `community`, `representation_role` | A value changes without any rule changing |
 | `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code` | Closed lists, written in the Description | A rule branches on each value |
 
