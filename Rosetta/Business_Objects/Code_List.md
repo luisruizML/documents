@@ -35,7 +35,7 @@ One object holds every list. A new list is a new row, never a new table, so the 
 | Hub | `hub_code_value` | The table that holds each value that can appear in a list, identified by the list name and the code, such as gender:female. The same code in two lists is two different values. | one row per business key | `code_value_bk`: the list name and the code joined by a colon, such as `gender:female` |
 | Link | `lnk_code_list__code_value` | The table that records which values belong to which list. | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
 | Satellite | `sat_code_value__label` | The table that records the name shown to people for each value in each language, a short name for small screens, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key and language, for each time its values change | — |
-| Satellite | `sat_code_value__validation` | The table that records how a value is to be read and checked: the data type of the value, the usual unit and, for each jurisdiction, the pattern its written form must follow, such as the format of a passport number. | one row per parent key and jurisdiction, for each time its values change | — |
+| Satellite | `sat_code_value__validation` | The table that records how a value is to be read and checked: the data type of the value, the usual unit, the limit of levels of a hierarchy kind and, for each jurisdiction, the pattern its written form must follow, such as the format of a passport number. | one row per parent key and jurisdiction, for each time its values change | — |
 | Satellite | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction (a country or territory) and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
 | Satellite | `sat_code_list__usage` | The table that records where a list is used: which object and which column take their values from it. | one row per parent key and column that uses the list, for each time its values change | — |
 | Satellite | `sat_code_list__access` | The table that records which roles may see the values of a list, and how much each may see, for lists that only some roles may read. | one row per parent key and role, for each time its values change | — |
@@ -100,6 +100,7 @@ The data type says which value column a consumer reads (R11): a trait such as `h
 | `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) the pattern applies to, ISO 3166-1 alpha-3, or `any`: e.g. `COL`, `CUW`, `any` |
 | `value_data_type_code` | | `string` | No | No | — | Type of the values that use this code. One of `string`, `integer`, `decimal`, `date`, `boolean` |
 | `measure_unit_code` | | `string` | Yes | No | null | Usual unit of a numeric value, a value of the list `measure_unit`: e.g. `cm`, `kg`, `percent`; empty when the value has no unit |
+| `max_depth_count` | | `int` | Yes | No | null | Most levels a hierarchy of this kind may have, for a value that names a kind of hierarchy: e.g. `2`, `3`, `5`; empty for any other value |
 | `validation_pattern_text` | | `string` | Yes | No | null | Regular expression the written form must match: e.g. `^[A-Z]{2}[0-9]{6}$`, `^[0-9]{6,10}$`; empty when there is no rule |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
@@ -177,13 +178,14 @@ Illustrative data. The list `gender` is allowed with different values in two jur
 
 Here a person in `PNG` can be recorded only as male or female, and a person in `WSM` as male, female or non-binary from 2024.
 
-`sat_code_value__validation` for a passport number and a height
+`sat_code_value__validation` for a passport number, a height and a kind of hierarchy
 
-| **code_value_bk** | **jurisdiction_code** | **value_data_type_code** | **validation_pattern_text** |
-| --- | --- | --- | --- |
-| identification_type:passport | any | string | (empty) |
-| identification_type:passport | COL | string | ^[A-Z]{2}[0-9]{6}$ |
-| physical_trait:height | any | decimal | (empty) |
+| **code_value_bk** | **jurisdiction_code** | **value_data_type_code** | **max_depth_count** | **validation_pattern_text** |
+| --- | --- | --- | --- | --- |
+| identification_type:passport | any | string | (empty) | (empty) |
+| identification_type:passport | COL | string | (empty) | ^[A-Z]{2}[0-9]{6}$ |
+| physical_trait:height | any | decimal | (empty) | (empty) |
+| legal_entity_hierarchy_type:holding_group | any | string | 2 | (empty) |
 
 A value that is later given a new rule gets a new row, and the loader closes the previous one the day before. A height is a `decimal`, so the traits Satellite reads it from `value_number`.
 
@@ -212,10 +214,12 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `trait_code`, `measure_unit_code` | Lists `physical_trait` and `measure_unit` | A new trait or unit is a new value, not a new column |
 | `event_code` | Lists `person_event` and `legal_entity_event` | A new kind of event changes no table |
 | `relationship_type_code`, `end_reason_code`, `responsibility_basis_code` | Lists with the same names without `_code` | The values differ by jurisdiction |
+| `hierarchy_type_code` | List `legal_entity_hierarchy_type` | Each kind of grouping between legal entities is a value, with its own depth limit |
 | `criterion_code`, `classification_code`, `community_code`, `role_code` (representation) | Lists `legal_form`, `classification_criterion`, one list for each criterion, `community`, `representation_role` | A value changes without any rule changing |
 | `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code` | Closed lists, written in the Description | A rule branches on each value |
 
 - **A date range closes the one before it.** In `sat_code_value__applicability` and `sat_code_value__validation` a new row for the same value and jurisdiction closes the open one: its end becomes the day before the new start (Principles, "Validity ranges").
+- **A hierarchy kind has a depth.** `max_depth_count` in `sat_code_value__validation` says how many levels a kind of hierarchy may have. It is a setting of the value, so a deeper hierarchy changes a number and no table.
 - **A value has a type.** `value_data_type_code` in `sat_code_value__validation` says whether the values of a code are strings, whole numbers, decimals, dates or booleans, so the load casts once and the Gold layer does not guess (R11).
 - **External standards are still lists.** ISO 3166-1 for jurisdictions and ISO 15924 for scripts are loaded as lists, so every column reads the same way.
 

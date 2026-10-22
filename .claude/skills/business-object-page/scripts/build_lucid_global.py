@@ -229,11 +229,12 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     link_np_name = "lnk_legal_entity__natural_person"
     rel_link, rel_sat = "lnk_natural_person__natural_person_relation", "sat_natural_person__natural_person_relation__relationship"
     own_link, own_sat = "lnk_legal_entity__party_owner", "sat_legal_entity__party_owner__ownership"
+    hier_link, hier_sat = "lnk_legal_entity__legal_entity_hierarchy", "sat_legal_entity__legal_entity_hierarchy__membership"
 
     def width(names):
         return max(L.boxes[n].w for n in names)
 
-    wL = width(np_singles + rep + [link_np_name])
+    wL = width(np_singles + rep + [link_np_name, hier_link, hier_sat])
     wM = width(chain + [rel_link])
     wR = width(np_pairs + le_sats + [own_link, rel_sat])
     wS = width([own_sat])
@@ -301,12 +302,23 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, link_np_name, "hub_natural_person", (1.0, 0.25), (0.0, (n_left - 0.5) / n_left))
     _line(L, link_np_name, "hub_legal_entity", (1.0, 0.75), (0.0, 0.5))
 
+    # the grouping of legal entities: its Link left of the Legal Entity Hub, below the lines of the representation Link,
+    # and its Satellite under it. Both lines to the Hub leave from the right edge of the Link.
+    hl, hs = L.boxes[hier_link], L.boxes[hier_sat]
+    hl.x = xL + wL - hl.w
+    hl.y = hub_le.y + hub_le.h * 0.5
+    hs.x = xL + wL - hs.w
+    hs.y = hl.y + hl.h + 110
+    _line(L, hier_link, "hub_legal_entity", (1.0, 0.3), (0.0, 0.65))
+    _line(L, hier_link, "hub_legal_entity", (1.0, 0.7), (0.0, 0.9))
+    _line(L, hier_sat, hier_link, (0.5, 0.0), (0.5, 1.0))
+
     _line(L, "lnk_natural_person__party", "hub_natural_person", (0.5, 0.0), (0.5, 1.0))
     _line(L, "lnk_natural_person__party", "hub_party", (0.5, 1.0), (0.5, 0.0))
     _line(L, "lnk_legal_entity__party", "hub_party", (0.5, 0.0), (0.5, 1.0))
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
-    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h) + BAND_PAD
+    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h) + BAND_PAD
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 
     # ---- Platform band, to the right of the Registries band

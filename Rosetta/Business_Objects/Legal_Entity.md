@@ -11,7 +11,7 @@
 | Scope | Global |
 | Status | Draft |
 | Version | 0.1 |
-| Last updated | 2026-10-21 |
+| Last updated | 2026-10-22 |
 
 ## Definition
 
@@ -19,11 +19,14 @@ A Legal Entity is a non-human organization, association or collective recognized
 
 It supports two variations of the same object. A **corporate (formal)** entity is a legally incorporated body such as a limited liability company, a multinational corporation, a state-owned enterprise or a formally registered NGO, with an official charter, a governance structure and a Tax Identification Number or Company Registration Number. A **collective (informal)** entity is a group recognized by social, cultural or customary law rather than corporate law, such as a tribal authority, an indigenous council, a family farming collective or an informal market vendor association. The State registers it to allocate resources, such as agricultural subsidies, or to grant land rights, such as customary tenure, even when it has no formal corporate paperwork.
 
+A Legal Entity can also be a **holding**: an entity that groups other Legal Entities. Today the grouping is administrative, a decision or a registration that puts entities in one group, and not a statement about who owns whom. A holding has an identifier of its own, like any other Legal Entity, and a group can sit inside another group, to a depth that is set as a rule and not built into the tables.
+
 ## Why it is its own object
 
 - **It is identified differently from a Natural Person.** A formal entity has a tax or company registration number. An informal one may have only a government-issued registry code tied to a village or to a community leader. Both are valid business keys of the one Hub. A Natural Person can exist with no identifier at all, so the two cannot share an identification structure.
 - **Its lifecycle is administrative.** A Legal Entity is created by an act (incorporation, formal recognition) and can exist indefinitely. It ends by legal dissolution, bankruptcy or merger, never by a biological event.
 - **It nests without limit.** A Legal Entity can own other Legal Entities, and it is linked to the Natural Persons who act for it: representatives, directors or tribal chiefs.
+- **A holding is a Legal Entity, not a new object.** It has a name, identifiers, a lifecycle and a classification like any entity. A second Hub for groups would copy all of that and would still need a way to nest.
 - **Two variations are one object.** A tribal authority and a limited company both hold rights and responsibilities toward the State. The difference is a scenario of the same object (R7), not a second object.
 
 If a Legal Entity were a Satellite of Party, every Satellite of Party would have to carry two identification structures, and the entity's own hierarchy would have nowhere to attach.
@@ -36,14 +39,18 @@ If a Legal Entity were a Satellite of Party, every Satellite of Party would have
 | Link | `lnk_legal_entity__party` | The table that places every legal entity in the same universe as the natural persons, which together are the Parties. It says that a legal entity is a party; who owns it is recorded in `lnk_legal_entity__party_owner`. | one row per distinct combination of legal entity and party | `hub_legal_entity`, `hub_party` |
 | Link | `lnk_legal_entity__natural_person` | The table that records that a natural person acts for a legal entity, such as a director, a representative or a tribal chief. The role and the dates are recorded in `sat_legal_entity__natural_person__representation`. | one row per distinct combination of legal entity and natural person | `hub_legal_entity`, `hub_natural_person` |
 | Link | `lnk_legal_entity__party_owner` | The table that records that a party owns a legal entity. The owner can be a natural person or another legal entity, and one entity can have many owners; the share and the state of each holding are recorded in `sat_legal_entity__party_owner__ownership`. It is not the identity table `lnk_legal_entity__party`. | one row per distinct combination of legal entity and owner party | `hub_legal_entity`, `hub_party` (owner) |
+| Link | `lnk_legal_entity__legal_entity_hierarchy` | The table that records that one legal entity is a member of another, such as a company that belongs to a holding group. It says who groups whom; the kind of grouping and the period are recorded in `sat_legal_entity__legal_entity_hierarchy__membership`. It is a grouping and not ownership, which is recorded in `lnk_legal_entity__party_owner`. | one row per distinct combination of parent legal entity and member legal entity | `hub_legal_entity` (parent), `hub_legal_entity` (member) |
 | Satellite | `sat_legal_entity__name` | The table that records the names a legal entity is known by, such as its legal name, a trading name or a community name, and the writing system of each. | one row per parent key and name type, for each time its values change | — |
 | Satellite | `sat_legal_entity__identification` | The table that records the identifiers of a legal entity, such as a tax number, a company registration number or a community registry code, who issued each and, for an informal entity, the community it is tied to. | one row per parent key and identification (type and number), for each time its values change | — |
 | Satellite | `sat_legal_entity__classification` | The table that records how a legal entity is classified, with one row for each criterion: whether it is corporate or collective, its legal form in the jurisdiction, and any other criterion a jurisdiction adds, such as its economic activity or its size. | one row per parent key and criterion, for each time its values change | — |
 | Satellite | `sat_legal_entity__lifecycle` | The table that records the events in the life of a legal entity, each with its date, its place and its evidence: incorporation, formal recognition, dissolution, bankruptcy, merger and restoration. Whether an entity is active is worked out from these events, not stored. | one row per parent key and event (type and date), for each time its values change | — |
 | Satellite | `sat_legal_entity__natural_person__representation` | The table that records how a natural person acts for a legal entity: the role, and when the person took it and left it. A person can hold several roles. | one row per parent key and role, for each time its values change | — |
+| Satellite | `sat_legal_entity__legal_entity_hierarchy__membership` | The table that records the kind of grouping between a parent and a member legal entity, such as a holding group or a branch, the period in which it applies and why it ended. A change is a new entry, so the earlier ones stay. | one row per parent key and hierarchy type, for each time its values change | — |
 | Satellite | `sat_legal_entity__party_owner__ownership` | The table that records each holding by which a party owns a legal entity: the legal nature of the title, the share, any restriction on distributions or disposal, and whether the award is fully vested, with the dates each applies. Each type of holding is its own entry, and a change is a new entry, so the earlier ones stay. | one row per parent key and holding type, for each time its values change | — |
 
 The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `legal_entity_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
+
+`lnk_legal_entity__legal_entity_hierarchy` says that a Legal Entity **belongs to** another: it joins the Hub to itself, the **parent** (the holding) and the **member**. It is a grouping, not ownership. See Modeling considerations for what changes if the grouping comes to mean control.
 
 `lnk_legal_entity__party` says that a Legal Entity **is** a Party: each Legal Entity has exactly one. `lnk_legal_entity__party_owner` says that a Party **owns** a Legal Entity: it is a different relationship, with its own rows, and one Legal Entity can have many owners. The owner is any Party, so it can be a Natural Person or another Legal Entity.
 
@@ -58,7 +65,7 @@ The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_c
 | `legal_entity_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
 | `legal_entity_bk` | ● | `string` | No | No | — | Identifier of the entity in the source of record; unique for the life of the platform, never reused |
 | `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code` |
+| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `holding_registry_code` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -112,8 +119,8 @@ A legal entity can be classified by several criteria at once, and each criterion
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `criterion_code` | | `string` | No | No | — | The criterion this row classifies by, a value of the list `classification_criterion`: e.g. `formality`, `legal_form`, `economic_activity`, `size` |
-| `classification_code` | | `string` | No | No | — | The class of the entity under that criterion, a value of the list named by the criterion: e.g. `corporate`, `collective`, `limited_liability_company`, `indigenous_council` |
+| `criterion_code` | | `string` | No | No | — | The criterion this row classifies by, a value of the list `classification_criterion`: e.g. `formality`, `legal_form`, `economic_activity`, `group_role` |
+| `classification_code` | | `string` | No | No | — | The class of the entity under that criterion, a value of the list named by the criterion: e.g. `corporate`, `collective`, `limited_liability_company`, `holding` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -172,6 +179,33 @@ One Satellite holds the three dimensions of an ownership, so a change in any of 
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
+### lnk_legal_entity__legal_entity_hierarchy
+
+A grouping between two Legal Entities. The **parent** is the entity that groups, such as a holding, and the **member** is the entity that belongs to it. Both are rows of `hub_legal_entity`. A member can itself be a parent, so a group can sit inside another group.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `parent_legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity that groups, such as a holding |
+| `member_legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity that belongs to the group |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+
+### sat_legal_entity__legal_entity_hierarchy__membership
+
+The kind of grouping, its period and the reason it ended are one fact, so they share a Satellite. The kind of grouping is part of the grain: a member can belong to a holding group and, at the same time, be a branch in another hierarchy. Within one kind, a member has at most one open row (see Modeling considerations).
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lnk_legal_entity__legal_entity_hierarchy_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `hierarchy_type_code` | | `string` | No | No | — | Which kind of grouping this is, a value of the list `legal_entity_hierarchy_type`: e.g. `holding_group`, `branch`, `division` |
+| `end_reason_code` | | `string` | Yes | No | null | Why the member left the group, a value of the list `end_reason`; empty while it belongs: e.g. `left_group`, `dissolved`, `merged` |
+| `effective_date` | | `date` | No | No | — | First day the member belongs to the group |
+| `end_date` | | `date` | No | No | `9999-12-31` | Last day the member belongs to the group; `9999-12-31` while it still belongs. When a new row starts for the same member and type, the loader sets this to the day before it starts |
+| `artifact_uri` | | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the decision that created the group; only the pointer is stored: e.g. `artifact://decision/d-310`, `artifact://registry/r-77`, `artifact://deed/g-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
 ## Sources and mapping
 
 No endpoints declared yet
@@ -184,6 +218,9 @@ No endpoints declared yet
 | Tribal authority, indigenous council or family farming collective with no corporate paperwork | Papua New Guinea and other customary-law communities | The entity is registered under a government-issued registry code tied to a village or a leader (R7: a scenario of the same object) | `hub_legal_entity` with `key_type_code` `community_registry_code`; `formality` is `collective`; `community_code` in `sat_legal_entity__identification` |
 | Informal market vendor association | Emerging-economy jurisdictions | Registered so the State can allocate resources such as subsidies | Same as a collective |
 | Customary land tenure held by a community | Papua New Guinea | The holder is a Legal Entity; the land right itself is a Legal object | `hub_legal_entity`; nothing on this object for the right |
+| A holding that groups entities for administration, such as reporting or supervision, with no ownership between them | Any jurisdiction with groups of entities under one administrative decision | The holding is a Legal Entity with its own identifier; each member is a row of the grouping, with the dates it applies (R7: a scenario of the same object) | `lnk_legal_entity__legal_entity_hierarchy` and `sat_legal_entity__legal_entity_hierarchy__membership` with `hierarchy_type_code` `holding_group`; the holding is classified with `criterion_code` `group_role` and `classification_code` `holding` |
+| A group inside a group, and later a third level | Any jurisdiction whose groups grow | The same Link is used again; the depth is a rule of the hierarchy type, so a new level changes a setting and no table | Rows of `lnk_legal_entity__legal_entity_hierarchy`; `max_depth_count` of the hierarchy type in `sat_code_value__validation` |
+| A member that belongs to a holding group and is also a branch of another entity | Any jurisdiction with branches or divisions | Each kind of grouping is its own hierarchy, so a member has one open row for each kind | Rows with different `hierarchy_type_code` in `sat_legal_entity__legal_entity_hierarchy__membership` |
 | Entity that owns other entities, or is owned by persons | Any jurisdiction with corporate groups | Each entity is its own Hub row; the owner is a Party, so a person and a company are handled the same way | `lnk_legal_entity__party_owner` and `sat_legal_entity__party_owner__ownership` |
 | Title split between two holders (bare ownership and usufruct) | Any jurisdiction | Each title is its own holding, with its own share | Two rows in `sat_legal_entity__party_owner__ownership`, one for each holding type |
 | Shares held through a nominee, a trust or an intermediary | Any jurisdiction with fiscal transparency rules | The registered holder and the beneficiary are two owners with different holding types | Rows with `legal_nominee` and `beneficial_ownership` |
@@ -287,12 +324,50 @@ Each row ends the day before the next one starts; the loader closes the earlier 
 | Natural Person `P-1` | bare_ownership | 30.0000 |
 | Natural Person `P-9` | usufruct | 30.0000 |
 
+**A holding group (Samoa).** The holding `H-100` has its own identifier, with the key type `holding_registry_code`. It groups Pacific Fisheries Limited (`C-2291`) and another company (`C-3310`). No ownership is implied: the members are grouped for administration.
+
+`hub_legal_entity`
+
+| **legal_entity_bk** | **jurisdiction_code** | **key_type_code** |
+| --- | --- | --- |
+| H-100 | WSM | holding_registry_code |
+
+`sat_legal_entity__legal_entity_hierarchy__membership`, with the parent on the left of each row
+
+| **Parent** | **Member** | **hierarchy_type_code** | **end_reason_code** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- | --- |
+| `H-100` | `C-2291` | holding_group | (empty) | 2020-01-01 | 9999-12-31 |
+| `H-100` | `C-3310` | holding_group | left_group | 2020-01-01 | 2023-12-31 |
+
+**A third level, with no change of table.** In 2024 a sub-holding `H-110` joins `H-100`, and the company `C-4410` joins `H-110`. The path of `C-4410` is now two steps long, so the holding group has three levels. Only the setting `max_depth_count` of the hierarchy type changes, from 2 to 3. Until it does, the load parks the rows that go deeper than the limit, with the reason (R8).
+
+| **Parent** | **Member** | **hierarchy_type_code** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| `H-100` | `H-110` | holding_group | 2024-06-01 | 9999-12-31 |
+| `H-110` | `C-4410` | holding_group | 2024-06-01 | 9999-12-31 |
+
 ## Modeling considerations
 
 - **One Hub, two kinds of key.** A tax or company number and a community registry code are both business keys of the same Hub. The key type is part of the hash, so two keys with the same text but different types never collide.
 - **The entity key is internal and has to last.** `legal_entity_bk` is set in the platform configuration for each jurisdiction. It is unique for the life of the platform, never changed and never reused, and it is sized for every entity the State will ever register, because a key has to outlive the entity, its numbers and its owners. The key type is part of the hash, and a Natural Person has its own Hub, so an entity and a person cannot collide even if their keys look alike; the Party Link is the only place where the two meet.
 - **Names follow the same rules as a person's.** A row of `sat_legal_entity__name` is identified by the parent key, `name_type_code`, `name_text` and `script_code`; `record_source` is not part of it. `script_code` is a writing system (ISO 15924), not an encoding, and Gold builds one normalized name for each name type. See the Natural Person page.
 - **Identifiers are facts, not keys.** Additional identifiers, such as a tax number added after incorporation, live in `sat_legal_entity__identification`. The business key is the source's own identifier, so adding one never changes a key.
+- **A holding is a Legal Entity that groups other Legal Entities.** It has its own identifier (its own business key and key type), a name, a lifecycle and a classification, like any entity. It is marked with the classification row `group_role` `holding`, so a holding exists before its first member does. A parent in a grouping must be classified as a holding; the load checks it.
+- **The grouping is administrative today.** `lnk_legal_entity__legal_entity_hierarchy` records that an entity belongs to a group by decision or registration. It does not say who owns whom, and it carries no share. Ownership stays in `lnk_legal_entity__party_owner`, so a holding with no ownership of its members is valid.
+- **The depth is a rule, not a structure.** The Link joins the Hub to itself, so a group can sit inside a group to any depth. How many levels are allowed is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`), and it is 2 for `holding_group` today. The load parks a row that goes deeper than the limit, with the reason. A third level changes that value and no table, no Link and no page. The level of an entity and its path to the top are computed in the Gold layer, never stored (R13).
+- **A member has one open grouping for each kind.** An entity belongs to at most one holding group at a time. The Satellite grain does not say so, because it is one row for each Link row and kind; the quality rule does: at most one open row (`end_date` `9999-12-31`) for each member and `hierarchy_type_code`. A member that leaves a holding group and joins another has its first row closed the day before the second starts, and the earlier rows stay.
+- **A member cannot be its own ancestor.** A grouping that would close a loop is parked by the load.
+- **One Link, several kinds of hierarchy.** `hierarchy_type_code` is a value of the Code List `legal_entity_hierarchy_type`. Each kind is a hierarchy of its own, with its own depth rule and its own open row for each member. Kinds that this design can carry with no new table are: `holding_group` (an administrative group of entities), `branch` (an entity that is a branch of another), `division` (a unit inside an entity) and `tax_group` (entities treated as one for tax). A new kind is a new Code List value. The decision on which kinds are used belongs to the owners of each rule, and it is an open decision.
+- **If the meaning of the grouping changes.** The model was designed for the first row of this table. The other rows say what would change:
+
+| **If the grouping becomes** | **What changes** | **What does not change** |
+| --- | --- | --- |
+| Administrative grouping (today) | Nothing: the grouping is the fact | Ownership is recorded apart, in `lnk_legal_entity__party_owner` |
+| Control: the holding owns its members | The source of truth moves to ownership. A parent must also appear as an owner of the member, with a share above a threshold set by the rule. The grouping is derived in Gold from the ownership tree, or kept here and compared with it. An entity could then have several owners, so the rule of one open grouping for each kind would be reconsidered | The tables, the Link, the Satellite and the way depth is set |
+| Both at once | Both Links are loaded. A Gold view compares them and flags a member that is grouped but not owned, or owned above the threshold but not grouped | The tables |
+| A third level or more | Only `max_depth_count` | The tables and the Link |
+| A second kind of hierarchy (branches, divisions, tax groups) | A new value of `legal_entity_hierarchy_type`, and its own depth rule | The tables |
+
 - **Hierarchy has no depth in the model.** Ownership is a Link between a Legal Entity and its owner Party, and a Legal Entity is a Party too, so nesting is unlimited. How deep an entity sits in a group, the total share of an owner through several levels and the ultimate owner are computed in the Gold layer, never stored (R13).
 - **Ownership is a different relationship from identity.** `lnk_legal_entity__party` has one row for each Legal Entity; `lnk_legal_entity__party_owner` has one row for each owner of an entity. The owner can be a Natural Person or a Legal Entity because the Link points to the Party.
 - **One Satellite, three dimensions.** `holding_type_code`, `liquidity_status_code` and `vesting_status_code` are states of the same holding, so they share a Satellite; any change of one is a new row. The holding type is part of the grain: an owner with several titles over one entity has several rows, each with its own share and status.
@@ -320,7 +395,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 3 Links and 6 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 4 Links and 7 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
 
 ![Legal Entity cluster, simplified](images/Diagrams_Legal_Entity_Simplified.png)
 
@@ -340,6 +415,9 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | The name of the same-as Link between two Legal Entity records, for a merger or a re-key | Data Architecture Engineer and Data Product Owner | They decide the name, following the Link rules in the Principles | Before the first mapping that needs it |
 | Whether a legal form is a value of one Code List for all jurisdictions or one list for each jurisdiction | Data Architecture Engineer and Platform | Decided with the Code List object, from the applicability of each value | Before the Code List page is reviewed |
 | Whether a family-owned collective that is also a taxpayer is one Legal Entity or two | Data Product Owner | Decided with Taxation, Contributions and Licences | Before the first mapping that needs it |
+| Whether a holding group means ownership or control in the future, and with what share threshold | Data Product Owner | Decided with Taxation, Contributions and Licences, from the first rule that depends on the group; the table in Modeling considerations says what changes | Before the first mapping that needs it |
+| Which kinds of hierarchy are used, and the maximum depth of each (2 for `holding_group` today) | Data Product Owner and Data Architecture Engineer | Set as values of the Code List `legal_entity_hierarchy_type`, with the rule of each kind | Before the first hierarchy is loaded |
+| Who issues and maintains the identifier of a holding (`holding_registry_code`) | Platform configuration and Data Product Owner | Decided for each jurisdiction with the registry that creates the groups | When a jurisdiction is configured |
 | Which key type and jurisdiction each source uses | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
 | The minimum size and format of `legal_entity_bk`, from the number of entities the State must serve and its growth | Platform configuration and Data Architecture Engineer | Set for each jurisdiction from the entities it registers and the years of operation it plans for | When a jurisdiction is configured |
 | Which communities are values of the list `community`, and who maintains the list | Data Product Owner and Platform | Decided with the Code List object, from the first jurisdiction that has informal entities | Before the first mapping that needs it |

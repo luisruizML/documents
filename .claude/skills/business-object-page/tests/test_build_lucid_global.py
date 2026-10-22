@@ -40,7 +40,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_five_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 35)
+        self.assertEqual(len(self.by_name), 37)
 
     def test_ids_are_short_enough_for_lucid(self):
         for s in self.page["shapes"]:
