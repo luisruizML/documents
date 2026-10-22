@@ -1,4 +1,6 @@
 import json
+import os
+import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -52,7 +54,18 @@ class GraphDiagramTests(unittest.TestCase):
             self.assertIn("position", ln["endpoint1"])
             self.assertIn("position", ln["endpoint2"])
 
-    def test_gray_dashed_lines_reach_every_code_list_and_load_configuration_user(self):
+    def test_every_line_joins_exactly_the_two_objects_the_pages_relate_and_ends_in_their_centres(self):
+        ids = {name: s["id"] for name, s in self.by_name.items()}
+        wanted = {frozenset((ids[c], ids[p])) for c, p in {(e.child, e.parent) for e in self.edges}}
+        drawn = [ln for ln in self.page["lines"] if ln["id"].startswith("e")]
+        self.assertEqual({frozenset((ln["endpoint1"]["shapeId"], ln["endpoint2"]["shapeId"])) for ln in drawn}, wanted)
+        self.assertEqual(len(drawn), len(wanted))
+        for ln in self.page["lines"]:
+            if ln["id"].startswith(("e", "u")):
+                for end in ("endpoint1", "endpoint2"):
+                    self.assertEqual(ln[end]["position"], {"x": 0.5, "y": 0.5}, ln["id"])
+
+    def test_the_gray_dashed_lines_reach_every_code_list_and_load_configuration_user(self):
         dashed = [ln for ln in self.page["lines"] if ln["id"].startswith("u")]
         self.assertEqual(len(dashed), len(self.uses))
         self.assertGreaterEqual(len(dashed), 33)
@@ -76,6 +89,16 @@ class GraphDiagramTests(unittest.TestCase):
         self.assertEqual(len(legend), 4)
         for s in legend:
             self.assertTrue(any(tag in s["text"] for tag in ("HUB", "LINK", "SAT")))
+
+    def test_the_layout_does_not_depend_on_the_hash_seed_of_the_run(self):
+        code = ("import sys; sys.path.insert(0, r'%s'); import graph_layout as gl; "
+                "k={'hub_a':'Hub','hub_b':'Hub','lnk_a__b':'Link','sat_a__x':'Satellite','hub_c':'Hub','lnk_b__c':'Link'}; "
+                "e=[('lnk_a__b','hub_a'),('lnk_a__b','hub_b'),('sat_a__x','hub_a'),('lnk_b__c','hub_b'),('lnk_b__c','hub_c')]; "
+                "L=gl.layout(k,{},e,['sat_a__x']); print(sorted((n,round(p.x,3),round(p.y,3)) for n,p in L.items.items()))"
+                % (Path(__file__).resolve().parents[1] / "scripts"))
+        runs = {subprocess.run([sys.executable, "-c", code], env={**os.environ, "PYTHONHASHSEED": seed}, capture_output=True, text=True,
+                               check=True).stdout for seed in ("1", "2", "3")}
+        self.assertEqual(len(runs), 1)
 
 
 if __name__ == "__main__":

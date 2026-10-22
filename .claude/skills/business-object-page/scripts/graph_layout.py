@@ -243,7 +243,7 @@ def _metrics(items: dict[str, Placed], segs: list[tuple[str, str]]) -> tuple[int
 def _skeleton(skeleton, edges, seed: int):
     """The force-directed layout of the skeleton at one seed, with a mean edge length of 1 (cached by the caller)."""
     G = nx.Graph()
-    G.add_nodes_from(skeleton)
+    G.add_nodes_from(sorted(skeleton))      # a set iterates in hash order, which changes from run to run
     G.add_edges_from((a, b) for a, b in edges if a in skeleton and b in skeleton)
     if len(G) == 1:
         return G, {next(iter(G)): (0.0, 0.0)}

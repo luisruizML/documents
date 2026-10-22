@@ -7,7 +7,6 @@ pages, so it cannot drift from them. Gray dashed lines join the Code List and th
 from __future__ import annotations
 
 import json
-import math
 import sys
 from pathlib import Path
 
@@ -71,33 +70,7 @@ def preview(L: gl.GraphLayout, uses, path: Path) -> None:
 # ---------------------------------------------------------------- Standard Import JSON
 SHAPE_TYPE = {"Hub": "connector", "Link": "preparation", "Satellite": "process"}   # the Flowchart shapes of the hand-drawn graph
 USES_COLOR = g.USES_COLOR
-HEXAGON = [(0.0, 0.5), (0.25, 0.0), (0.75, 0.0), (1.0, 0.5), (0.75, 1.0), (0.25, 1.0)]
-
-
-def boundary(item: gl.Placed, toward: gl.Placed) -> tuple[float, float]:
-    """Where the straight line from the centre of `item` to the centre of `toward` leaves the shape, as fractions of its box."""
-    dx, dy = toward.x - item.x, toward.y - item.y
-    n = math.hypot(dx, dy) or 1.0
-    ux, uy = dx / n, dy / n
-    if item.kind == "Hub":                       # circle
-        return round(0.5 + 0.5 * ux, 4), round(0.5 + 0.5 * uy, 4)
-    if item.kind == "Link":                      # hexagon: nearest crossing of the ray with an edge
-        best = None
-        for i, (x1, y1) in enumerate(HEXAGON):
-            x2, y2 = HEXAGON[(i + 1) % 6]
-            ex, ey = (x2 - x1) * item.w, (y2 - y1) * item.h
-            ox, oy = (x1 - 0.5) * item.w, (y1 - 0.5) * item.h
-            det = ux * -ey - uy * -ex
-            if abs(det) < 1e-9:
-                continue
-            t_ray = (ox * -ey - oy * -ex) / det
-            t_edge = (ux * oy - uy * ox) / det
-            if t_ray > 0 and 0 <= t_edge <= 1 and (best is None or t_ray < best):
-                best = t_ray
-        r = best or item.w / 2
-        return round(0.5 + ux * r / item.w, 4), round(0.5 + uy * r / item.h, 4)
-    scale = min((item.w / 2) / abs(ux) if ux else math.inf, (item.h / 2) / abs(uy) if uy else math.inf)   # rectangle
-    return round(0.5 + ux * scale / item.w, 4), round(0.5 + uy * scale / item.h, 4)
+CENTRE = {"x": 0.5, "y": 0.5}      # every line is drawn to the middle of its shapes and sent behind them, so each one visibly enters the shape it joins
 
 
 def label_html(item: gl.Placed) -> str:
@@ -132,21 +105,17 @@ def to_spec(L: gl.GraphLayout, uses, title: str = "PSS Data Objects - Graph") ->
         })
     lines = []
     for i, (src, user) in enumerate(uses, 1):
-        a, b = L.items[src], L.items[user]
-        (ax, ay), (bx, by) = boundary(a, b), boundary(b, a)
         lines.append({
             "id": f"u{i}", "lineType": "straight",
-            "endpoint1": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[src], "position": {"x": ax, "y": ay}},
-            "endpoint2": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[user], "position": {"x": bx, "y": by}},
+            "endpoint1": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[src], "position": CENTRE},
+            "endpoint2": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[user], "position": CENTRE},
             "stroke": {"color": USES_COLOR, "width": 1, "style": "dashed"},
         })
     for i, (child, parent) in enumerate(L.edges, 1):
-        a, b = L.items[child], L.items[parent]
-        (ax, ay), (bx, by) = boundary(a, b), boundary(b, a)
         lines.append({
             "id": f"e{i}", "lineType": "straight",
-            "endpoint1": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[child], "position": {"x": ax, "y": ay}},
-            "endpoint2": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[parent], "position": {"x": bx, "y": by}},
+            "endpoint1": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[child], "position": CENTRE},
+            "endpoint2": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[parent], "position": CENTRE},
             "stroke": {"color": EDGE, "width": 2, "style": "solid"},
         })
     ly = max(p.label_rect[3] for p in L.items.values()) + 80
