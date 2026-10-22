@@ -39,9 +39,16 @@ class IndexTests(unittest.TestCase):
         self.assertIn("(images/Diagrams_Natural_Person_Simplified.png)", self.text)
         self.assertIn("(images/Diagrams_Natural_Person_Full.png)", self.text)
 
+    def test_index_shows_the_simplified_graph_before_the_full_model_each_under_a_title(self):
+        graph = self.text.index("lucid.app/lucidchart/f6b50fd5-5622-4fd2-9d31-039678a4b722")
+        full = self.text.index("lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238")
+        self.assertLess(self.text.index("### Simplified graph"), graph)
+        self.assertLess(graph, self.text.index("### Full model"))
+        self.assertLess(self.text.index("### Full model"), full)
+
     def test_index_shows_the_global_lucid_model(self):
         self.assertIn("## The full picture", self.text)
-        self.assertIn("lucid.app/lucidchart/28eac543-4a9f-4979-833e-3f38efa1cb35", self.text)
+        self.assertIn("lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238", self.text)
         self.assertNotIn("Global_Model.png", self.text)
 
     def test_every_table_header_is_bold(self):

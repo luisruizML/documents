@@ -1,6 +1,6 @@
 """Publish the Business Object pages and their diagrams to Confluence from the repository, in one command.
 
-    python sync_confluence.py [--page Natural_Person] [--dry-run] [--no-images]
+    python sync_confluence.py [--page Natural_Person] [--dry-run] [--no-images] [--lucid <full model id>] [--lucid-graph <graph id>]
 
 For each page (the ids are in assets/confluence_pages.json; `text_only_pages` have no pictures, such as the inventory):
   1. the Markdown page is converted to Confluence storage format (md_to_storage.py) and saved as a new version of the
@@ -74,6 +74,71 @@ def point_index_at_lucid(adf: dict, document_id: str, snapshot: str | None = Non
     return changed
 
 
+GRAPH_TITLE = "Simplified graph"
+FULL_TITLE = "Full model"
+PICTURES_INTRO = ("The same Hubs, Links and Satellites in two pictures drawn in Lucidchart: first the simplified graph, to see the "
+                  "shape, then the full model, to read the definition of each object.")
+GRAPH_TEXT = ("Hubs are circles, Links are hexagons and Satellites are small squares, each with its name beside it. A gray dashed "
+              "line joins the Code List and the Load Configuration to every object that uses them.")
+FULL_TEXT = ("Every object with its definition written in its box. Registries and Platform are drawn as separate bands, and arrows "
+             "run from the child to its parent. The same gray dashed lines show who uses the Code List and the Load Configuration.")
+
+
+def _lucid_embeds(adf: dict) -> list[int]:
+    """Positions, among the top-level nodes of the page, of the Lucidchart embeds, in order."""
+    return [i for i, n in enumerate(adf["content"])
+            if n.get("type") == "extension" and (n.get("attrs") or {}).get("extensionKey") == "lucidchart"]
+
+
+def _node(kind: str, text: str, **attrs) -> dict:
+    node = {"type": kind, "content": [{"type": "text", "text": text}]}
+    if attrs:
+        node["attrs"] = attrs
+    return node
+
+
+def _clone_embed(node: dict) -> dict:
+    """A copy of a Lucidchart embed with its own macro ids, so Confluence treats it as another macro."""
+    import copy
+    import uuid
+    new = copy.deepcopy(node)
+    params = new["attrs"]["parameters"]
+    old_macro = params["macroParams"]["macroId"]["value"]
+    fresh = str(uuid.uuid4())
+    params["macroParams"]["macroId"]["value"] = fresh
+    params.get("macroMetadata", {}).get("macroId", {})["value"] = str(uuid.uuid4())
+    for item in params.get("macroMetadata", {}).get("placeholder", []):
+        url = item.get("data", {}).get("url")
+        if url:
+            item["data"]["url"] = url.replace(old_macro, fresh)
+    return new
+
+
+def point_index_at_pictures(adf: dict, graph_id: str | None, global_id: str | None, snapshot: str | None = None) -> int:
+    """The index shows two Lucidchart pictures under "The full picture": the simplified graph, then the full model, each
+    under its own title. With one embed on the page, the graph's title, text and embed are added before it. Then each
+    embed is pointed at its document. Returns how many changes were made."""
+    changed = 0
+    embeds = _lucid_embeds(adf)
+    if len(embeds) == 1 and graph_id:
+        at = embeds[0]
+        content = adf["content"]
+        if at > 0 and content[at - 1].get("type") == "paragraph":
+            content[at - 1] = _node("paragraph", PICTURES_INTRO)      # the old sentence spoke of one diagram
+            at -= 1
+            content.insert(at + 1, _node("heading", GRAPH_TITLE, level=3))
+            content.insert(at + 2, _node("paragraph", GRAPH_TEXT))
+            content.insert(at + 3, _clone_embed(content[at + 3]))
+            content.insert(at + 4, _node("heading", FULL_TITLE, level=3))
+            content.insert(at + 5, _node("paragraph", FULL_TEXT))
+            changed += 1
+        embeds = _lucid_embeds(adf)
+    for position, document_id in zip(embeds, (graph_id, global_id) if len(embeds) == 2 else (global_id,)):
+        if document_id:
+            changed += point_index_at_lucid({"content": [adf["content"][position]]}, document_id, snapshot)
+    return changed
+
+
 def checksum(storage: str) -> str:
     return hashlib.sha256(storage.encode("utf-8")).hexdigest()[:16]
 
@@ -124,7 +189,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--page", help="only this page, for example Natural_Person")
     ap.add_argument("--dry-run", action="store_true", help="say what would change and change nothing")
     ap.add_argument("--no-images", action="store_true", help="publish the text only")
-    ap.add_argument("--lucid", help="point the Lucidchart embed of the index page at this Lucid document id")
+    ap.add_argument("--lucid", help="point the full model embed of the index page at this Lucid document id")
+    ap.add_argument("--lucid-graph", help="the simplified graph: its embed (added before the full model on the first run) points at this Lucid document id")
     args = ap.parse_args(argv)
 
     config = images.load_pages()
@@ -148,16 +214,17 @@ def main(argv: list[str] | None = None) -> int:
                 api.upload(step)
             if step["action"] == "missing":
                 code = 1
-    if args.lucid:
+    if args.lucid or args.lucid_graph:
         index_id = config["index_page"]
         page = api.session.get(f"{api.base}/rest/api/content/{index_id}?expand=body.atlas_doc_format,version").json()
         adf = json.loads(page["body"]["atlas_doc_format"]["value"])
-        changed = point_index_at_lucid(adf, args.lucid, formatdate(usegmt=True))
-        print(f"{'would point' if args.dry_run else 'pointed'} {changed} Lucidchart embed(s) of the index at {args.lucid}")
+        changed = point_index_at_pictures(adf, args.lucid_graph, args.lucid, formatdate(usegmt=True))
+        print(f"{'would make' if args.dry_run else 'made'} {changed} change(s) to the Lucidchart pictures of the index "
+              f"(graph {args.lucid_graph or 'unchanged'}, full model {args.lucid or 'unchanged'})")
         if changed and not args.dry_run:
             api.session.put(f"{api.base}/rest/api/content/{index_id}", {
                 "id": index_id, "type": "page", "title": page["title"],
-                "version": {"number": page["version"]["number"] + 1, "message": "Lucidchart embed: current diagram"},
+                "version": {"number": page["version"]["number"] + 1, "message": "Lucidchart pictures: simplified graph and full model"},
                 "body": {"atlas_doc_format": {"value": json.dumps(adf, ensure_ascii=False), "representation": "atlas_doc_format"}},
             })
     texts = dict(pages)
