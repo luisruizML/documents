@@ -10,10 +10,10 @@ import sync_confluence as sc  # noqa: E402
 
 def embed(document_id="old", macro="m1"):
     return {"type": "extension", "attrs": {"extensionKey": "lucidchart", "parameters": {
-        "macroParams": {"documentId": {"value": document_id}, "macroId": {"value": macro},
+        "macroParams": {"documentId": {"value": document_id}, "macroId": {"value": macro}, "embedId": {"value": "shared-embed"},
                         "lastSnapshotDate": {"value": "Thu, 22 Oct 2026 18:13:08 GMT"}},
         "macroMetadata": {"macroId": {"value": "meta"},
-                          "placeholder": [{"data": {"url": f"https://l/ac?macroId={macro}&documentId={document_id}"}}]}}}}
+                          "placeholder": [{"data": {"url": f"https://l/ac?macroId={macro}&documentId={document_id}&embedId=shared-embed"}}]}}}}
 
 
 def page():
@@ -53,6 +53,8 @@ class PictureSectionTests(unittest.TestCase):
         graph, full = adf["content"][4]["attrs"]["parameters"], adf["content"][7]["attrs"]["parameters"]
         self.assertNotEqual(graph["macroParams"]["macroId"]["value"], full["macroParams"]["macroId"]["value"])
         self.assertNotEqual(graph["macroMetadata"]["macroId"]["value"], full["macroMetadata"]["macroId"]["value"])
+        self.assertNotEqual(graph["macroParams"]["embedId"]["value"], full["macroParams"]["embedId"]["value"])
+        self.assertNotIn("shared-embed", graph["macroMetadata"]["placeholder"][0]["data"]["url"])
         url = graph["macroMetadata"]["placeholder"][0]["data"]["url"]
         self.assertIn("documentId=graph", url)
         self.assertIn(graph["macroParams"]["macroId"]["value"], url)

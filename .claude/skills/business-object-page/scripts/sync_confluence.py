@@ -107,10 +107,13 @@ def _clone_embed(node: dict) -> dict:
     fresh = str(uuid.uuid4())
     params["macroParams"]["macroId"]["value"] = fresh
     params.get("macroMetadata", {}).get("macroId", {})["value"] = str(uuid.uuid4())
+    old_embed = params["macroParams"]["embedId"]["value"]
+    fresh_embed = str(uuid.uuid4())                 # two embeds sharing one embedId can show the same picture
+    params["macroParams"]["embedId"]["value"] = fresh_embed
     for item in params.get("macroMetadata", {}).get("placeholder", []):
         url = item.get("data", {}).get("url")
         if url:
-            item["data"]["url"] = url.replace(old_macro, fresh)
+            item["data"]["url"] = url.replace(old_macro, fresh).replace(old_embed, fresh_embed)
     return new
 
 
