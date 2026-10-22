@@ -1,4 +1,4 @@
-// Finishing pass for the generated Lucid documents, run once after the import with lucid_run_script (`source` = this file).
+// Finishing pass for the generated Lucid documents (the simplified graph and the global model), run once after the import with lucid_run_script (`source` = this file).
 // The Standard Import JSON cannot set either of these, so the pass does it:
 //   1. every line goes behind every shape: lines cannot be re-ordered, so every block (shapes, names, legend) is brought to the front,
 //      in the order the importer drew them (shapes, then names, then legend), which leaves all lines at the back;
@@ -17,7 +17,7 @@ const ids = new Set();
   }
 })(read.pages[0].data);
 const items = skills.basecanvasediting.inspect([...ids]);
-const blocks = items.filter((i) => i.kind === 'block');
+const blocks = items.filter((i) => i.kind === 'block' && !i.id.startsWith('band_'));   // the bands of the global diagram stay at the back
 const lines = items.filter((i) => i.kind === 'line');
 const rank = (id) => (/^n\d+$/.test(id) ? 0 : /^l\d+$/.test(id) ? 1 : 2);
 const number = (id) => parseInt(id.replace(/\D+/g, '') || '0', 10);
