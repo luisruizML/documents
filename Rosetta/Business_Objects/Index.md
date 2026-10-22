@@ -23,7 +23,7 @@ What the platform owns and every domain uses, such as configuration, has its own
 
 Every Hub, Link and Satellite of the five pages in one diagram, drawn in Lucidchart and embedded below. Registries and Platform are drawn as separate bands, the grain is written inside each box, and arrows run from the child to its parent.
 
-<!-- Confluence only: the Lucid diagram is an embedded Lucidchart macro (document 1d3424bd-b9e8-4284-b710-2607f548564e). Markdown cannot embed it. Link: https://lucid.app/lucidchart/1d3424bd-b9e8-4284-b710-2607f548564e/view -->
+<!-- Confluence only: the Lucid diagram is an embedded Lucidchart macro (document 7b2360f3-961b-48c8-ac80-3e2f71cf331e). Markdown cannot embed it. Link: https://lucid.app/lucidchart/7b2360f3-961b-48c8-ac80-3e2f71cf331e/view -->
 
 | **Color** | **Object** |
 | --- | --- |

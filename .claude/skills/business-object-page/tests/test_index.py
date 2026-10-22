@@ -41,7 +41,7 @@ class IndexTests(unittest.TestCase):
 
     def test_index_shows_the_global_lucid_model(self):
         self.assertIn("## The full picture", self.text)
-        self.assertIn("lucid.app/lucidchart/1d3424bd-b9e8-4284-b710-2607f548564e", self.text)
+        self.assertIn("lucid.app/lucidchart/7b2360f3-961b-48c8-ac80-3e2f71cf331e", self.text)
         self.assertNotIn("Global_Model.png", self.text)
 
     def test_every_table_header_is_bold(self):
