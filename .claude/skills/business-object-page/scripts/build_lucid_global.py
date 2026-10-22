@@ -18,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import build_diagram as bd  # noqa: E402
+import platform_usage as pu  # noqa: E402
 
 REPO = HERE.parents[3]
 PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Code_List", "Load_Configuration"]
@@ -35,6 +36,7 @@ TEXT_COLOR = "#000000"
 EDGE_COLOR = "#3A414A"
 BAND_FILL = "#F6F4FC"
 BAND_LINE = "#A6A8AB"
+USES_COLOR = "#A6A8AB"          # the light, dashed "uses" line from the Code List and the Load Configuration
 
 # ---------------------------------------------------------------- text measurement
 UNIT_PER_PT = 160 / 72          # Lucid's coordinate system is 160 dpi
@@ -171,6 +173,7 @@ class Layout:
     lines: list[dict] = field(default_factory=list)
     bands: list[dict] = field(default_factory=list)
     twins: list[tuple[str, str]] = field(default_factory=list)
+    uses: list[tuple[str, str]] = field(default_factory=list)   # (Code List or Load Configuration Hub, user): gray dashed lines
 
 
 def _stack(layout: Layout, names: list[str], x: float, y: float, width: float, align: str = "left") -> float:
@@ -424,6 +427,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     plat_bottom = max(lc_bottom, hlc.y + hlc.h) + BAND_PAD
     L.bands.append({"title": "Platform", "x": px, "y": by, "w": plat_w, "h": plat_bottom - by})
     L.legend_y = max(reg_bottom, plat_bottom) + 60
+    L.uses = pu.uses_lines(nodes)
     L.band_w = px + plat_w
     return L
 
@@ -438,6 +442,15 @@ def segments(L: Layout) -> list[tuple[dict, tuple[float, float], tuple[float, fl
     for ln in L.lines:
         out.append((ln, _abs(L.boxes[ln["child"]], ln["c"]), _abs(L.boxes[ln["parent"]], ln["p"])))
     return out
+
+
+def edge_position(box: Box, toward: Box) -> tuple[float, float]:
+    """Where the straight line from the centre of `box` to the centre of `toward` leaves `box`, as fractions of its size."""
+    dx, dy = toward.cx - box.cx, toward.cy - box.cy
+    if dx == 0 and dy == 0:
+        return 0.5, 0.5
+    scale = min((box.w / 2) / abs(dx) if dx else math.inf, (box.h / 2) / abs(dy) if dy else math.inf)
+    return round(0.5 + dx * scale / box.w, 4), round(0.5 + dy * scale / box.h, 4)
 
 
 def short_ids(L: Layout) -> dict[str, str]:
@@ -478,6 +491,17 @@ def to_spec(L: Layout, title: str = "PSS Data Objects") -> dict:
             "endpoint2": {"type": "shapeEndpoint", "style": "arrow" if ln["arrow"] else "none", "shapeId": ids[ln["parent"]], "position": {"x": ln["p"][0], "y": ln["p"][1]}},
             "stroke": {"color": EDGE_COLOR, "width": 1, "style": "dashed" if ln["dashed"] else "solid"},
         })
+    for i, (src, user) in enumerate(L.uses, 1):
+        s, u = L.boxes[src], L.boxes[user]
+        sx, sy = edge_position(s, u)
+        ux, uy = edge_position(u, s)
+        lines.append({
+            "id": f"u{i}",
+            "lineType": "straight",
+            "endpoint1": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[src], "position": {"x": sx, "y": sy}},
+            "endpoint2": {"type": "shapeEndpoint", "style": "none", "shapeId": ids[user], "position": {"x": ux, "y": uy}},
+            "stroke": {"color": USES_COLOR, "width": 1, "style": "dashed"},
+        })
     for i, (a, b) in enumerate(L.twins, 1):
         lines.append({
             "id": f"t{i}",
@@ -501,6 +525,18 @@ def to_spec(L: Layout, title: str = "PSS Data Objects") -> dict:
             "text": f'<p style="font-size:10pt;text-align:left">{label}</p>',
         })
         lx += 660
+    for label in ("Gray dashed line from hub_code_list: the object has a column whose values come from a Code List",
+                  "Gray dashed line from hub_load_configuration: the Load Configuration decides which Satellite of the pair is loaded"):
+        shapes.append({
+            "id": f"legend_uses_box_{len([s for s in shapes if s['id'].startswith('legend_uses_box')])}", "type": "rectangle",
+            "boundingBox": {"x": 60.0, "y": ly + 100 + 46 * len([s for s in shapes if s["id"].startswith("legend_uses_box")]), "w": 60, "h": 12},
+            "style": {"fill": {"type": "color", "color": "#FFFFFF"}, "stroke": {"color": USES_COLOR, "width": 2, "style": "dashed"}},
+        })
+        shapes.append({
+            "id": f"legend_uses_text_{len([s for s in shapes if s['id'].startswith('legend_uses_text')])}", "type": "text",
+            "boundingBox": {"x": 132.0, "y": ly + 88 + 46 * len([s for s in shapes if s["id"].startswith("legend_uses_text")]), "w": 1800, "h": 36},
+            "text": f'<p style="font-size:10pt;text-align:left">{label}</p>',
+        })
     shapes.append({
         "id": "legend_note", "type": "text",
         "boundingBox": {"x": 60, "y": ly + 50, "w": 2400, "h": 36},

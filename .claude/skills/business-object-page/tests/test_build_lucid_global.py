@@ -158,6 +158,27 @@ class GlobalDiagramTests(unittest.TestCase):
             self.assertTrue(reg["y"] <= b.y and b.y + b.h <= reg["y"] + reg["h"], n)
         self.assertIn(("lnk_location__party", "hub_party"), {(ln["child"], ln["parent"]) for ln in self.layout.lines})
 
+    def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):
+        uses = [ln for ln in self.page["lines"] if ln["id"].startswith("u")]
+        self.assertEqual(len(uses), len(self.layout.uses))
+        self.assertEqual(len(set(self.layout.uses)), len(self.layout.uses))
+        for ln in uses:
+            self.assertEqual(ln["stroke"], {"color": g.USES_COLOR, "width": 1, "style": "dashed"})
+            self.assertEqual((ln["endpoint1"]["style"], ln["endpoint2"]["style"]), ("none", "none"))
+        by_id = {s["id"]: s for s in self.page["shapes"]}
+        for ln in uses:
+            for end in ("endpoint1", "endpoint2"):
+                pos = ln[end]["position"]
+                self.assertTrue(0 <= pos["x"] <= 1 and 0 <= pos["y"] <= 1)
+                on_edge = pos["x"] in (0, 1) or pos["y"] in (0, 1) or min(pos["x"], 1 - pos["x"], pos["y"], 1 - pos["y"]) < 1e-3
+                self.assertTrue(on_edge, ln["id"])
+                self.assertIn(ln[end]["shapeId"], by_id)
+
+    def test_gray_dashed_lines_are_not_structural_arrows(self):
+        self.assertFalse([ln for ln in self.layout.lines if ln.get("kind") == "uses"])
+        arrows = [ln for ln in self.page["lines"] if ln["endpoint2"]["style"] == "arrow"]
+        self.assertEqual(len(arrows), len(self.edges))
+
     def test_both_owner_domain_bands_are_drawn(self):
         titles = {s["containerTitle"]["text"] for s in self.page["shapes"] if s["type"] == "roundedRectangleContainer"}
         self.assertEqual(titles, {"Registries (owner domain)", "Platform (owner domain)"})
