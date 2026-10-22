@@ -210,7 +210,7 @@ The kind of division, its period and the reason it ended are one fact, so they s
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `lnk_location__party_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | No | — | How the party uses the place, a value of the list `location_role`: e.g. `residence`, `registered_office`, `mailing_address`, `place_of_birth` |
+| `role_code` | | `string` | No | No | — | How the party uses the place, a value of the list `location_role` that is allowed for the kind of party (`party_type_code` in the Code List): e.g. `residence`, `registered_office`, `mailing_address`, `place_of_birth` |
 | `effective_date` | | `date` | No | No | `1900-01-01` | First day the party uses the place; `1900-01-01` when unknown |
 | `end_date` | | `date` | No | No | `9999-12-31` | Last day the party uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
 | `artifact_uri` | | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
@@ -324,6 +324,7 @@ Illustrative data. The first example is a place known by a zone and an address; 
 - **An open end is `9999-12-31`.** The end of a zone, a division or a use of a place is `9999-12-31` while it applies, and an unknown start is `1900-01-01`. When a new row for the same key and role arrives, the loader sets the end of the previous row to the day before the new start (Principles, "Validity ranges").
 - **The jurisdiction is a Code List value.** `jurisdiction_code` is a country or territory, ISO 3166-1 alpha-3. Zones hang below it. A Jurisdiction object comes only if treaties or currencies need attributes of their own.
 - **Codes take their values from the Code List.** `zone_scheme_code`, `zone_level_code`, `hierarchy_type_code`, `key_type_code`, `role_code`, `geometry_type_code`, `srs_code`, `accuracy_unit_code`, `end_reason_code` and `script_code` hold values that change without changing any logic, so they are Code List values.
+- **The role depends on the kind of party.** `role_code` is one list for every Party. Each value says in the Code List (`party_type_code` in `sat_code_value__applicability`) whether it is for natural persons, legal entities or both: `place_of_birth` for a natural person, `registered_office` and `branch_office` for a legal entity, `mailing_address` for either. The load reads the kind of Party through `lnk_natural_person__party` or `lnk_legal_entity__party` and parks a row whose role is not allowed for it.
 - **Distance, area and containment are not stored.** Whether a point lies inside a zone, the area of a polygon and the distance between two places are computed in the Gold layer (R13).
 
 ## Diagram

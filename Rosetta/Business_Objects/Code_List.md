@@ -36,7 +36,7 @@ One object holds every list. A new list is a new row, never a new table, so the 
 | Link | `lnk_code_list__code_value` | The table that records which values belong to which list. | one row per distinct combination of code list and code value | `hub_code_list`, `hub_code_value` |
 | Satellite | `sat_code_value__label` | The table that records the name shown to people for each value in each language, a short name for small screens, what it means when the name is not enough, the order in which it is listed and whether it is a draft, active or retired. | one row per parent key and language, for each time its values change | — |
 | Satellite | `sat_code_value__validation` | The table that records how a value is to be read and checked: the data type of the value, the usual unit, the limit of levels of a hierarchy kind and, for each jurisdiction, the pattern its written form must follow, such as the format of a passport number. | one row per parent key and jurisdiction, for each time its values change | — |
-| Satellite | `sat_code_value__applicability` | The table that records where and when a value is allowed: the jurisdiction (a country or territory) and the first and last day, so the same list can differ by jurisdiction and over time. | one row per parent key and jurisdiction, for each time its values change | — |
+| Satellite | `sat_code_value__applicability` | The table that records where, when and for which kind of party a value is allowed: the jurisdiction (a country or territory), whether it applies to natural persons, to legal entities or to both, and the first and last day, so the same list can differ by jurisdiction, by kind of party and over time. | one row per parent key, jurisdiction and party type, for each time its values change | — |
 | Satellite | `sat_code_list__usage` | The table that records where a list is used: which object and which column take their values from it. | one row per parent key and column that uses the list, for each time its values change | — |
 | Satellite | `sat_code_list__access` | The table that records which roles may see the values of a list, and how much each may see, for lists that only some roles may read. | one row per parent key and role, for each time its values change | — |
 
@@ -112,6 +112,7 @@ The data type says which value column a consumer reads (R11): a trait such as `h
 | --- | --- | --- | --- | --- | --- | --- |
 | `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
 | `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) where the value is allowed, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `PNG`, `WSM`, `any` |
+| `party_type_code` | | `string` | No | No | `any` | Kind of party the value is allowed for. One of `natural_person`, `legal_entity`, `any`; `any` when the value does not depend on the kind of party |
 | `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the value is allowed there; `1900-01-01` when it has always been allowed |
 | `valid_to_date` | | `date` | No | No | `9999-12-31` | Last day the value is allowed there; `9999-12-31` while it is still allowed. When a newer row starts for the same value and jurisdiction, the loader sets this to the day before it starts |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
@@ -149,6 +150,7 @@ No endpoints declared yet
 | **Edge case** | **Where it happens** | **Approach** | **Vault effect** |
 | --- | --- | --- | --- |
 | A list with two values in one jurisdiction and more in another | Any jurisdiction that defines a list on its own | The values are the same rows; each jurisdiction has its own applicability rows (R7) | `sat_code_value__applicability`, one row for each jurisdiction |
+| A value that only one kind of party may take, such as a place of birth for a person and a registered office for a legal entity | Any jurisdiction | The value stays one row; its applicability rows say for which kind of party it is allowed, with `any` when both may take it | `party_type_code` in `sat_code_value__applicability` |
 | A jurisdiction widens its list, then narrows it | Any jurisdiction that changes a definition | The value gets an end date; a value that returns gets a new applicability row | New rows in `sat_code_value__applicability`; earlier rows stay as history |
 | A value used in old records that is no longer allowed | Any jurisdiction | The value is retired, never deleted, so old rows stay readable | `status_code` changes to `retired` in `sat_code_value__label` |
 | A jurisdiction with more than one official language | Any multilingual country or territory | One label row for each official language; the reader falls back to the default language of the jurisdiction, then to `en` | Rows by `language_code` in `sat_code_value__label` |
@@ -170,13 +172,16 @@ Illustrative data. The list `gender` is allowed with different values in two jur
 
 `sat_code_value__applicability`
 
-| **code_value_bk** | **jurisdiction_code** | **valid_from_date** | **valid_to_date** |
-| --- | --- | --- | --- |
-| gender:male | any | 1900-01-01 | 9999-12-31 |
-| gender:female | any | 1900-01-01 | 9999-12-31 |
-| gender:non_binary | WSM | 2024-01-01 | 9999-12-31 |
+| **code_value_bk** | **jurisdiction_code** | **party_type_code** | **valid_from_date** | **valid_to_date** |
+| --- | --- | --- | --- | --- |
+| gender:male | any | any | 1900-01-01 | 9999-12-31 |
+| gender:female | any | any | 1900-01-01 | 9999-12-31 |
+| gender:non_binary | WSM | any | 2024-01-01 | 9999-12-31 |
+| location_role:place_of_birth | any | natural_person | 1900-01-01 | 9999-12-31 |
+| location_role:registered_office | any | legal_entity | 1900-01-01 | 9999-12-31 |
+| location_role:mailing_address | any | any | 1900-01-01 | 9999-12-31 |
 
-Here a person in `PNG` can be recorded only as male or female, and a person in `WSM` as male, female or non-binary from 2024.
+Here a person in `PNG` can be recorded only as male or female, and a person in `WSM` as male, female or non-binary from 2024. A place of birth can be given to a natural person only, a registered office to a legal entity only, and a mailing address to either.
 
 `sat_code_value__validation` for a passport number, a height and a kind of hierarchy
 
@@ -202,6 +207,7 @@ A value that is later given a new rule gets a new row, and the loader closes the
 - **A column that uses a list says so in two places.** The Description of the column points to the list, and `sat_code_list__usage` records the exact object and column. A search of either finds the other.
 - **A Code List is never deleted from.** A value that is no longer allowed is retired, because records loaded earlier still carry it (R1).
 - **Applicability is a scenario, not a copy.** The same value is one row; where and when it is allowed is in `sat_code_value__applicability`.
+- **A value can be limited to a kind of party.** `party_type_code` in `sat_code_value__applicability` says whether a value is for natural persons, legal entities or both. The load checks the value of a column against the kind of Party of the row (a Party is a natural person or a legal entity through its identity Link) and parks a row that does not fit, with the reason, instead of rejecting it. The table itself accepts any combination.
 - **Access is enforced by Platform.** `sat_code_list__access` records the rule; the role-based access control of the platform applies it.
 - **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. The columns of the five pages:
 
@@ -218,9 +224,9 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `hierarchy_type_code` (zones) | List `zone_hierarchy_type` | Each kind of division of the territory is a value, with its own depth limit |
 | `zone_scheme_code`, `zone_level_code`, `address_key_type`, `role_code` (place), `geometry_type_code`, `srs_code`, `accuracy_unit_code` | Lists `zone_scheme`, `zone_level`, `address_key_type`, `location_role`, `geometry_type`, `spatial_reference_system`, and the values of `measure_unit` | The Location page: each jurisdiction has its own zones and address keys, and a new kind of place or system is a value |
 | `criterion_code`, `classification_code`, `community_code`, `role_code` (representation) | Lists `legal_form`, `classification_criterion`, one list for each criterion, `community`, `representation_role` | A value changes without any rule changing |
-| `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code` | Closed lists, written in the Description | A rule branches on each value |
+| `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `party_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code` | Closed lists, written in the Description | A rule branches on each value |
 
-- **A date range closes the one before it.** In `sat_code_value__applicability` and `sat_code_value__validation` a new row for the same value and jurisdiction closes the open one: its end becomes the day before the new start (Principles, "Validity ranges").
+- **A date range closes the one before it.** In `sat_code_value__applicability` and `sat_code_value__validation` a new row for the same value, jurisdiction and party type closes the open one: its end becomes the day before the new start (Principles, "Validity ranges").
 - **A hierarchy kind has a depth.** `max_depth_count` in `sat_code_value__validation` says how many levels a kind of hierarchy may have. It is a setting of the value, so a deeper hierarchy changes a number and no table.
 - **A value has a type.** `value_data_type_code` in `sat_code_value__validation` says whether the values of a code are strings, whole numbers, decimals, dates or booleans, so the load casts once and the Gold layer does not guess (R11).
 - **External standards are still lists.** ISO 3166-1 for jurisdictions and ISO 15924 for scripts are loaded as lists, so every column reads the same way.
@@ -250,4 +256,5 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | Whether `usage_object_name` and `usage_column_name` are filled by hand or read from the catalog | Data Architecture Engineer and Platform | Decided when the catalog (R5) is set up | Before the first list is loaded |
 | Whether the validation pattern of a value is a regular expression only, or can name a check rule such as a check digit | Data Architecture Engineer | Decided with the first source that has a check digit | Before the first identification type is loaded |
 | Whether a mapping from an old list to its replacement, such as an old gender list to a new one, is kept as data here | Data Architecture Engineer and Data Product Owner | Decided when the first jurisdiction changes a list that is used in reports | When such a change is announced |
+| Whether a value limited to a kind of party is checked at load, which parks the row, or only reported in the Gold layer | Data Architecture Engineer and Data Product Owner | Decided with the first load of `lnk_location__party`, where `role_code` depends on the kind of Party | Before the first Location is loaded |
 | Whether a list can have a parent list, such as a region inside a jurisdiction | Data Architecture Engineer | Decided when the first hierarchical list is needed | When such a list is requested |
