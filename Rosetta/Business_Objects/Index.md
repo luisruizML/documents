@@ -28,13 +28,17 @@ The same Hubs, Links and Satellites in two pictures drawn in Lucidchart: first t
 
 Hubs are circles, Links are hexagons and Satellites are small squares, each with its name beside it. A gray dashed line joins the Code List and the Load Configuration to every object that uses them.
 
-<!-- Confluence only: the simplified graph is an embedded Lucidchart macro (document f6b50fd5-5622-4fd2-9d31-039678a4b722). Markdown cannot embed it. Link: https://lucid.app/lucidchart/f6b50fd5-5622-4fd2-9d31-039678a4b722/view -->
+![Simplified graph](images/Lucid_Simplified_Graph.png)
+
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/f6b50fd5-5622-4fd2-9d31-039678a4b722/view)
 
 ### Full model
 
 Every object with its definition written in its box. Registries and Platform are drawn as separate bands, and arrows run from the child to its parent. The same gray dashed lines show who uses the Code List and the Load Configuration.
 
-<!-- Confluence only: the Lucid diagram is an embedded Lucidchart macro (document 732aa5e5-5c75-4799-88d9-b57e0723c238). Markdown cannot embed it. Link: https://lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238/view -->
+![Full model](images/Lucid_Full_Model.png)
+
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238/view)
 
 | **Color** | **Object** |
 | --- | --- |
