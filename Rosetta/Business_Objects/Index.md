@@ -22,9 +22,9 @@ What the platform owns and every domain uses, such as configuration, has its own
 
 ## The full picture
 
-The same Hubs, Links and Satellites in two pictures drawn in Lucidchart: first the simplified graph, to see the shape, then the full model, to read the definition of each object.
+The same Hubs, Links and Satellites in three pictures drawn in Lucidchart: first the graph, to see the shape; then the simplified version, with the grain of each object; then the full version, with the definition of each object.
 
-### Simplified graph
+### Graph
 
 Hubs are circles, Links are hexagons and Satellites are small squares, each with its name beside it. A gray dashed line joins the Code List and the Load Configuration to every object that uses them.
 
@@ -32,11 +32,19 @@ Hubs are circles, Links are hexagons and Satellites are small squares, each with
 
 [Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/f6b50fd5-5622-4fd2-9d31-039678a4b722/view)
 
-### Full model
+### Simplified version
+
+Every object as a box with its name and its grain: what one row of the table stands for. Registries and Platform are drawn as separate bands, and arrows run from the child to its parent. The same gray dashed lines show who uses the Code List and the Load Configuration.
+
+![Simplified version](images/Lucid_Simplified_Version.png)
+
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/17659b9b-12f7-4c7b-86b3-876ddedbbb9a/view)
+
+### Full version
 
 Every object with its definition written in its box. Registries and Platform are drawn as separate bands, and arrows run from the child to its parent. The same gray dashed lines show who uses the Code List and the Load Configuration.
 
-![Full model](images/Lucid_Full_Model.png)
+![Full version](images/Lucid_Full_Model.png)
 
 [Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238/view)
 

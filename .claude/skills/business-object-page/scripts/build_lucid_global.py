@@ -52,6 +52,7 @@ GAP_ROW = 26
 GAP_CHAIN = 80
 HUB_PER_EDGE = 20
 BAND_PAD = 80
+SIMPLIFIED = False              # True: each box holds its name and its grain ("one row per ...") instead of its definition
 
 
 def _w(text: str, pt: float, em: float) -> float:
@@ -112,7 +113,8 @@ def measure(node: bd.Node) -> Box:
     names = name_lines(node.name)
     name_w = max(_w(line, NAME_PT, BOLD_EM) for line in names)
     chars = max(24, int(max(name_w, 250) / (GRAIN_PT * UNIT_PER_PT * ITALIC_EM)))
-    grain = wrap(node.note, chars) if node.note else []
+    text = (node.grain or node.note) if SIMPLIFIED else node.note
+    grain = wrap(text, chars) if text else []
     grain_w = max((_w(line, GRAIN_PT, ITALIC_EM) for line in grain), default=0.0)
     box = Box(node.name, kind, node.in_place, names, grain)
     box.text_w = max(name_w, grain_w)
@@ -540,16 +542,19 @@ def to_spec(L: Layout, title: str = "PSS Data Objects") -> dict:
     shapes.append({
         "id": "legend_note", "type": "text",
         "boundingBox": {"x": 60, "y": ly + 50, "w": 2400, "h": 36},
-        "text": '<p style="font-size:9pt;text-align:left">Arrows run from the child to its parent. A dashed line joins the two Satellites of a twin pair. The definition of each object is written in its box.</p>',
+        "text": f'<p style="font-size:9pt;text-align:left">Arrows run from the child to its parent. A dashed line joins the two Satellites of a twin pair. {"The grain of each object, one row per ..., is" if SIMPLIFIED else "The definition of each object is"} written in its box.</p>',
     })
     return {"version": 1, "pages": [{"id": "page1", "title": title, "shapes": shapes, "lines": lines}]}
 
 
 def main(argv: list[str]) -> int:
-    out = Path(argv[0]) if argv else Path("lucid_global.json")
+    global SIMPLIFIED
+    SIMPLIFIED = "--simplified" in argv
+    args = [a for a in argv if not a.startswith("--")]
+    out = Path(args[0]) if args else Path("lucid_global.json")
     nodes, edges = load_all()
     L = build_layout(nodes, edges)
-    out.write_text(json.dumps(to_spec(L), ensure_ascii=False), encoding="utf-8")
+    out.write_text(json.dumps(to_spec(L), ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print("wrote", out, f"({len(L.boxes)} boxes, {len(L.lines)} lines)")
     return 0
 
