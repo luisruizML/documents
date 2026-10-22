@@ -19,7 +19,7 @@ import re
 PAGE_WIDTH = 1800       # width of a table on a page in the wide appearance, in px (a screenshot of such a table was 1800 px wide)
 HEADER_WIDTH = 760      # width of the Header table (default layout), in px
 FONT_SCALE = 1.15       # Confluence's text is wider than Arial; "Owner domain" wrapped at 1.0 and at 1.12
-MONO_CHAR = 10          # width of one character of code in Confluence, in px, read from a screenshot
+MONO_CHAR = 8.5         # width of one character of code in Confluence, in px, read from a screenshot
 CODE_PADDING = 8        # the box around a code span adds 4 px on each side
 CELL_PADDING = 20       # 8 px of padding on each side of a cell, the border and a little slack
 SANS_PX = 14
