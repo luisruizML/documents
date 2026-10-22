@@ -67,9 +67,9 @@ class PlanTests(unittest.TestCase):
         (self.dir / "Diagrams_Sample_Full.png").unlink()
         self.assertEqual(self.actions({})["Diagrams_Sample_Full.png"], "missing")
 
-    def test_the_real_pages_file_names_all_five_pages(self):
+    def test_the_real_pages_file_names_all_the_pages(self):
         pages = sync.load_pages()["pages"]
-        self.assertEqual(sorted(pages), ["Code_List", "Legal_Entity", "Load_Configuration", "Natural_Person", "Party"])
+        self.assertEqual(sorted(pages), ["Code_List", "Legal_Entity", "Load_Configuration", "Location", "Natural_Person", "Party"])
 
     def test_every_real_image_exists(self):
         steps = sync.plan(sync.load_pages()["pages"], {})

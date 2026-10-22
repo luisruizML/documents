@@ -43,7 +43,7 @@ class GlobalDiagramTests(unittest.TestCase):
     def test_one_box_per_vault_object_of_the_five_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
         self.assertEqual(len(self.by_name), 51)
-        self.assertEqual(self.ghosts, {"hub_party:location"})
+        self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
         for s in self.page["shapes"]:
@@ -54,7 +54,6 @@ class GlobalDiagramTests(unittest.TestCase):
     def test_one_arrow_per_child_to_parent_edge(self):
         arrows = [ln for ln in self.page["lines"] if ln["endpoint2"]["style"] == "arrow"]
         self.assertEqual(len(arrows), len(self.edges))
-        self.assertEqual(sum(1 for ln in self.layout.lines if ln["parent"] in self.ghosts), 1)
         for ln in arrows:
             self.assertEqual(ln["lineType"], "straight")
             self.assertIn("position", ln["endpoint1"])
@@ -151,9 +150,17 @@ class GlobalDiagramTests(unittest.TestCase):
         legend = [s for s in self.page["shapes"] if s["id"].startswith("legend_box")]
         self.assertEqual(len(legend), 4)
 
+    def test_location_is_inside_the_registries_band_and_reaches_hub_party(self):
+        reg = next(b for b in self.layout.bands if b["title"] == "Registries")
+        for n in ("hub_location", "hub_address", "hub_geometry", "hub_administrative_zone", "lnk_location__party"):
+            b = self.layout.boxes[n]
+            self.assertTrue(reg["x"] <= b.x and b.x + b.w <= reg["x"] + reg["w"], n)
+            self.assertTrue(reg["y"] <= b.y and b.y + b.h <= reg["y"] + reg["h"], n)
+        self.assertIn(("lnk_location__party", "hub_party"), {(ln["child"], ln["parent"]) for ln in self.layout.lines})
+
     def test_both_owner_domain_bands_are_drawn(self):
         titles = {s["containerTitle"]["text"] for s in self.page["shapes"] if s["type"] == "roundedRectangleContainer"}
-        self.assertEqual(titles, {"Registries (owner domain)", "Registries (owner domain): Location", "Platform (owner domain)"})
+        self.assertEqual(titles, {"Registries (owner domain)", "Platform (owner domain)"})
 
 
 if __name__ == "__main__":
