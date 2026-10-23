@@ -329,6 +329,7 @@ The valuation of a structure goes through its status in the same way as that of 
 
 ## Modeling considerations
 
+- **A structure can have several Locations,** as a parcel can: its footprint, its entrance and its address can each be their own Location, with their own role in `lnk_built_structure__location`. The Vault does not deduce one from another; see the [Location](Location.md) page.
 - **Parcel and structure are two Hubs.** The structure has its own key, lifecycle and holders, so it is its own Hub, with its own Links to Location, to Party and to Government Authority. It is joined to the parcel by `lnk_base_parcel__built_structure`, which is defined on this page and drawn on the page [Base Parcel](Base_Parcel.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
 - **The Link to the parcel is many to many.** A parcel can hold many structures and a structure, such as a pier or a large building, can stand on more than one parcel. The period and the reason it ended are in `sat_base_parcel__built_structure__period`.
 - **Containment has no fixed depth.** `lnk_built_structure__built_structure_hierarchy` joins the Hub to itself, as the hierarchy of Legal Entities does. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`). The level of a structure and its path to the parcel are computed in Gold (R13).
