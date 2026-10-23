@@ -22,6 +22,13 @@ class FamilyPageTests(unittest.TestCase):
         members = vp.family_members(vp.parse_page(self.text()))
         self.assertEqual(sorted(set(members)), ["Base_Parcel", "Built_Structure"])
 
+    def test_the_movable_family_validates_and_merges_its_three_parts(self):
+        text = self.text("Movable_Assets")
+        self.assertEqual(vp.validate(text, base_dir=PAGES), [])
+        self.assertEqual(sorted(set(vp.family_members(vp.parse_page(text)))), ["Base_Asset", "Model_Catalog", "Swappable_Component"])
+        merged = bd.load_model(bd.merge_family(text, PAGES), ["hub_location", "hub_party", "hub_government_authority"])
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 33)
+
     def test_an_ordinary_page_is_not_a_family(self):
         self.assertIsNone(vp.family_members(vp.parse_page(self.text("Party"))))
 

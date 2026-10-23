@@ -9,7 +9,11 @@
     "Load_Configuration": "1999208453",
     "Base_Parcel": "2020573185",
     "Built_Structure": "2019852390",
-    "Immovable_Assets": "2020933633"
+    "Immovable_Assets": "2020933633",
+    "Movable_Assets": "2021064712",
+    "Base_Asset": "2021392397",
+    "Swappable_Component": "2020933657",
+    "Model_Catalog": "2021621763"
   },
   "index_page": "1977417738",
   "text_only_pages": {

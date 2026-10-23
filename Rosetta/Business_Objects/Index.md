@@ -13,6 +13,10 @@ An object shared by several domains is one page, listed once with every domain i
 | Immovable Assets | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Immovable Assets](Immovable_Assets.md) |
 | Base Parcel | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Base Parcel](Base_Parcel.md) |
 | Built Structure | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Built Structure](Built_Structure.md) |
+| Movable Assets | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Movable Assets](Movable_Assets.md) |
+| Base Asset | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Base Asset](Base_Asset.md) |
+| Swappable Component | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Swappable Component](Swappable_Component.md) |
+| Model Catalog | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Model Catalog](Model_Catalog.md) |
 
 ### Platform objects
 
