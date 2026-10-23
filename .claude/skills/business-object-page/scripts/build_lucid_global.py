@@ -21,7 +21,8 @@ import build_diagram as bd  # noqa: E402
 import platform_usage as pu  # noqa: E402
 
 REPO = HERE.parents[3]
-PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Base_Parcel", "Built_Structure", "Code_List", "Load_Configuration"]
+PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Base_Parcel", "Built_Structure", "Base_Asset", "Swappable_Component",
+         "Model_Catalog", "Code_List", "Load_Configuration"]
 
 # ---------------------------------------------------------------- style (from the Lucid proposal and the drawio files)
 # Same hues as the drawio files. The background is lighter; the border is the drawio fill.
@@ -288,7 +289,11 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     pairs = {"po": ("lnk_base_parcel__party_owner", "sat_base_parcel__party_owner__ownership"),
              "so": ("lnk_built_structure__party_owner", "sat_built_structure__party_owner__ownership"),
              "pl": ("lnk_base_parcel__location", "sat_base_parcel__location__usage"),
-             "sl": ("lnk_built_structure__location", "sat_built_structure__location__usage")}
+             "sl": ("lnk_built_structure__location", "sat_built_structure__location__usage"),
+             "ao": ("lnk_base_asset__party_owner", "sat_base_asset__party_owner__ownership"),
+             "co": ("lnk_party_owner__swappable_component", "sat_party_owner__swappable_component__ownership"),
+             "al": ("lnk_base_asset__location", "sat_base_asset__location__usage"),
+             "fit": ("lnk_base_asset__swappable_component", "sat_base_asset__swappable_component__period")}
     chain_link, chain_sat = "lnk_base_parcel__built_structure", "sat_base_parcel__built_structure__period"
     hier, hier_sat = "lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership"
     sat_p, sat_s = sats_of(P, nodes, edges), sats_of(S, nodes, edges)
@@ -308,20 +313,21 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
 
     # ownership by a Party, at the top, left-aligned at xR, the Satellite under its Link
     y = y0
-    for key in ("po", "so"):
+    for key in ("po", "so", "ao", "co"):
         link, sat = pairs[key]
         y = place(link, xR, y) + 110
         y = place(sat, xR, y) + 170
     y_own_end = y - 170
-    xr2 = max(B[n].x + B[n].w for k in ("po", "so") for n in pairs[k])
+    xr2 = max(B[n].x + B[n].w for k in ("po", "so", "ao", "co") for n in pairs[k])
     # the groups of the two Hubs
     def right_rows(keys, top, height):
         rows_h = sum(B[pairs[k][0]].h + 110 + B[pairs[k][1]].h for k in keys) + 130 * (len(keys) - 1)
         yy = top + (height - rows_h) / 2
         for k in keys:
             link, sat = pairs[k]
-            yy = place(link, xr2 - B[link].w, yy) + 110
-            yy = place(sat, xr2 - B[sat].w, yy) + 130
+            left = xr2 - max(B[link].w, B[sat].w) if k == "fit" else None   # its lines leave to the left: Link and Satellite share the left edge
+            yy = place(link, left if left is not None else xr2 - B[link].w, yy) + 110
+            yy = place(sat, left if left is not None else xr2 - B[sat].w, yy) + 130
     right_h = lambda keys: sum(B[pairs[k][0]].h + 110 + B[pairs[k][1]].h for k in keys) + 130 * (len(keys) - 1)  # noqa: E731
 
     # parcel
@@ -353,6 +359,46 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     place(hier_sat, xL + wL - hs_.w, hl_top + hl.h + 110)
     right_rows(("sl",), top_s, hh)
 
+    # ---- the Movable Assets cluster, below the Immovable one: asset, model and part in the middle column, the two Links between
+    # them under one another; the Links to Party are at the top with the other two, the Link that fits a part to an asset
+    # stands beside the model, on the right.
+    A, M, C = "hub_base_asset", "hub_model_catalog", "hub_swappable_component"
+    link_am, link_mc = "lnk_base_asset__model_catalog", "lnk_model_catalog__swappable_component"
+    chier, chier_sat = "lnk_swappable_component__swappable_component_hierarchy", "sat_swappable_component__swappable_component_hierarchy__period"
+    sat_a, sat_m = sats_of(A, nodes, edges), sats_of(M, nodes, edges)
+    sat_c = [n for n in sats_of(C, nodes, edges) if n != chier_sat]
+    hubA, hubM, hubC = B[A], B[M], B[C]
+    am, mc, hc_, hcs = B[link_am], B[link_mc], B[chier], B[chier_sat]
+    bottom_s = max(hubs.y + hubs.h, hs_.y + hs_.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in ("pl", "sl")))
+    top_a = bottom_s + 260
+    ha = max(stack_h(sat_a, GAP_ROW), right_h(("al",)))
+    hubA.h = ha
+    hubA.x, hubA.y = xM + wM - hubA.w, top_a
+    yy = top_a + (ha - stack_h(sat_a, GAP_ROW)) / 2
+    for n in sat_a:
+        yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
+    right_rows(("al",), top_a, ha)
+    am.x, am.y = xM + wM - am.w, top_a + ha + 110
+    top_m = am.y + am.h + 110
+    hm = max(stack_h(sat_m, GAP_ROW), right_h(("fit",)))
+    hubM.h = hm
+    hubM.x, hubM.y = xM + wM - hubM.w, top_m
+    yy = top_m + (hm - stack_h(sat_m, GAP_ROW)) / 2
+    for n in sat_m:
+        yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
+    right_rows(("fit",), top_m, hm)
+    mc.x, mc.y = xM + wM - mc.w, top_m + hm + 110
+    top_c = mc.y + mc.h + 110
+    left_c = stack_h(sat_c, GAP_ROW) + 110 + hc_.h + 110 + hcs.h
+    hubC.h = left_c
+    hubC.x, hubC.y = xM + wM - hubC.w, top_c
+    yy = top_c
+    for n in sat_c:
+        yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
+    hc_top = yy - GAP_ROW + 110
+    place(chier, xL + wL - hc_.w, hc_top)
+    place(chier_sat, xL + wL - hcs.w, hc_top + hc_.h + 110)
+
     # ---- lines
     for hub, sats in ((hubp, sat_p), (hubs, sat_s)):
         for n in sats:
@@ -363,20 +409,39 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     _line(L, hier_sat, hier, *( (( _pair_x(hl, hs_)[1], 0.0), (_pair_x(hl, hs_)[0], 1.0)) ))
     _line(L, hier, S, (1.0, 0.3), (0.0, _frac(hubs, hl.y + 0.3 * hl.h)))
     _line(L, hier, S, (1.0, 0.7), (0.0, _frac(hubs, hl.y + 0.7 * hl.h)))
+    for hub, sats in ((hubA, sat_a), (hubM, sat_m), (hubC, sat_c)):
+        for n in sats:
+            _line(L, n, hub.name, (1.0, 0.5), (0.0, _frac(hub, B[n].cy)))
+    for link, up, down in ((am, hubA, hubM), (mc, hubM, hubC)):
+        fl, fu = _pair_x(link, up)
+        _line(L, link.name, up.name, (fl, 0.0), (fu, 1.0))
+        fl, fd = _pair_x(link, down)
+        _line(L, link.name, down.name, (fl, 1.0), (fd, 0.0))
+    _line(L, chier_sat, chier, *(((_pair_x(hc_, hcs)[1], 0.0), (_pair_x(hc_, hcs)[0], 1.0))))
+    _line(L, chier, C, (1.0, 0.3), (0.0, _frac(hubC, hc_.y + 0.3 * hc_.h)))
+    _line(L, chier, C, (1.0, 0.7), (0.0, _frac(hubC, hc_.y + 0.7 * hc_.h)))
     for key in pairs:
         pair_line(*pairs[key])
     # the Links to the Hub of their own kind: level lines along the rows, the ownership Links from above
-    for key, hub in (("pl", hubp), ("sl", hubs)):
+    for key, hub in (("pl", hubp), ("sl", hubs), ("al", hubA)):
         link = B[pairs[key][0]]
         _line(L, link.name, hub.name, (0.0, 0.5), (1.0, _frac(hub, link.cy)))
     _line(L, pairs["po"][0], P, (0.0, 0.3), (1.0, 0.03))
     _line(L, pairs["so"][0], S, (0.0, 0.3), (1.0, 0.03))
     # the Links to the Hubs defined on other pages
-    _line(L, pairs["po"][0], "hub_party", (0.0, 0.6), (1.0, 0.93))
-    _line(L, pairs["so"][0], "hub_party", (0.0, 0.6), (1.0, 0.98))
+    _line(L, pairs["po"][0], "hub_party", (0.0, 0.6), (1.0, 0.925))
+    _line(L, pairs["so"][0], "hub_party", (0.0, 0.6), (1.0, 0.945))
+    _line(L, pairs["ao"][0], A, (0.0, 0.3), (1.0, 0.03))
+    _line(L, pairs["co"][0], C, (0.0, 0.3), (1.0, 0.03))
+    _line(L, pairs["ao"][0], "hub_party", (0.0, 0.6), (1.0, 0.965))
+    _line(L, pairs["co"][0], "hub_party", (0.0, 0.6), (1.0, 0.985))
+    _line(L, pairs["al"][0], "hub_location", (1.0, 0.5), (0.5, 1.0))
+    _line(L, pairs["fit"][0], A, (0.0, 0.35), (1.0, 0.97))
+    _line(L, pairs["fit"][0], C, (0.0, 0.65), (1.0, 0.03))
+    _line(L, link_am, M, (0.5, 1.0), (0.5, 0.0)) if False else None
     _line(L, pairs["pl"][0], "hub_location", (1.0, 0.5), (0.35, 1.0))
     _line(L, pairs["sl"][0], "hub_location", (1.0, 0.5), (0.65, 1.0))
-    bottom = max(hubs.y + hubs.h, hs_.y + hs_.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in pairs))
+    bottom = max(hubC.y + hubC.h, hcs.y + hcs.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in pairs))
     return bottom
 
 
@@ -412,9 +477,12 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
 
     imm_left = (sats_of("hub_base_parcel", nodes, edges) + sats_of("hub_built_structure", nodes, edges)
                 + ["lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership",
-                   "sat_base_parcel__built_structure__period"])
+                   "sat_base_parcel__built_structure__period"]
+                + sats_of("hub_base_asset", nodes, edges) + sats_of("hub_model_catalog", nodes, edges) + sats_of("hub_swappable_component", nodes, edges)
+                + ["lnk_swappable_component__swappable_component_hierarchy", "sat_swappable_component__swappable_component_hierarchy__period"])
     wL = width(np_singles + rep + [link_np_name, hier_link, hier_sat] + imm_left)
-    wM = width(chain + [rel_link, "hub_base_parcel", "hub_built_structure", "lnk_base_parcel__built_structure"])
+    wM = width(chain + [rel_link, "hub_base_parcel", "hub_built_structure", "lnk_base_parcel__built_structure", "hub_base_asset", "hub_model_catalog",
+                        "hub_swappable_component", "lnk_base_asset__model_catalog", "lnk_model_catalog__swappable_component"])
     wR = width(np_pairs + le_sats + [own_link, rel_sat, np_loc, np_loc_sat, le_loc, le_loc_sat, party_sat])
     wS = width([own_sat])
     xL = BAND_PAD

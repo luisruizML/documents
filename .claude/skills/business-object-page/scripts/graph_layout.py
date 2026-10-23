@@ -26,7 +26,7 @@ LABEL_GAP = 6.0
 PAD = 8.0                  # clear space asked between two shapes
 EDGE_LENGTH = 430.0        # mean length of a skeleton edge at scale 1
 SEEDS = tuple(range(24))
-SCALES = tuple(round(1.0 + 0.08 * i, 2) for i in range(16))
+SCALES = tuple(round(1.0 + 0.12 * i, 2) for i in range(28))
 COMPONENT_GAP = 220.0
 MARGIN = 80.0
 

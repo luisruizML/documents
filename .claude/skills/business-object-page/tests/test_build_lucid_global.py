@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 80)
+        self.assertEqual(len(self.by_name), 109)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -106,11 +106,12 @@ class GlobalDiagramTests(unittest.TestCase):
                 apart = a.x + a.w <= b.x or b.x + b.w <= a.x or a.y + a.h <= b.y or b.y + b.h <= a.y
                 self.assertTrue(apart, f"{a.name} overlaps {b.name}")
 
-    def test_no_two_lines_cross_except_the_ones_that_reach_the_immovable_asset_cluster(self):
-        """The long lines from the Immovable Asset cluster up to hub_party and hub_location cross the short lines of the
+    def test_no_two_lines_cross_except_the_ones_that_reach_the_asset_clusters(self):
+        """The long lines from the Immovable and Movable Assets clusters up to hub_party and hub_location cross the short lines of the
         objects between them; those crossings are drawn with a line jump. Every other pair of lines is free of crossings."""
         segs = g.segments(self.layout)
-        mine = lambda ln: ln["child"].startswith(("lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__"))  # noqa: E731
+        mine = lambda ln: ln["child"].startswith(("lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__",  # noqa: E731
+                                                  "lnk_base_asset__", "lnk_party_owner__swappable", "lnk_model_catalog__", "sat_base_asset__", "sat_party_owner__swappable"))
         for i, (l1, a1, b1) in enumerate(segs):
             for l2, a2, b2 in segs[i + 1:]:
                 if mine(l1) or mine(l2):
