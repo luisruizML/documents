@@ -55,7 +55,7 @@ If the three were Satellites of one Hub, a place known only by a zone would carr
 
 The hash key `location_hk` is computed from the normalized `location_bk`. `administrative_zone_hk` is computed from `jurisdiction_code`, `zone_scheme_code` and the normalized `administrative_zone_bk`; `address_hk` from `jurisdiction_code`, `key_type_code` and the normalized `address_bk`; and `geometry_hk` from the normalized `geometry_bk`, all joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_administrative_zone__location`, `lnk_address__location` and `lnk_geometry__location` say that a description **is** a place: each description has exactly one row. `lnk_location__natural_person` and `lnk_legal_entity__location` say that a place **belongs to** a person or to an entity. The Links from `hub_location` to an immovable asset are `lnk_base_parcel__location` and `lnk_built_structure__location`, on the Immovable Asset page, with the same shape as `lnk_location__natural_person`; the Link of a movable asset is added with its page.
+`lnk_administrative_zone__location`, `lnk_address__location` and `lnk_geometry__location` say that a description **is** a place: each description has exactly one row. `lnk_location__natural_person` and `lnk_legal_entity__location` say that a place **belongs to** a person or to an entity. The Links from `hub_location` to an immovable asset are `lnk_base_parcel__location` and `lnk_built_structure__location`, on the pages [Base Parcel](Base_Parcel.md) and [Built Structure](Built_Structure.md), with the same shape as `lnk_location__natural_person`; the Link of a movable asset is added with its page.
 
 ## Fields
 
@@ -264,7 +264,7 @@ No endpoints declared yet
 | A person who moves | Any jurisdiction | The old residence ends the day before the new one starts; the earlier row stays | `end_date` in `sat_location__natural_person__usage` |
 | A legal entity with a registered office and branches | Any jurisdiction | Each place is attached to the entity with its role | Rows in `lnk_legal_entity__location` and `sat_legal_entity__location__usage` with `registered_office` and `branch_office` |
 | A country that is also a territory of another, such as Curaçao | Any jurisdiction with territories | The territory has its own jurisdiction code, and its zones hang below it | `jurisdiction_code` in `hub_administrative_zone` |
-| A place that belongs to an asset, such as a parcel or a port of registry | Any jurisdiction | The asset is attached to the Location with the same shape of Link | `lnk_base_parcel__location` and `lnk_built_structure__location` (Immovable Asset page); the movable asset Link comes with its page |
+| A place that belongs to an asset, such as a parcel or a port of registry | Any jurisdiction | The asset is attached to the Location with the same shape of Link | `lnk_base_parcel__location` and `lnk_built_structure__location` (pages Base Parcel and Built Structure); the movable asset Link comes with its page |
 
 ## Examples
 

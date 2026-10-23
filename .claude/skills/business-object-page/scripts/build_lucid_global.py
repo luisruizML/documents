@@ -21,7 +21,7 @@ import build_diagram as bd  # noqa: E402
 import platform_usage as pu  # noqa: E402
 
 REPO = HERE.parents[3]
-PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Immovable_Asset", "Code_List", "Load_Configuration"]
+PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Base_Parcel", "Built_Structure", "Code_List", "Load_Configuration"]
 
 # ---------------------------------------------------------------- style (from the Lucid proposal and the drawio files)
 # Same hues as the drawio files. The background is lighter; the border is the drawio fill.
