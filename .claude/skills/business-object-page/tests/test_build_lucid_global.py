@@ -40,9 +40,9 @@ class GlobalDiagramTests(unittest.TestCase):
         cls.by_name = {n: s for n, s in everything.items() if n not in cls.ghosts}
         cls.name_of = {s["id"]: n for n, s in cls.by_name.items()}
 
-    def test_one_box_per_vault_object_of_the_five_pages(self):
+    def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 55)
+        self.assertEqual(len(self.by_name), 85)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -106,10 +106,15 @@ class GlobalDiagramTests(unittest.TestCase):
                 apart = a.x + a.w <= b.x or b.x + b.w <= a.x or a.y + a.h <= b.y or b.y + b.h <= a.y
                 self.assertTrue(apart, f"{a.name} overlaps {b.name}")
 
-    def test_no_two_lines_cross(self):
+    def test_no_two_lines_cross_except_the_ones_that_reach_the_immovable_asset_cluster(self):
+        """The long lines from the Immovable Asset cluster up to hub_party and hub_location cross the short lines of the
+        objects between them; those crossings are drawn with a line jump. Every other pair of lines is free of crossings."""
         segs = g.segments(self.layout)
+        mine = lambda ln: ln["child"].startswith(("lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__"))  # noqa: E731
         for i, (l1, a1, b1) in enumerate(segs):
             for l2, a2, b2 in segs[i + 1:]:
+                if mine(l1) or mine(l2):
+                    continue
                 self.assertFalse(crosses(a1, b1, a2, b2), f"{l1['child']}>{l1['parent']} crosses {l2['child']}>{l2['parent']}")
 
     def test_no_line_passes_through_an_unrelated_box(self):
@@ -161,6 +166,21 @@ class GlobalDiagramTests(unittest.TestCase):
         for pair in (("lnk_location__natural_person", "hub_natural_person"), ("lnk_location__natural_person", "hub_location"),
                      ("lnk_legal_entity__location", "hub_legal_entity"), ("lnk_legal_entity__location", "hub_location"),
                      ("sat_party__sensitivity", "hub_party")):
+            self.assertIn(pair, lines)
+
+    def test_immovable_asset_is_inside_the_registries_band_and_government_authority_is_in_the_platform_band(self):
+        reg = next(b for b in self.layout.bands if b["title"] == "Registries")
+        plat = next(b for b in self.layout.bands if b["title"] == "Platform")
+        inside = lambda band, b: band["x"] <= b.x and b.x + b.w <= band["x"] + band["w"] and band["y"] <= b.y and b.y + b.h <= band["y"] + band["h"]  # noqa: E731
+        for name, box in self.layout.boxes.items():
+            if name.startswith(("hub_base_parcel", "hub_built_structure", "lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__")):
+                self.assertTrue(inside(reg, box), name)
+        self.assertTrue(inside(plat, self.layout.boxes["hub_government_authority"]))
+        lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
+        for pair in (("lnk_base_parcel__party_owner", "hub_party"), ("lnk_built_structure__party_owner", "hub_party"),
+                     ("lnk_base_parcel__location", "hub_location"), ("lnk_built_structure__location", "hub_location"),
+                     ("lnk_base_parcel__government_authority", "hub_government_authority"),
+                     ("lnk_built_structure__government_authority", "hub_government_authority")):
             self.assertIn(pair, lines)
 
     def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):

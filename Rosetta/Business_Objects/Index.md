@@ -10,6 +10,7 @@ An object shared by several domains is one page, listed once with every domain i
 | Natural Person | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Natural Person](Natural_Person.md) |
 | Legal Entity | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Legal Entity](Legal_Entity.md) |
 | Location | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Location](Location.md) |
+| Immovable Asset | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Immovable Asset](Immovable_Asset.md) |
 
 ### Platform objects
 
@@ -30,7 +31,7 @@ Hubs are circles, Links are hexagons and Satellites are small squares, each with
 
 ![Simplified graph](images/Lucid_Simplified_Graph.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/c9a7dd1b-13cf-4b46-86bd-415fbf705ec0/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/dda0d440-626c-48db-8f29-7a69f72e9260/view)
 
 ### Simplified version
 
@@ -38,7 +39,7 @@ Every object as a box with its name and its grain: what one row of the table sta
 
 ![Simplified version](images/Lucid_Simplified_Version.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/891aad57-ddac-4310-9f47-3d79bf5f50cd/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/56f216c4-12ea-42ee-98b2-75bc582fbfcf/view)
 
 ### Full version
 
@@ -46,7 +47,7 @@ Every object with its definition written in its box. Registries and Platform are
 
 ![Full version](images/Lucid_Full_Model.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/81951add-0e51-41d7-b1ff-aae696e9686b/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/fe78c138-2500-428e-a9e2-de57ed5f19de/view)
 
 | **Color** | **Object** |
 | --- | --- |
@@ -55,7 +56,7 @@ Every object with its definition written in its box. Registries and Platform are
 | Pink | Satellite that keeps history, the default |
 | Lighter pink | Satellite updated in place, the exception. It is drawn next to its `_history` twin and joined to it by a dashed line |
 
-The page diagrams below use the stronger colors of the drawio files; here the backgrounds are lighter so the text stays readable at this size. Lines are straight and do not cross.
+The page diagrams below use the stronger colors of the drawio files; here the backgrounds are lighter so the text stays readable at this size. Lines are straight. Where one crosses another it hops over it, and every line is drawn behind the boxes.
 
 ## What every page contains
 

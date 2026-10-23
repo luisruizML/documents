@@ -10,7 +10,7 @@ import re
 import sys
 from pathlib import Path
 
-ORDER = ["Party", "Natural_Person", "Legal_Entity", "Location", "Code_List", "Load_Configuration"]
+ORDER = ["Party", "Natural_Person", "Legal_Entity", "Location", "Immovable_Asset", "Code_List", "Load_Configuration"]
 COLUMNS = ["Owner domain", "Object", "Name", "Definition", "Grain", "Business key"]
 
 # (heading, fill, text) per type. Hub, Link and Satellite are the brand colours of section 3c; a Non-historized Link
