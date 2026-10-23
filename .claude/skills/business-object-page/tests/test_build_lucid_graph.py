@@ -41,7 +41,7 @@ class GraphDiagramTests(unittest.TestCase):
     def test_colors_follow_the_hand_drawn_graph(self):
         fill = lambda n: self.by_name[n]["style"]["fill"]["color"]  # noqa: E731
         self.assertEqual(fill("hub_party"), "#8F63F4")
-        self.assertEqual(fill("lnk_location__party"), "#A2F1E6")
+        self.assertEqual(fill("lnk_location__natural_person"), "#A2F1E6")
         self.assertEqual(fill("sat_natural_person__name"), "#FCB3D5")
         self.assertEqual(fill("sat_natural_person__demographics"), "#FEDBEB")
 

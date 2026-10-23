@@ -27,7 +27,7 @@ A **Location** is the single place where all three are gathered. It says nothing
 
 - **The three descriptions have different keys and lifecycles.** A zone code is set by law and changes when a border is redrawn. An address is a source record that changes when a street is renamed or a house is renumbered. A geometry is surveyed and corrected. A single Hub for the three would force one key to serve all of them.
 - **Not every jurisdiction has all three.** A jurisdiction can have zone codes and surveyed polygons but no street addresses; another can have addresses and no survey. The three Hubs are therefore independent of one another: none requires the others, and nothing links them directly in this version.
-- **One handle for everything that has a place.** Natural Persons, Legal Entities, Immovable Assets and Movable Assets all need a place. If each Hub had its own links to three kinds of description, the combinations would multiply. A thin Hub, as Party is for persons and entities, lets every object attach to a place once, and lets a place be described in more ways later without touching any of them.
+- **One handle for everything that has a place.** Natural Persons, Legal Entities, Immovable Assets and Movable Assets all need a place. If each Hub had its own links to three kinds of description, the combinations would multiply. A thin Hub lets every object attach to a place once, and lets a place be described in more ways later without touching any of them.
 - **A zone is not a jurisdiction.** The jurisdiction (country or territory) stays a value of the Code List. A zone hangs below a jurisdiction and is keyed by the jurisdiction code and the zone code. A separate Jurisdiction object comes later only if treaties or currencies need attributes of their own.
 
 If the three were Satellites of one Hub, a place known only by a zone would carry empty address and geometry columns, and a border change would rewrite the description of every place inside it.
@@ -44,16 +44,18 @@ If the three were Satellites of one Hub, a place known only by a zone would carr
 | Link | `lnk_address__location` | The table that records that an address is one way a place is described. It makes the address a Location. | one row per distinct combination of address and location | `hub_address`, `hub_location` |
 | Link | `lnk_geometry__location` | The table that records that a shape is one way a place is described. It makes the shape a Location. | one row per distinct combination of geometry and location | `hub_geometry`, `hub_location` |
 | Link | `lnk_administrative_zone__administrative_zone_hierarchy` | The table that records that one administrative zone lies inside another, such as a ward inside a district. It says which zone contains which; the kind of division and the period are recorded in `sat_administrative_zone__administrative_zone_hierarchy__period`. | one row per distinct combination of parent administrative zone and member administrative zone | `hub_administrative_zone` (parent), `hub_administrative_zone` (member) |
-| Link | `lnk_location__party` | The table that records that a place belongs to a party: where a natural person lives, where a legal entity is registered or operates. The role and the period are recorded in `sat_location__party__usage`. It is the way a place is attached to a person or an entity, and it is not the identity table `lnk_natural_person__party`. | one row per distinct combination of location and party | `hub_location`, `hub_party` |
+| Link | `lnk_legal_entity__location` | The table that records that a place belongs to a legal entity: where it is registered or operates. The role and the period are recorded in `sat_legal_entity__location__usage`. It is the way a place is attached to an entity. | one row per distinct combination of legal entity and location | `hub_legal_entity`, `hub_location` |
+| Link | `lnk_location__natural_person` | The table that records that a place belongs to a natural person: where the person lives, receives mail or was born. The role and the period are recorded in `sat_location__natural_person__usage`. It is the way a place is attached to a person. | one row per distinct combination of location and natural person | `hub_location`, `hub_natural_person` |
 | Satellite | `sat_administrative_zone__description` | The table that records the name of an administrative zone, its level in the State's division (province, district, ward) and the period in which the zone exists. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_address__description` | The table that records how an address is written: the street, the building, the postal code and, where there is no street name, a free description of how to find the place. It is personal data. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_geometry__shape` | The table that records the shape of a place: its kind, its coordinates, the spatial reference system and how accurate it is. A correction of the survey is a new entry, so the earlier shapes stay. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_administrative_zone__administrative_zone_hierarchy__period` | The table that records the kind of division between a parent zone and a zone inside it, the period in which it applies and why it ended. A border that is redrawn is a new entry, so the earlier ones stay. | one row per parent key and hierarchy type, for each time its values change | — |
-| Satellite | `sat_location__party__usage` | The table that records how a party uses a place, such as residence, registered office or mailing address, from which day and until which day, and the evidence held for it. A person can have several places and a place can have several parties. | one row per parent key and role, for each time its values change | — |
+| Satellite | `sat_legal_entity__location__usage` | The table that records how a legal entity uses a place, such as registered office, branch office or mailing address, from which day and until which day, and the evidence held for it. An entity can have several places and a place can have several entities. | one row per parent key and role, for each time its values change | — |
+| Satellite | `sat_location__natural_person__usage` | The table that records how a natural person uses a place, such as residence, mailing address or place of birth, from which day and until which day, and the evidence held for it. A person can have several places and a place can have several persons. | one row per parent key and role, for each time its values change | — |
 
 The hash key `location_hk` is computed from the normalized `location_bk`. `administrative_zone_hk` is computed from `jurisdiction_code`, `zone_scheme_code` and the normalized `administrative_zone_bk`; `address_hk` from `jurisdiction_code`, `key_type_code` and the normalized `address_bk`; and `geometry_hk` from the normalized `geometry_bk`, all joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_administrative_zone__location`, `lnk_address__location` and `lnk_geometry__location` say that a description **is** a place: each description has exactly one row. `lnk_location__party` says that a place **belongs to** a party. A Link from `hub_location` to an asset (`lnk_immovable_asset__location`, `lnk_movable_asset__location`) is added with the page of each asset and has the same shape as `lnk_location__party`.
+`lnk_administrative_zone__location`, `lnk_address__location` and `lnk_geometry__location` say that a description **is** a place: each description has exactly one row. `lnk_location__natural_person` and `lnk_legal_entity__location` say that a place **belongs to** a person or to an entity. A Link from `hub_location` to an asset (`lnk_immovable_asset__location`, `lnk_movable_asset__location`) is added with the page of each asset and has the same shape as `lnk_location__natural_person`.
 
 ## Fields
 
@@ -137,12 +139,21 @@ A division between two zones. The **parent** is the zone that contains, such as 
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
-### lnk_location__party
+### lnk_legal_entity__location
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity |
+| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+
+### lnk_location__natural_person
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `party_hk` | ◇ | `string` | No | No | — | Hash key of the party, a Natural Person or a Legal Entity |
+| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the natural person |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -205,18 +216,32 @@ The kind of division, its period and the reason it ended are one fact, so they s
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-### sat_location__party__usage
+### sat_legal_entity__location__usage
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
-| `lnk_location__party_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | No | — | How the party uses the place, a value of the list `location_role` that is allowed for the kind of party (`party_type_code` in the Code List): e.g. `residence`, `registered_office`, `mailing_address`, `place_of_birth` |
-| `effective_date` | | `date` | No | No | `1900-01-01` | First day the party uses the place; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day the party uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
+| `lnk_legal_entity__location_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `role_code` | | `string` | No | No | — | How the entity uses the place, a value of the list `location_role` allowed for legal entities (`party_type_code` in the Code List): e.g. `registered_office`, `branch_office`, `mailing_address` |
+| `effective_date` | | `date` | No | No | `1900-01-01` | First day the entity uses the place; `1900-01-01` when unknown |
+| `end_date` | | `date` | No | No | `9999-12-31` | Last day the entity uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
+### sat_location__natural_person__usage
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lnk_location__natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `role_code` | | `string` | No | Yes | — | How the person uses the place, a value of the list `location_role` allowed for natural persons (`party_type_code` in the Code List): e.g. `residence`, `mailing_address`, `place_of_birth` |
+| `effective_date` | | `date` | No | Yes | `1900-01-01` | First day the person uses the place; `1900-01-01` when unknown |
+| `end_date` | | `date` | No | Yes | `9999-12-31` | Last day the person uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
 
 ## Sources and mapping
 
@@ -228,16 +253,16 @@ No endpoints declared yet
 | --- | --- | --- | --- |
 | A jurisdiction with zone codes but no street addresses | Pacific and other island jurisdictions | Places are described by a zone and, where surveyed, by a shape; no address is loaded (R7: a scenario of the same object) | `hub_administrative_zone` and `hub_geometry`, each joined to `hub_location`; no row in `hub_address` |
 | A rural place with no street names | Papua New Guinea and other jurisdictions with customary settlement | The address is a free description of how to find the place | `description_text` in `sat_address__description`; `street_text` empty |
-| A place surveyed but with no postal address | Jurisdictions with a land survey but no address system | The place is a shape, attached to its party like any other | `hub_geometry` and `lnk_geometry__location` |
+| A place surveyed but with no postal address | Jurisdictions with a land survey but no address system | The place is a shape, attached to its person or entity like any other | `hub_geometry` and `lnk_geometry__location` |
 | The three descriptions of one place are all known | Jurisdictions with a full address and survey system | Each description is loaded on its own and joined to the same Location; later a multi-step ETL derives one from another or checks that they agree | Three Links to one `hub_location` row; the comparison is a Gold check, not a table |
 | A border is redrawn by decree | Any jurisdiction | The zone keeps its code; only the division changes, with the date and the decree | New row in `sat_administrative_zone__administrative_zone_hierarchy__period`; the earlier row is closed |
 | A zone is split in two or merged with another | Any jurisdiction | The new zones are new Hub rows, and the old zone ends with a reason; nothing is rewritten | `valid_to_date` in `sat_administrative_zone__description`; `end_reason_code` `merged` |
 | A zone that belongs to two divisions at once, such as an electoral and a census division | Jurisdictions with more than one division | Each kind of division is its own hierarchy | Rows with different `hierarchy_type_code` |
 | A survey is corrected | Any jurisdiction | The identifier of the shape does not change; the new shape is a new row and the earlier one stays | New row in `sat_geometry__shape` |
 | A street is renamed or a house renumbered | Any jurisdiction | The address identifier stays; the description changes | New row in `sat_address__description` |
-| A person with a home, a postal address and a place of birth | Any jurisdiction | One Location for each place, each attached with its role | Rows in `lnk_location__party` and `sat_location__party__usage` with different `role_code` |
-| A person who moves | Any jurisdiction | The old residence ends the day before the new one starts; the earlier row stays | `end_date` in `sat_location__party__usage` |
-| A legal entity with a registered office and branches | Any jurisdiction | Each place is attached to the entity with its role | Rows with `registered_office` and `branch_office` |
+| A person with a home, a postal address and a place of birth | Any jurisdiction | One Location for each place, each attached with its role | Rows in `lnk_location__natural_person` and `sat_location__natural_person__usage` with different `role_code` |
+| A person who moves | Any jurisdiction | The old residence ends the day before the new one starts; the earlier row stays | `end_date` in `sat_location__natural_person__usage` |
+| A legal entity with a registered office and branches | Any jurisdiction | Each place is attached to the entity with its role | Rows in `lnk_legal_entity__location` and `sat_legal_entity__location__usage` with `registered_office` and `branch_office` |
 | A country that is also a territory of another, such as Curaçao | Any jurisdiction with territories | The territory has its own jurisdiction code, and its zones hang below it | `jurisdiction_code` in `hub_administrative_zone` |
 | A place that belongs to an asset, such as a parcel or a port of registry | Any jurisdiction | The asset is attached to the Location with the same shape of Link | `lnk_immovable_asset__location` and `lnk_movable_asset__location`, added with the asset pages |
 
@@ -245,7 +270,7 @@ No endpoints declared yet
 
 Illustrative data. The first example is a place known by a zone and an address; the second is a rural place in Papua New Guinea known by a zone and a shape only.
 
-**A residence in Apia (Samoa).** The Location `L-1001` is described by a zone and an address, and it is the residence of Natural Person `P-1`.
+**A residence in Apia (Samoa).** The Location `L-1001` is described by a zone and an address, and it is the residence of Natural Person `NP-1`.
 
 `hub_location`
 
@@ -271,7 +296,7 @@ Illustrative data. The first example is a place known by a zone and an address; 
 | --- | --- | --- | --- | --- | --- |
 | A-5521 | WSM | registry_address_id | 12 Beach Road | (empty) | Latn |
 
-`sat_location__party__usage` for the party `P-1`
+`sat_location__natural_person__usage` for the person `NP-1`
 
 | **role_code** | **effective_date** | **end_date** |
 | --- | --- | --- |
@@ -293,7 +318,7 @@ Illustrative data. The first example is a place known by a zone and an address; 
 
 **A person who moves.** The first residence is closed the day before the second starts; both stay on record.
 
-`sat_location__party__usage`
+`sat_location__natural_person__usage`
 
 | **Location** | **role_code** | **effective_date** | **end_date** |
 | --- | --- | --- | --- |
@@ -313,7 +338,7 @@ Illustrative data. The first example is a place known by a zone and an address; 
 
 - **The three descriptions are independent.** No Link joins an address, a zone and a shape directly. Each is joined to the Location, so a Location can have one, two or three descriptions, and a jurisdiction without addresses loads none. Relations between the descriptions are derived later by a multi-step ETL, or checked for inconsistencies between them; they are a Gold concern, not a table of this version.
 - **A Location is a handle, not a description.** `hub_location` is thin, as `hub_party` is. It holds only the identifier assigned by the platform. What a place looks like lives in the three description Hubs.
-- **One handle for everything that has a place.** `lnk_location__party` serves Natural Persons and Legal Entities, because both are Parties. Each asset Hub gets its own Link of the same shape, with the same usage Satellite, when its page is written. A Link per target Hub keeps a foreign key to each Hub and its own Satellite, and a new target adds one Link and changes nothing else.
+- **One handle for everything that has a place.** Each kind of owner of a place has its own Link: `lnk_location__natural_person` for persons and `lnk_legal_entity__location` for entities, each with its own usage Satellite. A source says "this place belongs to person P-7" under the person's own key, so the load needs no lookup through Party, whose key Nexus assigns; the two kinds have very different volumes and different personal data, so they are not mixed in one table. Each asset Hub gets its own Link of the same shape when its page is written. A Link per target Hub keeps a foreign key to each Hub and its own Satellite, and a new target adds one Link and changes nothing else. The places of any party in one query are the Gold view `party__location`, a union of the two (R13).
 - **The identifier of a shape does not depend on the shape.** `geometry_bk` is assigned once. If it were a hash of the coordinates, a corrected survey would be a new identifier and every Link to the old one would have to move. The same holds for `location_bk`.
 - **The address key is the source's own.** `address_bk` is the identifier in the source of record, or one the platform assigns. It is not a hash of the text, because a street renamed or a house renumbered would change the key.
 - **An address is personal data.** `sat_address__description` is marked PII and has its own Satellite, so the access rules and the erasure apply to the address and not to the zone or the shape.
@@ -324,7 +349,7 @@ Illustrative data. The first example is a place known by a zone and an address; 
 - **An open end is `9999-12-31`.** The end of a zone, a division or a use of a place is `9999-12-31` while it applies, and an unknown start is `1900-01-01`. When a new row for the same key and role arrives, the loader sets the end of the previous row to the day before the new start (Principles, "Validity ranges").
 - **The jurisdiction is a Code List value.** `jurisdiction_code` is a country or territory, ISO 3166-1 alpha-3. Zones hang below it. A Jurisdiction object comes only if treaties or currencies need attributes of their own.
 - **Codes take their values from the Code List.** `zone_scheme_code`, `zone_level_code`, `hierarchy_type_code`, `key_type_code`, `role_code`, `geometry_type_code`, `srs_code`, `accuracy_unit_code`, `end_reason_code` and `script_code` hold values that change without changing any logic, so they are Code List values.
-- **The role depends on the kind of party.** `role_code` is one list for every Party. Each value says in the Code List (`party_type_code` in `sat_code_value__applicability`) whether it is for natural persons, legal entities or both: `place_of_birth` for a natural person, `registered_office` and `branch_office` for a legal entity, `mailing_address` for either. The load reads the kind of Party through `lnk_natural_person__party` or `lnk_legal_entity__party` and parks a row whose role is not allowed for it.
+- **The role depends on the kind of owner.** `role_code` is one list, `location_role`. Each value says in the Code List (`party_type_code` in `sat_code_value__applicability`) whether it is for natural persons, legal entities or both: `place_of_birth` for a natural person, `registered_office` and `branch_office` for a legal entity, `mailing_address` for either. The table says the kind, so a row whose role is not allowed for it is parked by the load with no lookup.
 - **Distance, area and containment are not stored.** Whether a point lies inside a zone, the area of a polygon and the distance between two places are computed in the Gold layer (R13).
 
 ## Diagram
@@ -333,7 +358,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 4 Hubs, 5 Links and 5 Satellites, each with its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 4 Hubs, 6 Links and 6 Satellites, each with its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Location cluster, simplified](images/Diagrams_Location_Simplified.png)
 
@@ -354,4 +379,4 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | Which source of record supplies `address_bk` in each jurisdiction, and what happens where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
 | Whether the accuracy of a shape is required, and the spatial reference systems accepted | Data Product Owner | Decided with the surveying authority of each jurisdiction | Before the first shape is loaded |
 | Whether a Jurisdiction object is needed, from treaties or currencies that need attributes of a jurisdiction | Data Product Owner | Decided with Finance and Compliance, from the first rule that depends on it | Before the first mapping that needs it |
-| The Links from a Location to Immovable Assets and Movable Assets, and the roles they use | Data Architecture Engineer and Data Product Owner | Decided with the pages of each asset, using the shape of `lnk_location__party` | When the asset pages are drafted |
+| The Links from a Location to Immovable Assets and Movable Assets, and the roles they use | Data Architecture Engineer and Data Product Owner | Decided with the pages of each asset, using the shape of `lnk_location__natural_person` | When the asset pages are drafted |

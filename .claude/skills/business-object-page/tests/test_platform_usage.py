@@ -28,7 +28,7 @@ class PlatformUsageTests(unittest.TestCase):
         self.assertFalse([n for n in self.users if n.startswith(("hub_code_", "sat_code_", "lnk_code_"))])
 
     def test_hubs_satellites_and_the_load_configuration_are_users(self):
-        for name in ("hub_natural_person", "hub_address", "sat_natural_person__name", "sat_location__party__usage",
+        for name in ("hub_natural_person", "hub_address", "sat_natural_person__name", "sat_location__natural_person__usage",
                      "sat_load_configuration__mechanism"):
             self.assertIn(name, self.users)
 

@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_five_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 51)
+        self.assertEqual(len(self.by_name), 55)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -150,13 +150,18 @@ class GlobalDiagramTests(unittest.TestCase):
         legend = [s for s in self.page["shapes"] if s["id"].startswith("legend_box")]
         self.assertEqual(len(legend), 4)
 
-    def test_location_is_inside_the_registries_band_and_reaches_hub_party(self):
+    def test_location_is_inside_the_registries_band_and_each_owner_link_reaches_its_hub(self):
         reg = next(b for b in self.layout.bands if b["title"] == "Registries")
-        for n in ("hub_location", "hub_address", "hub_geometry", "hub_administrative_zone", "lnk_location__party"):
+        for n in ("hub_location", "hub_address", "hub_geometry", "hub_administrative_zone", "lnk_location__natural_person",
+                  "lnk_legal_entity__location", "sat_location__natural_person__usage", "sat_legal_entity__location__usage"):
             b = self.layout.boxes[n]
             self.assertTrue(reg["x"] <= b.x and b.x + b.w <= reg["x"] + reg["w"], n)
             self.assertTrue(reg["y"] <= b.y and b.y + b.h <= reg["y"] + reg["h"], n)
-        self.assertIn(("lnk_location__party", "hub_party"), {(ln["child"], ln["parent"]) for ln in self.layout.lines})
+        lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
+        for pair in (("lnk_location__natural_person", "hub_natural_person"), ("lnk_location__natural_person", "hub_location"),
+                     ("lnk_legal_entity__location", "hub_legal_entity"), ("lnk_legal_entity__location", "hub_location"),
+                     ("sat_party__sensitivity", "hub_party")):
+            self.assertIn(pair, lines)
 
     def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):
         uses = [ln for ln in self.page["lines"] if ln["id"].startswith("u")]

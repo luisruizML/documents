@@ -212,43 +212,42 @@ def _fan(layout: Layout, sats: list[str], hub: str, side: str):
             _line(layout, s, hub, (0.0, 0.5), (1.0, frac))
 
 
-def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], x0: float, top: float) -> tuple[float, float]:
-    """The Location cluster, inside the Registries band, east of the Party chain. Left to right: the Link to Party and its
-    usage Satellite, the umbrella Hub, the Links of the three views, the three description Hubs, their descriptions.
-    The zone Hub is the last row, so the Link of its hierarchy sits under the others.
-    Returns the bottom edge and the right edge."""
+def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], x0: float, yc: float) -> tuple[float, float, float]:
+    """The Location cluster, inside the Registries band, east of the ownership group. Left to right: the umbrella Hub, the Links
+    of the three views, the three description Hubs, their descriptions. The umbrella Hub is centred on `yc`, the height of the
+    ownership line, so the Link from a person comes down to it and the Link from an entity comes up to it, both east of the
+    ownership group. The zone Hub is the last row, so the Link of its hierarchy sits under the others.
+    Returns the top edge, the bottom edge and the right edge."""
     views = [("hub_address", "sat_address__description", "lnk_address__location"),
              ("hub_geometry", "sat_geometry__shape", "lnk_geometry__location"),
              ("hub_administrative_zone", "sat_administrative_zone__description", "lnk_administrative_zone__location")]
     hier_link = "lnk_administrative_zone__administrative_zone_hierarchy"
     hier_sat = "sat_administrative_zone__administrative_zone_hierarchy__period"
-    party_link, party_sat = "lnk_location__party", "sat_location__party__usage"
     B = L.boxes
+    row_hs = [max(B[h].h, B[s].h, B[k].h) for h, s, k in views]
 
     def col_w(names):
         return max(B[n].w for n in names)
 
-    w1 = col_w([party_link, party_sat])
     w2 = B["hub_location"].w
     w3 = col_w([v[2] for v in views] + [hier_link, hier_sat])
     w4 = col_w([v[0] for v in views])
     w5 = col_w([v[1] for v in views])
-    x1 = x0
-    x2 = x1 + w1 + GAP_X
+    x2 = x0
     x3 = x2 + w2 + GAP_X
     x4 = x3 + w3 + GAP_X
     x5 = x4 + w4 + GAP_X
+    first_center = row_hs[0] / 2
+    last_center = sum(row_hs[:-1]) + 110 * (len(row_hs) - 1) + row_hs[-1] / 2
+    top = yc - (first_center + last_center) / 2
     y = top
-    centers = []
-    for hub, sat, lnk in views:
-        h, s, k = B[hub], B[sat], B[lnk]
-        row_h = max(h.h, s.h, k.h)
+    for (hub, sat, lnk), row_h in zip(views, row_hs):
+        h, s_, k = B[hub], B[sat], B[lnk]
         h.x, h.y = x4, y + (row_h - h.h) / 2
-        s.x, s.y = x5, y + (row_h - s.h) / 2
+        s_.x, s_.y = x5, y + (row_h - s_.h) / 2
         k.x, k.y = x3 + (w3 - k.w) / 2, y + (row_h - k.h) / 2
         _line(L, sat, hub, (0.0, 0.5), (1.0, 0.5))
         _line(L, lnk, hub, (1.0, 0.3), (0.0, 0.3))
-        centers.append(y + row_h / 2)
         y += row_h + 110
     hl, hs = B[hier_link], B[hier_sat]
     hl.x = x3 + (w3 - hl.w) / 2
@@ -259,19 +258,10 @@ def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], 
     _line(L, hier_link, "hub_administrative_zone", (1.0, 0.7), (0.0, 0.9))
     _line(L, hier_sat, hier_link, (0.5, 0.0), (0.5, 1.0))
     hub_loc = B["hub_location"]
-    hub_loc.x = x2
-    hub_loc.y = (centers[0] + centers[-1]) / 2 - hub_loc.h / 2
+    hub_loc.x, hub_loc.y = x2, yc - hub_loc.h / 2
     for i, (hub, sat, lnk) in enumerate(views):
         _line(L, lnk, "hub_location", (0.0, 0.5), (1.0, (i + 0.5) / len(views)))
-    pl, ps = B[party_link], B[party_sat]
-    pl.x, pl.y = x1 + (w1 - pl.w) / 2, hub_loc.cy - pl.h / 2
-    ps.x, ps.y = x1 + (w1 - ps.w) / 2, pl.y + pl.h + 110
-    _line(L, party_link, "hub_location", (1.0, 0.5), (0.0, 0.5))
-    _line(L, party_sat, party_link, (0.5, 0.0), (0.5, 1.0))
-    # the Link to Party reaches the real hub_party, drawn in the chain west of this block
-    _line(L, party_link, "hub_party", (0.0, 0.5), (1.0, 0.3))
-    bottom = max(hs.y + hs.h, ps.y + ps.h, hub_loc.y + hub_loc.h)
-    return bottom, x5 + w5
+    return top, max(hs.y + hs.h, hub_loc.y + hub_loc.h), x5 + w5
 
 
 def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
@@ -296,6 +286,9 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     link_np_name = "lnk_legal_entity__natural_person"
     rel_link, rel_sat = "lnk_natural_person__natural_person_relation", "sat_natural_person__natural_person_relation__relationship"
     own_link, own_sat = "lnk_legal_entity__party_owner", "sat_legal_entity__party_owner__ownership"
+    np_loc, np_loc_sat = "lnk_location__natural_person", "sat_location__natural_person__usage"
+    le_loc, le_loc_sat = "lnk_legal_entity__location", "sat_legal_entity__location__usage"
+    party_sat = "sat_party__sensitivity"
     hier_link, hier_sat = "lnk_legal_entity__legal_entity_hierarchy", "sat_legal_entity__legal_entity_hierarchy__membership"
 
     def width(names):
@@ -303,7 +296,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
 
     wL = width(np_singles + rep + [link_np_name, hier_link, hier_sat])
     wM = width(chain + [rel_link])
-    wR = width(np_pairs + le_sats + [own_link, rel_sat])
+    wR = width(np_pairs + le_sats + [own_link, rel_sat, np_loc, np_loc_sat, le_loc, le_loc_sat, party_sat])
     wS = width([own_sat])
     xL = BAND_PAD
     xM = xL + wL + GAP_X
@@ -340,27 +333,50 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
         if a.endswith("_history") and a[: -len("_history")] in np_pairs:
             L.twins.append((a, a[: -len("_history")]))
 
-    y = hub_np.y + hub_np.h + GAP_CHAIN
+    y = hub_np.y + hub_np.h + GAP_CHAIN + 140     # room for the line of the place of a person, which comes up to the Hub from the east
     for n in chain[1:4]:
         b = L.boxes[n]
         b.x, b.y = xM + (wM - b.w) / 2, y
         y += b.h + GAP_CHAIN
     hub_le = L.boxes["hub_legal_entity"]
     hub_le.x = xM + (wM - hub_le.w) / 2
-    # Location (a Registries object): east of the Party chain, between the person Satellites and the ownership group
-    loc_bottom, loc_right = _location_block(L, nodes, edges, xR, bottom_r + 90)
+    # the column east of the chain, top to bottom: the Link of a person to its place and its Satellite, the sensitivity of the
+    # party, the ownership group, the Link of an entity to its place and its Satellite, then the entity Satellites.
+    # The Location cluster sits east of the ownership group, its Hub on the height of the ownership line, so the line of the
+    # person comes down to it from above and the line of the entity comes up to it from below.
+    nl, ns = L.boxes[np_loc], L.boxes[np_loc_sat]
+    ps = L.boxes[party_sat]
+
+    def column(box, y):
+        box.x, box.y = xR, y
+        return y + box.h
+
+    y_col = column(nl, bottom_r + 90) + 110
+    y_col = column(ns, y_col) + 110
+    y_col = column(ps, y_col) + 110
     ol, os_ = L.boxes[own_link], L.boxes[own_sat]
-    ol.x, ol.y = xR, loc_bottom + 110
+    ol.x, ol.y = xR, y_col
     os_.x, os_.y = xS, ol.y + (ol.h - os_.h) / 2
     _line(L, own_sat, own_link, (0.0, 0.5), (1.0, 0.5))
     _line(L, own_link, "hub_party", (0.0, 0.3), (1.0, 0.9))
     _line(L, own_link, "hub_legal_entity", (0.0, 0.7), (1.0, 0.02))
-    le_top = max(ol.y + ol.h + 90, y + hub_le.h / 2 - ((len(le_sats) * 140) / 2))
+    ll, ls = L.boxes[le_loc], L.boxes[le_loc_sat]
+    y_col = column(ll, ol.y + ol.h + 110) + 110
+    column(ls, y_col)
+    loc_top, loc_bottom, loc_right = _location_block(L, nodes, edges, xS + wS + GAP_X * 1.5, ol.y + ol.h / 2)
+    _line(L, np_loc_sat, np_loc, ((nl.cx - ns.x) / ns.w, 0.0), (0.5, 1.0))
+    _line(L, np_loc, "hub_natural_person", (0.0, 0.5), (1.0, 0.985))
+    _line(L, np_loc, "hub_location", (1.0, 0.5), (0.0, 0.1))
+    _line(L, party_sat, "hub_party", (0.0, 0.5), (1.0, 0.3))
+    _line(L, le_loc_sat, le_loc, ((ll.cx - ls.x) / ls.w, 0.0), (0.5, 1.0))
+    _line(L, le_loc, "hub_legal_entity", (0.0, 0.5), (1.0, 0.06))
+    _line(L, le_loc, "hub_location", (1.0, 0.5), (0.0, 0.9))
+    le_top = max(ls.y + ls.h + 90, y + hub_le.h / 2 - ((len(le_sats) * 140) / 2))
     le_bottom = _stack(L, le_sats, xR, le_top, wR, "left")
     hub_le.y = max((le_top + le_bottom) / 2 - hub_le.h / 2, y)
     # the line from the ownership Link to hub_party leaves its right edge and must pass east of this Link
     lel = L.boxes["lnk_legal_entity__party"]
-    lel.y = hub_le.y - GAP_CHAIN - lel.h
+    lel.y = hub_le.y - GAP_CHAIN - 220 - lel.h      # the ownership line comes down steeply from the east
     for i, s in enumerate(le_sats):
         _line(L, s, "hub_legal_entity", (0.0, 0.5), (1.0, (i + 0.5) / len(le_sats)))
 
@@ -390,7 +406,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, "lnk_legal_entity__party", "hub_party", (0.5, 0.0), (0.5, 1.0))
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
-    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h) + BAND_PAD
+    reg_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h, loc_bottom) + BAND_PAD
     reg_w = max(reg_w, loc_right + BAND_PAD)
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 

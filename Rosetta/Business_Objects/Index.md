@@ -30,7 +30,7 @@ Hubs are circles, Links are hexagons and Satellites are small squares, each with
 
 ![Simplified graph](images/Lucid_Simplified_Graph.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/f6b50fd5-5622-4fd2-9d31-039678a4b722/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/c9a7dd1b-13cf-4b46-86bd-415fbf705ec0/view)
 
 ### Simplified version
 
@@ -38,7 +38,7 @@ Every object as a box with its name and its grain: what one row of the table sta
 
 ![Simplified version](images/Lucid_Simplified_Version.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/17659b9b-12f7-4c7b-86b3-876ddedbbb9a/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/891aad57-ddac-4310-9f47-3d79bf5f50cd/view)
 
 ### Full version
 
@@ -46,7 +46,7 @@ Every object with its definition written in its box. Registries and Platform are
 
 ![Full version](images/Lucid_Full_Model.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/732aa5e5-5c75-4799-88d9-b57e0723c238/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/81951add-0e51-41d7-b1ff-aae696e9686b/view)
 
 | **Color** | **Object** |
 | --- | --- |

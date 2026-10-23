@@ -42,6 +42,7 @@ If a Legal Entity were a Satellite of Party, every Satellite of Party would have
 | Link | `lnk_legal_entity__legal_entity_hierarchy` | The table that records that one legal entity is a member of another, such as a company that belongs to a holding group. It says who groups whom; the kind of grouping and the period are recorded in `sat_legal_entity__legal_entity_hierarchy__membership`. It is a grouping and not ownership, which is recorded in `lnk_legal_entity__party_owner`. | one row per distinct combination of parent legal entity and member legal entity | `hub_legal_entity` (parent), `hub_legal_entity` (member) |
 | Satellite | `sat_legal_entity__name` | The table that records the names a legal entity is known by, such as its legal name, a trading name or a community name, and the writing system of each. | one row per parent key and name type, for each time its values change | — |
 | Satellite | `sat_legal_entity__identification` | The table that records the identifiers of a legal entity, such as a tax number, a company registration number or a community registry code, who issued each and, for an informal entity, the community it is tied to. | one row per parent key and identification (type and number), for each time its values change | — |
+| Satellite | `sat_legal_entity__registration` | The table that records the certificate or other evidence by which a legal entity was registered, or by which one of its identifiers was confirmed, with its date and a pointer to the evidence. | one row per parent key, registration basis and identifier type, for each time its values change | — |
 | Satellite | `sat_legal_entity__classification` | The table that records how a legal entity is classified, with one row for each criterion: whether it is corporate or collective, its legal form in the jurisdiction, and any other criterion a jurisdiction adds, such as its economic activity or its size. | one row per parent key and criterion, for each time its values change | — |
 | Satellite | `sat_legal_entity__lifecycle` | The table that records the events in the life of a legal entity, each with its date, its place and its evidence: incorporation, formal recognition, dissolution, bankruptcy, merger and restoration. Whether an entity is active is worked out from these events, not stored. | one row per parent key and event (type and date), for each time its values change | — |
 | Satellite | `sat_legal_entity__natural_person__representation` | The table that records how a natural person acts for a legal entity: the role, and when the person took it and left it. A person can hold several roles. | one row per parent key and role, for each time its values change | — |
@@ -93,7 +94,7 @@ The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_c
 | --- | --- | --- | --- | --- | --- | --- |
 | `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
 | `name_type_code` | | `string` | No | No | — | Which kind of name this is: e.g. `legal_name`, `trading_name`, `community_name`, `alias` |
-| `name_text` | | `string` | No | No | — | The name as written: e.g. `Pacific Fisheries Limited`, `Council of Elders`, `Kunai Growers Collective` |
+| `name_text` | | `string` | No | Yes | — | The name as written: e.g. `Pacific Fisheries Limited`, `Council of Elders`, `Kunai Growers Collective` |
 | `script_code` | | `string` | No | No | — | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
@@ -105,9 +106,22 @@ The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_c
 | --- | --- | --- | --- | --- | --- | --- |
 | `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
 | `identification_type_code` | | `string` | No | No | — | Kind of identifier: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `customary_land_registry_code` |
-| `identification_id` | | `string` | No | No | — | The identifier as issued, always text: e.g. `TIN-884210`, `C-2291`, `HLD-017` |
+| `identification_id` | | `string` | No | Yes | — | The identifier as issued, always text: e.g. `TIN-884210`, `C-2291`, `HLD-017` |
 | `issuing_jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that issued the identifier, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `community_code` | | `string` | Yes | No | null | Community the identifier is tied to, for an informal entity, a value of the list `community`: e.g. `tari`, `kunai`, `mendi`; empty for a formal one |
+| `community_code` | | `string` | Yes | Yes | null | Community the identifier is tied to, for an informal entity, a value of the list `community`: e.g. `tari`, `kunai`, `mendi`; empty for a formal one |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
+### sat_legal_entity__registration
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
+| `registration_basis_code` | | `string` | No | No | — | Why the entity was registered, or which kind of evidence confirms the identifier, a value of the list `legal_entity_registration_basis`: e.g. `certificate_of_incorporation`, `tax_registration`, `community_recognition` |
+| `registration_date` | | `date` | No | No | — | When the entity was registered, or the identifier confirmed, on this basis |
+| `identification_type_code` | | `string` | Yes | No | null | Which identifier the evidence supports, a value of the list `identification_type`; empty when the evidence supports the entity as a whole: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code` |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a certificate of incorporation or a recognition letter; each upload is its own object with its own pointer; only the pointer is stored: e.g. `artifact://certificate/c-2291`, `artifact://tax/t-884`, `artifact://recognition/r-17`; empty when there is none |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -136,7 +150,7 @@ One row for each event in the life of a legal entity, built as `sat_natural_pers
 | `event_date` | | `date` | Yes | No | null | Date of the event; empty when unknown, as with a customary body recognized long ago |
 | `event_place_jurisdiction_code` | | `string` | Yes | No | null | Jurisdiction (country or territory) where the event was registered, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL`; empty when unknown |
 | `event_status_code` | | `string` | No | No | `recorded` | One of `recorded`, `voided`. An event recorded by mistake is voided by a later row, never deleted |
-| `artifact_uri` | | `string` | Yes | No | null | Pointer to the evidence held in Digital Artifact, such as a certificate of incorporation; only the pointer is stored: e.g. `artifact://incorporation/i-2291`, `artifact://court/c-310`, `artifact://merger/m-18`; empty when there is none |
+| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the evidence held in Digital Artifact, such as a certificate of incorporation; only the pointer is stored: e.g. `artifact://incorporation/i-2291`, `artifact://court/c-310`, `artifact://merger/m-18`; empty when there is none |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -146,9 +160,9 @@ One row for each event in the life of a legal entity, built as `sat_natural_pers
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `lnk_legal_entity__natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | No | — | How the person acts for the entity: e.g. `director`, `representative`, `tribal_chief`, `trustee` |
-| `appointed_date` | | `date` | No | No | `1900-01-01` | When the person took the role; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | No | `9999-12-31` | When the person left the role; `9999-12-31` while the role continues. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `role_code` | | `string` | No | Yes | — | How the person acts for the entity: e.g. `director`, `representative`, `tribal_chief`, `trustee` |
+| `appointed_date` | | `date` | No | Yes | `1900-01-01` | When the person took the role; `1900-01-01` when unknown |
+| `end_date` | | `date` | No | Yes | `9999-12-31` | When the person left the role; `9999-12-31` while the role continues. When a new row starts for the same role, the loader sets this to the day before it starts |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -169,12 +183,12 @@ One Satellite holds the three dimensions of an ownership, so a change in any of 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `lnk_legal_entity__party_owner_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `holding_type_code` | | `string` | No | No | — | The legal nature of the title. One of `full_ownership` (complete title with all economic yields), `bare_ownership` (title to the capital without current yields), `usufruct` (right to the dividends without title to the capital), `beneficial_ownership` (economic entitlement held through an intermediary, nominee or trust), `legal_nominee` (registered titleholder acting for a third party, with no economic benefit), `synthetic_economic` (contractual rights indexed to the shares, such as phantom stock, without holding equity) |
+| `holding_type_code` | | `string` | No | Yes | — | The legal nature of the title. One of `full_ownership` (complete title with all economic yields), `bare_ownership` (title to the capital without current yields), `usufruct` (right to the dividends without title to the capital), `beneficial_ownership` (economic entitlement held through an intermediary, nominee or trust), `legal_nominee` (registered titleholder acting for a third party, with no economic benefit), `synthetic_economic` (contractual rights indexed to the shares, such as phantom stock, without holding equity) |
 | `ownership_share_percent` | | `decimal(7,4)` | No | Yes | — | The share of the entity this holding represents, from 0 to 100: e.g. `60.0000`, `33.3333`, `100.0000` |
-| `liquidity_status_code` | | `string` | No | No | `unrestricted` | Restrictions on distributions and disposal. One of `unrestricted` (free disposal), `attached_sequestered` (judicial freeze, embargo or court deposit, so the funds are blocked), `pledged_retained` (pledged to a creditor, owner keeps the distributions), `pledged_cash_sweep` (pledged, and every distribution goes to the creditor), `escrow_locked` (held by a third party until a condition is met) |
-| `vesting_status_code` | | `string` | No | No | `fully_vested` | How mature the award is. One of `fully_vested` (unconditional, cannot be forfeited), `unvested_subject_to_clawback` (contingent on time or performance, with a risk of forfeiture or repurchase) |
-| `effective_date` | | `date` | No | No | — | First day this combination applies |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day this combination applies; `9999-12-31` while it still applies. When a new row starts for the same holding type, the loader sets this to the day before it starts |
+| `liquidity_status_code` | | `string` | No | Yes | `unrestricted` | Restrictions on distributions and disposal. One of `unrestricted` (free disposal), `attached_sequestered` (judicial freeze, embargo or court deposit, so the funds are blocked), `pledged_retained` (pledged to a creditor, owner keeps the distributions), `pledged_cash_sweep` (pledged, and every distribution goes to the creditor), `escrow_locked` (held by a third party until a condition is met) |
+| `vesting_status_code` | | `string` | No | Yes | `fully_vested` | How mature the award is. One of `fully_vested` (unconditional, cannot be forfeited), `unvested_subject_to_clawback` (contingent on time or performance, with a risk of forfeiture or repurchase) |
+| `effective_date` | | `date` | No | Yes | — | First day this combination applies |
+| `end_date` | | `date` | No | Yes | `9999-12-31` | Last day this combination applies; `9999-12-31` while it still applies. When a new row starts for the same holding type, the loader sets this to the day before it starts |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -216,6 +230,7 @@ No endpoints declared yet
 | --- | --- | --- | --- |
 | Formal company with a tax or company registration number | Any jurisdiction with company law | The number is the business key; the key type says which number it is | `hub_legal_entity` with `key_type_code` `tax_identification_number` or `company_registration_number`; `criterion_code` `formality` with `classification_code` `corporate` in `sat_legal_entity__classification` |
 | Tribal authority, indigenous council or family farming collective with no corporate paperwork | Papua New Guinea and other customary-law communities | The entity is registered under a government-issued registry code tied to a village or a leader (R7: a scenario of the same object) | `hub_legal_entity` with `key_type_code` `community_registry_code`; `formality` is `collective`; `community_code` in `sat_legal_entity__identification` |
+| An entity whose existence or identifier is confirmed by a certificate, a tax registration or a recognition letter | Any jurisdiction | Each piece of evidence is a row with its basis, its date and a pointer to the stored document; a renewed certificate is a new row | `sat_legal_entity__registration` |
 | Informal market vendor association | Emerging-economy jurisdictions | Registered so the State can allocate resources such as subsidies | Same as a collective |
 | Customary land tenure held by a community | Papua New Guinea | The holder is a Legal Entity; the land right itself is a Legal object | `hub_legal_entity`; nothing on this object for the right |
 | A holding that groups entities for administration, such as reporting or supervision, with no ownership between them | Any jurisdiction with groups of entities under one administrative decision | The holding is a Legal Entity with its own identifier; each member is a row of the grouping, with the dates it applies (R7: a scenario of the same object) | `lnk_legal_entity__legal_entity_hierarchy` and `sat_legal_entity__legal_entity_hierarchy__membership` with `hierarchy_type_code` `holding_group`; the holding is classified with `criterion_code` `group_role` and `classification_code` `holding` |
@@ -248,6 +263,13 @@ Illustrative data. The first example is a formal company; the second is an infor
 | **name_type_code** | **name_text** | **script_code** |
 | --- | --- | --- |
 | legal_name | Pacific Fisheries Limited | Latn |
+
+`sat_legal_entity__registration`
+
+| **registration_basis_code** | **registration_date** | **identification_type_code** |
+| --- | --- | --- |
+| certificate_of_incorporation | 2019-04-02 | company_registration_number |
+| community_recognition | 2021-06-15 | community_registry_code |
 
 `sat_legal_entity__classification`
 
@@ -351,6 +373,8 @@ Each row ends the day before the next one starts; the loader closes the earlier 
 - **One Hub, two kinds of key.** A tax or company number and a community registry code are both business keys of the same Hub. The key type is part of the hash, so two keys with the same text but different types never collide.
 - **The entity key is internal and has to last.** `legal_entity_bk` is set in the platform configuration for each jurisdiction. It is unique for the life of the platform, never changed and never reused, and it is sized for every entity the State will ever register, because a key has to outlive the entity, its numbers and its owners. The key type is part of the hash, and a Natural Person has its own Hub, so an entity and a person cannot collide even if their keys look alike; the Party Link is the only place where the two meet.
 - **Names follow the same rules as a person's.** A row of `sat_legal_entity__name` is identified by the parent key, `name_type_code`, `name_text` and `script_code`; `record_source` is not part of it. `script_code` is a writing system (ISO 15924), not an encoding, and Gold builds one normalized name for each name type. See the Natural Person page.
+- **Evidence is kept apart from the identifier.** `sat_legal_entity__registration` records the certificate or letter that confirms the entity or one of its identifiers, with its date and a pointer to the stored document, as `sat_natural_person__registration` does for a person. `identification_type_code` says which identifier it supports. `registration_basis_code` takes its values from the list `legal_entity_registration_basis`.
+- **The Vault keeps the two kinds apart; Gold reads them together.** Names, identifiers, events and places of persons and entities are separate Satellites because their personal data, their volumes and their load keys differ. The Gold views `party__name`, `party__identification`, `party__lifecycle` and `party__location` are the union of the two, computed and never stored (R13).
 - **Identifiers are facts, not keys.** Additional identifiers, such as a tax number added after incorporation, live in `sat_legal_entity__identification`. The business key is the source's own identifier, so adding one never changes a key.
 - **A holding is a Legal Entity that groups other Legal Entities.** It has its own identifier (its own business key and key type), a name, a lifecycle and a classification, like any entity. It is marked with the classification row `group_role` `holding`, so a holding exists before its first member does. A parent in a grouping must be classified as a holding; the load checks it.
 - **The grouping is administrative today.** `lnk_legal_entity__legal_entity_hierarchy` records that an entity belongs to a group by decision or registration. It does not say who owns whom, and it carries no share. Ownership stays in `lnk_legal_entity__party_owner`, so a holding with no ownership of its members is valid.
@@ -395,7 +419,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 4 Links and 7 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 4 Links and 8 Satellites, each with its name and grain. Use it to see how the objects relate. It has no columns.
 
 ![Legal Entity cluster, simplified](images/Diagrams_Legal_Entity_Simplified.png)
 
@@ -410,7 +434,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
 | Whether the shares of one holding type must add up to 100 for each entity, and where the check runs | Data Architecture Engineer and Data Product Owner | Decided with Taxation, Contributions and Licences | Before the first mapping that needs it |
-| Whether the stake columns are personal data only when the owner is a Natural Person | Data Architecture Engineer and Platform | Decided with the access rules of the platform; today the share is marked PII | Before the first review of this page |
+| Whether the stake columns are personal data only when the owner is a Natural Person | Data Architecture Engineer and Platform | Decided with the access rules of the platform; today every column of the holding is marked PII, because the owner can be a person | Before the first review of this page |
 | Whether `effective_date` and `end_date` are the dates the ownership applies in law, or only `load_dts` records when Nexus learned of it | Data Product Owner | Decided with the source owners | Before the first mapping that needs it |
 | The name of the same-as Link between two Legal Entity records, for a merger or a re-key | Data Architecture Engineer and Data Product Owner | They decide the name, following the Link rules in the Principles | Before the first mapping that needs it |
 | Whether a legal form is a value of one Code List for all jurisdictions or one list for each jurisdiction | Data Architecture Engineer and Platform | Decided with the Code List object, from the applicability of each value | Before the Code List page is reviewed |
