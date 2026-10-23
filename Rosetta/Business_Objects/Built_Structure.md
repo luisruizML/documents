@@ -5,7 +5,7 @@
 | **Field** | **Value** |
 | --- | --- |
 | Object | Built Structure |
-| Parent object | — |
+| Parent object | Immovable Assets |
 | Owner domain | Registries |
 | Shared with | Taxation Contributions and Licences, Finance, Compliance |
 | Scope | Shared |
@@ -56,6 +56,7 @@ If the parcel and the structure were one table, a unit in a strata building woul
 
 **Related pages.** The details of every object below are on its own page; the diagrams on this page draw them with a note.
 
+- [Immovable Assets](Immovable_Assets.md): the family page, with the rules that both parts share and the decisions that are open for both.
 - [Base Parcel](Base_Parcel.md): `hub_base_parcel`, joined by `lnk_base_parcel__built_structure`, which is defined on this page.
 - [Location](Location.md): `hub_location`, joined by `lnk_built_structure__location`.
 - [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): `hub_party`, joined by `lnk_built_structure__party_owner`.
@@ -328,17 +329,12 @@ The valuation of a structure goes through its status in the same way as that of 
 
 ## Modeling considerations
 
-- **Parcel and structure are two Hubs.** The structure has its own key, lifecycle and holders, so it is its own Hub, with its own Links to Location, to Party and to Government Authority. It is joined to the parcel by `lnk_base_parcel__built_structure`, which is defined on this page and drawn on the page [Base Parcel](Base_Parcel.md). There is no umbrella Hub (see [Base Parcel](Base_Parcel.md)).
+- **Parcel and structure are two Hubs.** The structure has its own key, lifecycle and holders, so it is its own Hub, with its own Links to Location, to Party and to Government Authority. It is joined to the parcel by `lnk_base_parcel__built_structure`, which is defined on this page and drawn on the page [Base Parcel](Base_Parcel.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
 - **The Link to the parcel is many to many.** A parcel can hold many structures and a structure, such as a pier or a large building, can stand on more than one parcel. The period and the reason it ended are in `sat_base_parcel__built_structure__period`.
 - **Containment has no fixed depth.** `lnk_built_structure__built_structure_hierarchy` joins the Hub to itself, as the hierarchy of Legal Entities does. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`). The level of a structure and its path to the parcel are computed in Gold (R13).
 - **A structure has at most one open parent for each kind of containment.** At most one row with `end_date` `9999-12-31` for each member and `hierarchy_type_code`. A structure cannot be its own ancestor; a row that would close a loop is parked by the load.
 - **The characteristics are an open list.** The number of toilets, the number of rooms, the material of the walls and the like are rows of `sat_built_structure__characteristic`, not columns. The Code List says for each characteristic which value column it uses and in which unit, and the load checks the value (Principles, "Traits as rows"). A characteristic that is a fact about a structure and not about a person is not personal data, so there is no in-place twin.
-- **Valuation follows the rules of the parcel.** Every valuation of a structure is stored with its method, value, day and status, and a change of status is a new row. The definitive value is the Gold view `cur_built_structure__valuation_definitive`, and the check for more than one accepted value is in Gold. The reasoning, and the closed list of statuses, are on the page [Base Parcel](Base_Parcel.md).
-- **Identification and registration are as for a person.** Every structure can have documents that identify it, such as a permit or an occupancy certificate, and proof of why it was registered. Identifiers are facts, not keys: a new permit never changes a key. `sat_built_structure__registration` keeps a pointer to the evidence (Principles, "Evidence is a pointer to one stored object").
-- **Ownership is a Link to Party, with its own details.** The holder is a Party, or a government authority through its own Link, as for a parcel (see [Base Parcel](Base_Parcel.md)). The holder of a structure can differ from the holder of the parcel under it. A holding by a party is personal data; the ownership Satellite of the Party Link is marked PII, that of the government Link is not. The legal nature of the title is the Code List `immovable_title_type`.
-- **Where Location roles come from.** The roles of a place for a structure (`footprint`, `entrance`, `address`) are the Code List `immovable_asset_location_role`.
-- **An open end is `9999-12-31`.** The end of a period is `9999-12-31` while it applies, and an unknown start is `1900-01-01`. When a new row for the same key and role arrives, the loader sets the end of the previous row to the day before the new start (Principles, "Validity ranges").
-- **Codes take their values from the Code List.** Every `_code` column on this page holds values that change without changing logic, except `valuation_status_code`, which is closed.
+- **Shared rules.** Valuation and its statuses, two accepted values, identification and registration, ownership, the roles of a place, validity ranges and codes follow the rules written on the page [Immovable Assets](Immovable_Assets.md). What is only the structure's: the definitive value is the Gold view `cur_built_structure__valuation_definitive`; a permit or an occupancy certificate identifies it, and a new permit never changes a key; the holder of a structure can differ from the holder of the parcel under it; the roles of a place for a structure are `footprint`, `entrance` and `address`.
 - **Area, distance and containment in space are not stored.** Whether a structure lies inside a parcel is computed in Gold from the shapes in Location (R13).
 
 ## Diagram
@@ -361,10 +357,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The Government Authority page: its Hub (assumed `hub_government_authority`), its key and who maintains it. The Links on this page join it | Data Architecture Engineer and Platform | Drafted as a Platform object with its own outline; until then the Hub is drawn as defined elsewhere | Before the first State parcel is loaded |
-| Mortgages, easements, caveats and liens over a structure: they follow the same design as for a parcel, a Legal Instrument object, described on the page [Base Parcel](Base_Parcel.md) | Data Architecture Engineer and Data Product Owner | Drafted as its own page with an outline approved first | Before the first mapping that needs them |
-| How the operations on a building are tracked: divide and join. They follow the decision taken for parcels (see [Base Parcel](Base_Parcel.md)) | Data Architecture Engineer and Data Product Owner | Decided with the first jurisdiction that loads a division of a building | Before the first division is loaded |
-| How a jurisdiction sets up the valuation process for structures: it is the same Code List design as for parcels (see [Base Parcel](Base_Parcel.md)) | Data Product Owner, Taxation Contributions and Licences and Platform | Designed with the Code List page | When a jurisdiction is configured |
+| The decisions shared with the other part of the family: Government Authority, Legal Instrument for encumbrances, divide and merge operations, the valuation process and two accepted values | Data Architecture Engineer and Data Product Owner | Written once, on the page [Immovable Assets](Immovable_Assets.md) | See that page |
 | Which characteristics are required for each kind of structure, and their units | Data Product Owner | Set as values of the Code List list `structure_characteristic` | When a jurisdiction is configured |
 | Which source of record supplies `built_structure_bk` in each jurisdiction, and who assigns the key where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
 | The roles of a place for a structure and the kinds of holding of immovable property | Data Product Owner | Set as values of the Code List lists `immovable_asset_location_role` and `immovable_title_type` | When a jurisdiction is configured |

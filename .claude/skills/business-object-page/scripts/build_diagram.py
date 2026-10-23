@@ -159,6 +159,28 @@ def _link_hubs(name: str, business_key: str) -> list[tuple[str, str]]:
     return [("hub_" + part, "") for part in name[len("lnk_"):].split("__")]
 
 
+def merge_family(text: str, folder: Path) -> str:
+    """The text of a family page followed by the Vault objects and the Fields of the pages that define its objects,
+    as one page, so that one picture can show them together. An ordinary page is returned as it is."""
+    page = vp.parse_page(text)
+    members = vp.family_members(page)
+    if members is None:
+        return text
+    head: list[str] = []
+    rows: list[str] = []
+    fields: list[str] = []
+    seen: set[str] = set()
+    for member in dict.fromkeys(members):
+        part = vp.parse_page((folder / f"{member}.md").read_text(encoding="utf-8"))
+        table = [l for l in part.sections["Vault objects"] if l.lstrip().startswith("|")]
+        head = head or table[:2]
+        rows += [l for l in table[2:] if l not in seen and not seen.add(l)]
+        body = part.sections["Fields"]
+        fields += body[next(i for i, l in enumerate(body) if l.startswith("### ")):]
+    return (f"# {page.title}\n\n## Vault objects\n\n" + "\n".join(head + rows)
+            + "\n\n## Fields\n\n" + "\n".join(fields) + "\n")
+
+
 def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
     page = vp.parse_page(text)
     model = Model(title=page.title)
@@ -635,7 +657,7 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
     page = Path(args.page)
     context = [c.strip() for c in args.context.split(",") if c.strip()]
-    model = load_model(page.read_text(encoding="utf-8"), context)
+    model = load_model(merge_family(page.read_text(encoding="utf-8"), page.parent), context)
     for full, kind, scale in ((False, "Simplified", 3), (True, "Full", 2)):
         title = f"SILVER: {model.title} cluster (Data Vault 2.0)" + (", full" if full else "")
         drawio = page.parent / "drawio" / f"Diagrams_{page.stem}_{kind}.drawio"

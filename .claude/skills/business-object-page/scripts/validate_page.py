@@ -276,8 +276,27 @@ def _check_definition(name: str, row: dict[str, str]) -> list[str]:
     return errs
 
 
+FAMILY_STATEMENT = "No Vault objects of its own"
+PAGE_LINK_RE = re.compile(r"\]\(([A-Za-z0-9_]+)\.md\)")
+
+
+def family_members(page: Page) -> list[str] | None:
+    """The pages that define the objects of a family page (a page with no Hub of its own, such as Immovable Assets),
+    or None when the page is an ordinary one. A family page says so in the first line of its Vault objects section."""
+    lines = _prose(page.sections.get("Vault objects", []))
+    if not lines or not lines[0].startswith(FAMILY_STATEMENT):
+        return None
+    rows = [l for l in page.sections["Vault objects"] if l.lstrip().startswith("|")]  # links elsewhere are related pages
+    return PAGE_LINK_RE.findall("\n".join(rows))
+
+
 def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     errs: list[str] = []
+    members = family_members(page)
+    if members is not None:
+        if len(set(members)) < 2:
+            errs.append(f"name: a family page ('{FAMILY_STATEMENT}') must link the pages that define its objects, at least two")
+        return errs
     tables = page.tables("Vault objects")
     if not tables:
         return ["name: the Vault objects section needs a table with Type, Name, Definition, Grain and Business key"]

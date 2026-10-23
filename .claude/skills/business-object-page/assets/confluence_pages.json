@@ -8,7 +8,8 @@
     "Code_List": "1997111297",
     "Load_Configuration": "1999208453",
     "Base_Parcel": "2020573185",
-    "Built_Structure": "2019852390"
+    "Built_Structure": "2019852390",
+    "Immovable_Assets": "2020933633"
   },
   "index_page": "1977417738",
   "text_only_pages": {
@@ -16,7 +17,6 @@
   },
   "group_pages": {
     "Registries": "2019852373",
-    "Assets": "2020016139",
-    "Immovable Assets": "2020933633"
+    "Assets": "2020016139"
   }
 }
