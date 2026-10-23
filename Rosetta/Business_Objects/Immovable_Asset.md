@@ -20,7 +20,7 @@ An Immovable Asset is a bounded portion of land, water or airspace, together wit
 - A **base parcel** is the bounded portion itself: a plot of land, a stretch of water, a volume of airspace. It may be surveyed as a polygon or three-dimensional space, or known only by words or natural features, as in customary tenure. Land may belong to the State or to a tribe.
 - A **built structure** is what is built on it and stays: a house, a hotel, an apartment unit, a pier, a turbine. A structure can contain other structures, such as the apartment units of a building under strata title, each with its own holder.
 
-A parcel can hold many structures, and every structure and every parcel has its own identifiers, its own proof of registration, its own characteristics and its own value.
+The holder of a parcel or a structure is a Party (a person or an entity) or a government authority; a public body is not a Party. A parcel can hold many structures, and every structure and every parcel has its own identifiers, its own proof of registration, its own characteristics and its own value.
 
 ## Why it is its own object
 
@@ -44,6 +44,8 @@ If the parcel and the structure were one table, a demolished house would end the
 | Link | `lnk_built_structure__location` | The table that records that a place belongs to a structure: its footprint, its entrance or its address. The role and the period are recorded in `sat_built_structure__location__usage`. It is the way a place is attached to a structure. | one row per distinct combination of structure and location | `hub_built_structure`, `hub_location` |
 | Link | `lnk_base_parcel__party_owner` | The table that records that a party holds a parcel. The holder can be a natural person or a legal entity, and one parcel can have many holders; the legal nature and the share of each holding are recorded in `sat_base_parcel__party_owner__ownership`. | one row per distinct combination of parcel and owner party | `hub_base_parcel`, `hub_party` (owner) |
 | Link | `lnk_built_structure__party_owner` | The table that records that a party holds a structure. The holder can be a natural person or a legal entity, and one structure can have many holders; the legal nature and the share of each holding are recorded in `sat_built_structure__party_owner__ownership`. The holder of a structure can differ from the holder of the parcel under it. | one row per distinct combination of structure and owner party | `hub_built_structure`, `hub_party` (owner) |
+| Link | `lnk_base_parcel__government_authority` | The table that records that a government or a government agency holds a parcel, for example State land. One parcel can have several; the legal nature and the share of each holding are recorded in `sat_base_parcel__government_authority__ownership`. It is the holder table for public bodies, which are not parties, and sits beside `lnk_base_parcel__party_owner`. | one row per distinct combination of parcel and government authority | `hub_base_parcel`, `hub_government_authority` |
+| Link | `lnk_built_structure__government_authority` | The table that records that a government or a government agency holds a structure, for example a public building. The legal nature and the share of each holding are recorded in `sat_built_structure__government_authority__ownership`. It is the holder table for public bodies, which are not parties, and sits beside `lnk_built_structure__party_owner`. | one row per distinct combination of structure and government authority | `hub_built_structure`, `hub_government_authority` |
 | Satellite | `sat_base_parcel__description` | The table that records what a parcel covers (land, water or airspace), how its use is classified, the kind of tenure over it and the area recorded for it, with how that area was obtained: measured from coordinates or written by someone. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__boundary` | The table that records how the boundary of a parcel is known when it is not a surveyed shape: in words, by a natural feature or by custom, with the day it was agreed and the evidence held for it. It is personal data. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__characteristic` | The table that records the characteristics of a parcel, such as the type of soil, the access road or the flood zone, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
@@ -61,10 +63,12 @@ If the parcel and the structure were one table, a demolished house would end the
 | Satellite | `sat_built_structure__location__usage` | The table that records how a place is used for a structure, such as its footprint, its entrance or its address, from which day and until which day, and the evidence held for it. A structure can have several places and a place can belong to several structures. | one row per parent key and role, for each time its values change | — |
 | Satellite | `sat_base_parcel__party_owner__ownership` | The table that records each holding by which a party holds a parcel: the legal nature of the title, the share and the dates it applies. Each type of holding is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and holding type, for each time its values change | — |
 | Satellite | `sat_built_structure__party_owner__ownership` | The table that records each holding by which a party holds a structure: the legal nature of the title, the share and the dates it applies. Each type of holding is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and holding type, for each time its values change | — |
+| Satellite | `sat_base_parcel__government_authority__ownership` | The table that records each holding by which a government or a government agency holds a parcel: the legal nature of the title, the share and the dates it applies, such as State land lent to a tribe. A change is a new entry, so the earlier ones stay. | one row per parent key and holding type, for each time its values change | — |
+| Satellite | `sat_built_structure__government_authority__ownership` | The table that records each holding by which a government or a government agency holds a structure: the legal nature of the title, the share and the dates it applies. A change is a new entry, so the earlier ones stay. | one row per parent key and holding type, for each time its values change | — |
 
 `base_parcel_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `base_parcel_bk`; `built_structure_hk` is computed the same way from its own key, all joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_base_parcel__built_structure` says that a structure **stands on** a parcel; `lnk_built_structure__built_structure_hierarchy` says that a structure **lies inside** another, so an apartment unit is a structure inside the building and the building is a structure on the parcel. `lnk_base_parcel__location` and `lnk_built_structure__location` say where the parcel or the structure **is**, with the shape of `lnk_location__natural_person`; the surveyed boundary of a parcel is a geometry of Location, not a column here. `lnk_base_parcel__party_owner` and `lnk_built_structure__party_owner` say that a Party **holds** the parcel or the structure, with the shape of `lnk_legal_entity__party_owner`. Each Link has its own Satellite for the details. The Links to `hub_location` and `hub_party` join Hubs that are defined on other pages.
+`lnk_base_parcel__built_structure` says that a structure **stands on** a parcel; `lnk_built_structure__built_structure_hierarchy` says that a structure **lies inside** another, so an apartment unit is a structure inside the building and the building is a structure on the parcel. `lnk_base_parcel__location` and `lnk_built_structure__location` say where the parcel or the structure **is**, with the shape of `lnk_location__natural_person`; the surveyed boundary of a parcel is a geometry of Location, not a column here. `lnk_base_parcel__party_owner` and `lnk_built_structure__party_owner` say that a Party **holds** the parcel or the structure, with the shape of `lnk_legal_entity__party_owner`. `lnk_base_parcel__government_authority` and `lnk_built_structure__government_authority` say the same for a government or a government agency, which is a Platform object and not a Party. Each Link has its own Satellite for the details. The Links to `hub_location`, `hub_party` and `hub_government_authority` join Hubs that are defined on other pages.
 
 ## Fields
 
@@ -145,6 +149,24 @@ A containment between two structures. The **parent** is the structure that conta
 | --- | --- | --- | --- | --- | --- | --- |
 | `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure that is owned |
 | `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+
+### lnk_base_parcel__government_authority
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel that is held |
+| `government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the government authority that holds it |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+
+### lnk_built_structure__government_authority
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure that is held |
+| `government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the government authority that holds it |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -395,6 +417,34 @@ The kind of containment, its period and the reason it ended are one fact, so the
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
+### sat_base_parcel__government_authority__ownership
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_parcel__government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `holding_type_code` |  | `string` | No | No | — | The legal nature of the title over the parcel, a value of the list `immovable_holding_type`: e.g. `freehold`, `leasehold`, `customary_title`, `usufruct` |
+| `ownership_share_percent` |  | `decimal(7,4)` | No | No | — | The share of the parcel this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and holding type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a title deed or a lease; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://certificate/c-9`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
+### sat_built_structure__government_authority__ownership
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- |
+| `lnk_built_structure__government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the link |
+| `holding_type_code` |  | `string` | No | No | — | The legal nature of the title over the structure, a value of the list `immovable_holding_type`: e.g. `freehold`, `leasehold`, `customary_title`, `usufruct` |
+| `ownership_share_percent` |  | `decimal(7,4)` | No | No | — | The share of the structure this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and holding type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a title deed or a lease; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://certificate/c-9`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+
 ## Sources and mapping
 
 No endpoints declared yet
@@ -416,7 +466,7 @@ No endpoints declared yet
 | Two accepted values for one parcel at once, from two processes | Jurisdictions that allow different values for different purposes, such as tax and insurance | Allowed or not by the jurisdiction. Both are stored. The risk is not two values but not noticing that there are two, so Gold flags an asset with more than one accepted value where the jurisdiction does not allow it | Rows with `accepted` in the valuation Satellites; the check is in Gold |
 | The area is measured in one jurisdiction and written by someone in another | Jurisdictions with coordinates for every parcel, and jurisdictions where the area is copied from a document | The area keeps how it was obtained | `area_basis_code` in `sat_base_parcel__description` |
 | A valuation is refused, objected to or taken back | Jurisdictions with an appeal process | The valuation stays on record with its status; it never becomes the definitive value | `valuation_status_code` `rejected` or `withdrawn` |
-| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land: in some the tribe holds the land, in others the government holds it and lends it to the tribe | The holder can be a person, an entity, or a government or a government agency. A loan to a tribe is a holding of its own kind, with its own dates (see Open decisions: a government body is not a Party) | `lnk_base_parcel__party_owner` and `sat_base_parcel__party_owner__ownership` with a `holding_type_code` such as `customary_title` or `state_lease`; the government holder is open |
+| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land: in some the tribe holds the land, in others the government holds it and lends it to the tribe | The holder can be a person, an entity, or a government or a government agency. The government holds through its own Link, the tribe through the Party Link, and the loan is the holding of the tribe, with its own dates | `lnk_base_parcel__government_authority` for the government; `lnk_base_parcel__party_owner` with a `holding_type_code` such as `customary_title` or `state_lease` for the tribe |
 | A structure with no permit, as in informal housing | Any jurisdiction | The structure is registered on the declaration of the owner or an inspection | An `owner_declaration` or `inspection` row in `sat_built_structure__registration`; no row in `sat_built_structure__identification` |
 | A parcel of water or airspace | Jurisdictions that register water or airspace rights | The same object, with another `parcel_kind_code` and a three-dimensional shape in Location | `parcel_kind_code` in `sat_base_parcel__description` |
 
@@ -501,7 +551,7 @@ The definitive value in Gold is `435000.00` from `REVAL-2026-02`. The refused va
 
 ## Modeling considerations
 
-- **Two Hubs, no umbrella.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub and its own Links go to Location and to Party. An umbrella Hub like `hub_party` would need a key that Nexus assigns before any source row can load, and every Link would have to look it up. A Gold view reads both together, as `party__location` does for persons and entities.
+- **Two Hubs, no umbrella.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub and its own Links go to Location, to Party and to Government Authority. An umbrella Hub like `hub_party` would need a key that Nexus assigns before any source row can load, and every Link would have to look it up. A Gold view reads both together, as `party__location` does for persons and entities.
 - **The shape of a parcel is a Location.** Whether a parcel is a polygon, a point or a three-dimensional volume is a geometry of Location, joined by `lnk_base_parcel__location`. The Satellite `sat_base_parcel__boundary` holds only what a shape cannot: the boundary in words, by a natural feature or by custom. A parcel can have both.
 - **Containment has no fixed depth.** `lnk_built_structure__built_structure_hierarchy` joins the Hub to itself, as the hierarchy of Legal Entities does. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`). The level of a structure and its path to the parcel are computed in Gold (R13).
 - **A structure has at most one open parent for each kind of containment.** At most one row with `end_date` `9999-12-31` for each member and `hierarchy_type_code`. A structure cannot be its own ancestor; a row that would close a loop is parked by the load.
@@ -510,7 +560,7 @@ The definitive value in Gold is `435000.00` from `REVAL-2026-02`. The refused va
 - **Two accepted values are allowed or not by the jurisdiction.** Two processes can each produce a value, for example one for tax and one for insurance, and both are stored. The danger is to believe there is only one and not detect the inconsistency. A Gold check lists the parcels and structures with more than one accepted valuation, and the jurisdiction says whether that is allowed.
 - **The status list is closed.** `valuation_status_code` is `draft`, `submitted`, `accepted`, `rejected` or `withdrawn`, because logic depends on `accepted`. A jurisdiction that needs another step maps it to one of these or asks to extend the list. Whether a value is superseded is worked out in Gold from the dates.
 - **Identification and registration are as for a person.** Every parcel and every structure can have documents that identify it and proof of why it was registered. Identifiers are facts, not keys: the business key is the registry's own identifier, so a new permit or a new title number never changes a key. `sat_..._registration` keeps a pointer to the evidence (Principles, "Evidence is a pointer to one stored object").
-- **Ownership is a Link to Party, with its own details.** The holder is a Party, so a person and a company are handled the same way. A government or a government agency can also hold land, or hold it and lend it to a tribe; Government Authority is a Platform object and not a Party, so how it appears as a holder is an open decision. A holding is personal data, because the holder can be a person; the ownership Satellites are marked PII. The legal nature of the title is the Code List `immovable_holding_type`, not the list of Legal Entity, because the rights over land differ from the rights over shares; it includes a loan of State land to a tribe.
+- **Ownership is a Link to Party, with its own details.** The holder is a Party, so a person and a company are handled the same way. A government or a government agency is a holder through its own Link to Government Authority, which is a Platform object and not a Party; the Satellites of that Link are not personal data. When the State holds land and lends it to a tribe, there are two holdings of the same parcel: the government's and the tribe's. A holding by a party is personal data, because the holder can be a person; the ownership Satellites of the Party Links are marked PII, those of the government Links are not. The legal nature of the title is the Code List `immovable_holding_type`, not the list of Legal Entity, because the rights over land differ from the rights over shares; it includes a loan of State land to a tribe.
 - **Where Location roles come from.** The roles of a place for a parcel or a structure (`boundary`, `footprint`, `entrance`, `address`) are the Code List `immovable_asset_location_role`. They are a list of their own, because the list `location_role` is limited to persons and entities by `party_type_code`.
 - **An open end is `9999-12-31`.** The end of a period is `9999-12-31` while it applies, and an unknown start is `1900-01-01`. When a new row for the same key and role arrives, the loader sets the end of the previous row to the day before the new start (Principles, "Validity ranges").
 - **Codes take their values from the Code List.** Every `_code` column on this page holds values that change without changing logic, except `valuation_status_code`, which is closed.
@@ -522,7 +572,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 2 Hubs, 6 Links and 17 Satellites, each with its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 2 Hubs, 8 Links and 19 Satellites, each with its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Immovable Asset cluster, simplified](images/Diagrams_Immovable_Asset_Simplified.png)
 
@@ -536,8 +586,8 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| How a government or a government agency is a holder of land, and how a loan of State land to a tribe is recorded, since Government Authority is not a Party: a Party for the State and for each agency, a Link to Government Authority, or both | Data Architecture Engineer and Data Product Owner | Depends on the jurisdiction: the tribe holds in some, the government lends to the tribe in others. Decided with the first jurisdiction that loads such land; the same answer fixes the lists `immovable_holding_type` and `immovable_asset_location_role` | Before the first customary or State parcel is loaded |
-| Mortgages, easements, caveats and liens: they change the status of an asset, so each needs to be identified with its evidence. Whether a Hub holds the legal documents that affect an asset, and whether it applies to natural persons and legal entities too | Data Architecture Engineer and Data Product Owner | Decided from the first jurisdiction that registers them; a Hub of legal documents with a Link to each kind of subject is the direction | Before the first mapping that needs them |
+| The Government Authority page: its Hub (assumed `hub_government_authority`), its key and who maintains it. The Links on this page join it | Data Architecture Engineer and Platform | Drafted as a Platform object with its own outline; until then the Hub is drawn as defined elsewhere | Before the first State parcel is loaded |
+| Mortgages, easements, caveats and liens: they change the status of an asset, so each needs to be identified with its evidence. The recommended design is a Legal Instrument object: a Hub of the legal documents, one Link to each kind of subject (parcel, structure, movable asset, natural person, legal entity) with its own Satellite, a Link to the parties involved, and a Satellite for the status of the instrument. It is the most efficient because one mortgage over three parcels is one row, the status is tracked once, and the evidence is asked for once | Data Architecture Engineer and Data Product Owner | Drafted as its own page with an outline approved first; the status of an asset under it is a Gold view (R13) | Before the first mapping that needs them |
 | How the operations on a parcel or a building are tracked: divide, merge, join. An operation can be a change on the register, or a geographic process that physically cuts or joins the shapes | Data Architecture Engineer and Data Product Owner | Decided with the first jurisdiction that loads a subdivision or a merger; the direction is to record the operation and link the assets before and after it | Before the first subdivision is loaded |
 | How a jurisdiction sets up the valuation process: the methods, the allowed changes of status, who decides each, and the data each method needs so that a calculation process can run. A Code List that holds the process and its data requirements, not only the names of the methods | Data Product Owner, Taxation Contributions and Licences and Platform | Designed with the Code List page, from the first jurisdiction that configures a valuation process | When a jurisdiction is configured |
 | Which jurisdictions allow more than one accepted value of one asset at a time, so that the Gold check does not flag it | Data Product Owner and Taxation Contributions and Licences | Set for each jurisdiction in the Code List | When a jurisdiction is configured |
