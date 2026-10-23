@@ -40,7 +40,7 @@ class IndexTests(unittest.TestCase):
         self.assertIn("(images/Diagrams_Natural_Person_Full.png)", self.text)
 
     def test_index_shows_graph_simplified_version_and_full_version_in_that_order_each_under_a_title(self):
-        order = [("### Graph", "images/Lucid_Simplified_Graph.png", "9219fb1c-3d87-4919-ac1b-2cc4f49a33c4"),
+        order = [("### Graph", "images/Lucid_Simplified_Graph.png", "764bbd00-fe69-4061-8d17-4249660c3624"),
                  ("### Simplified version", "images/Lucid_Simplified_Version.png", "4ca7a389-f932-49ff-8d30-64ecf58eb555"),
                  ("### Full version", "images/Lucid_Full_Model.png", "75d0c576-8f34-4e96-81e8-5fc5c189996f")]
         at = [[self.text.index(part) for part in step] for step in order]

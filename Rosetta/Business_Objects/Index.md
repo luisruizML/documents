@@ -37,7 +37,7 @@ Hubs are circles, Links are hexagons and Satellites are small squares, each with
 
 ![Simplified graph](images/Lucid_Simplified_Graph.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/9219fb1c-3d87-4919-ac1b-2cc4f49a33c4/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/764bbd00-fe69-4061-8d17-4249660c3624/view)
 
 ### Simplified version
 

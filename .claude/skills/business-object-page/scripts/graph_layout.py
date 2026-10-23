@@ -3,8 +3,10 @@
 The structure is hub and spoke: Hubs and Links form a skeleton, and each Satellite hangs off one of them. So the
 skeleton is placed first with a force-directed layout (networkx `spring_layout`, Fruchterman-Reingold), the Satellites
 are fanned out in the free angles around their parent, and each name is put in the free spot around its shape. The
-skeleton is spread out (dilated) until nothing overlaps, and the best of several fixed seeds is kept, scored by edge
-crossings first and size second. Everything is deterministic: the same pages give the same picture.
+skeleton is spread out (dilated) until nothing overlaps (the smallest such scale, found by bisection), and of the several
+fixed seeds the smallest picture is kept among those with at most CROSSING_TOLERANCE crossings more than the best one.
+The spacing is set by EDGE_LENGTH, SCALES, FAN_SPREAD and CROSSING_TOLERANCE; the Hub is twice the size of a Link.
+Everything is deterministic: the same pages give the same picture.
 
 No Lucid here: positions in, positions out. `build_lucid_graph.py` writes the Lucid JSON.
 """
@@ -19,14 +21,16 @@ except ImportError:  # pragma: no cover - reported by the caller
     nx = None
 
 # ---------------------------------------------------------------- sizes, from the hand-drawn Lucid graph
-SIZE = {"Hub": (80.0, 80.0), "Link": (80.0, 80.0), "Satellite": (92.376, 69.282)}
+SIZE = {"Hub": (160.0, 160.0), "Link": (80.0, 80.0), "Satellite": (92.376, 69.282)}   # the Hub is twice the Link: the shape that stands out
 LABEL_H = {"Hub": 37.701, "Link": 27.632, "Satellite": 27.632}
 LABEL_CHAR = {"Hub": 15.1, "Link": 9.6, "Satellite": 9.6}   # width of a character: 11 pt bold and 7 pt Liberation Mono
 LABEL_GAP = 6.0
 PAD = 8.0                  # clear space asked between two shapes
 EDGE_LENGTH = 430.0        # mean length of a skeleton edge at scale 1
 SEEDS = tuple(range(24))
-SCALES = tuple(round(1.0 + 0.12 * i, 2) for i in range(28))
+SCALES = tuple(round(0.5 * 1.07 ** i, 3) for i in range(40))     # from 0.5 to about 7.4: how far the skeleton is spread
+FAN_SPREAD = 1.0           # the Satellites of a shape sit at a fixed distance from it, not at one that grows with the scale
+CROSSING_TOLERANCE = 2     # of the layouts with at most this many crossings more than the best one, the smallest is kept
 COMPONENT_GAP = 220.0
 MARGIN = 80.0
 
@@ -268,7 +272,7 @@ def _layout_component(kinds, in_place, G, unit, sats_of, scale: float) -> dict[s
     for n in sorted(pos):
         near = [pos[m] for m in G.neighbors(n)]
         radius = SIZE[kinds[n]][0] / 2
-        spots = _fan_satellites(pos[n], radius, near, sats_of.get(n, []), scale)
+        spots = _fan_satellites(pos[n], radius, near, sats_of.get(n, []), FAN_SPREAD)
         for s, (x, y) in zip(sats_of.get(n, []), spots):
             add(s, x, y)
     return items
@@ -299,26 +303,41 @@ def layout(kinds: dict[str, str], in_place: dict[str, bool], edges: list[tuple[s
     for comp in components:
         members = set(comp) | {s for n in comp for s in sats_of.get(n, [])}
         segs = _component_edges(members, pairs)
-        best = None
+        candidates = []
         for seed in SEEDS:
             G_c, unit = _skeleton(comp, skeleton_edges, seed)
-            for scale in SCALES:
+
+            def attempt(scale):
                 items = _layout_component(kinds, in_place, G_c, unit, sats_of, scale)
                 if any(_overlap(a.rect, b.rect, PAD) for i, a in enumerate(items.values()) for b in list(items.values())[i + 1:]):
-                    continue      # shapes touch: spread the skeleton out before spending time on the names
+                    return None      # shapes touch: spread the skeleton out before spending time on the names
                 _place_labels(items, segs)
                 overlaps, crossings, label_hits = _metrics(items, segs)
-                if overlaps == 0:
-                    break
-            else:
+                return (items, overlaps, crossings, label_hits) if overlaps == 0 else None
+
+            # the smallest scale without overlaps, by bisection (a larger scale never makes shapes touch)
+            found = attempt(SCALES[-1])
+            if found is None:
                 continue
-            key = (crossings, label_hits, scale)
-            if best is None or key < best[0]:
-                best = (key, items, overlaps, crossings, label_hits)
-            if crossings == 0 and label_hits == 0 and scale <= 1.4:
-                break
-        if best is None:
+            lo, hi = 0, len(SCALES) - 1
+            while lo < hi:
+                mid = (lo + hi) // 2
+                r = attempt(SCALES[mid])
+                if r is not None:
+                    found, hi = r, mid
+                else:
+                    lo = mid + 1
+            items, overlaps, crossings, label_hits = found
+            xs = [v for p in items.values() for v in (p.rect[0], p.rect[2], p.label_rect[0], p.label_rect[2])]
+            ys = [v for p in items.values() for v in (p.rect[1], p.rect[3], p.label_rect[1], p.label_rect[3])]
+            area = (max(xs) - min(xs)) * (max(ys) - min(ys))
+            candidates.append((crossings, label_hits, area, items, overlaps))
+        if not candidates:
             raise SystemExit("no layout without overlaps found; raise SCALES")
+        fewest = min(c[0] for c in candidates)
+        eligible = [c for c in candidates if c[0] <= fewest + CROSSING_TOLERANCE]
+        crossings, label_hits, area, items, overlaps = min(eligible, key=lambda c: (c[2], c[0], c[1]))
+        best = (None, items, overlaps, crossings, label_hits)
         placed.append((best[1], segs, best[2], best[3], best[4]))
     result = GraphLayout()
     x_cursor, y_cursor = MARGIN, MARGIN

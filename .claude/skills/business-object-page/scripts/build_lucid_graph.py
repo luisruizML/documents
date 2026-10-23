@@ -81,7 +81,7 @@ def label_html(item: gl.Placed) -> str:
 
 def tag_html(item: gl.Placed) -> str:
     tag = COLORS[key(item)]["tag"]
-    return f'<p style="font-size:{10 if item.kind == "Hub" else 7}pt;text-align:center">{"<b>" + tag + "</b>" if item.kind == "Hub" else tag}</p>'
+    return f'<p style="font-size:{18 if item.kind == "Hub" else 7}pt;text-align:center">{"<b>" + tag + "</b>" if item.kind == "Hub" else tag}</p>'
 
 
 def to_spec(L: gl.GraphLayout, uses, title: str = "PSS Data Objects - Graph") -> dict:
