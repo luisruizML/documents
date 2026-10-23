@@ -76,6 +76,9 @@ The cases that cross the two parts. The detail of each is on the page named in t
 | Two accepted values for one asset at once | Jurisdictions that allow different values for different purposes, such as tax and insurance | Allowed or not by the jurisdiction. Both are stored; Gold flags an asset with more than one accepted value where it is not allowed | Rows with `accepted` in the valuation Satellites; the check is in Gold |
 | A valuation is refused, objected to or taken back | Jurisdictions with an appeal process | The valuation stays on record with its status and never becomes the definitive value | `valuation_status_code` `rejected` or `withdrawn` |
 | The area is measured in one jurisdiction and written by someone in another | Jurisdictions with coordinates for every parcel, and jurisdictions where the area is copied from a document | The area keeps how it was obtained | `area_basis_code` on [Base Parcel](Base_Parcel.md) |
+| An asset held by the government and by a party | Any jurisdiction | Each holder has its own row, in its own Link; the shares are in the two Satellites and are added up in Gold | A row in `lnk_base_parcel__government_authority` and a row in `lnk_base_parcel__party_owner`, each with its `ownership_share_percent` |
+| An asset held by two government agencies | Any jurisdiction | Both rows go in the same Link, one for each agency | Two rows in `lnk_base_parcel__government_authority` |
+| An asset held by a government agency and by a foreign government agency | Any jurisdiction with foreign State holdings, such as an embassy or a consulate | The Government Authority Hub covers only the base jurisdiction, so the foreign agency is a Legal Entity and holds through the Party Link, with the jurisdiction that owns its key | A row in `lnk_base_parcel__government_authority` and a row in `lnk_base_parcel__party_owner` |
 
 ## Examples
 
@@ -87,6 +90,47 @@ Illustrative data. One building under strata title on a surveyed parcel in New Z
 4. **The values.** The parcel is revalued in 2026: the first draft is refused and a second one is accepted. The unit has its own valuations. The definitive value of the parcel is `435000.00`, from the accepted valuation `REVAL-2026-02`. It is computed in Gold from the valuation rows; the refused valuation stays on record.
 5. **The family view.** A Gold view reads the parcel and the building together, so that a property tax bill asks for "the immovable asset `P-5501`" and gets both values and both holders.
 
+**Shared holdings.** Three cases of one parcel with more than one holder. The holder is shown by name here; in the tables it is the hash key of the Hub. Illustrative data; the parcel is `P-7020` in New Zealand.
+
+*A government and a party.* The State holds 60% and a company holds 40%. Each holding is in its own Link, so there is one row in each Satellite.
+
+`sat_base_parcel__government_authority__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| Ministry of Lands | state_title | 60.0000 | 2022-01-01 | 9999-12-31 |
+
+`sat_base_parcel__party_owner__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| a legal entity (a company) | leasehold | 40.0000 | 2022-01-01 | 9999-12-31 |
+
+*Two government agencies.* Both holdings are in `lnk_base_parcel__government_authority`, one row for each agency.
+
+`sat_base_parcel__government_authority__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| Ministry of Lands | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
+| Housing Agency | state_title | 30.0000 | 2022-01-01 | 9999-12-31 |
+
+*A government agency and a foreign government agency.* The agency of the base jurisdiction holds 70%. The foreign agency is a Legal Entity, so it holds through the Party Link, and its jurisdiction is part of its key, as for every Legal Entity.
+
+`sat_base_parcel__government_authority__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| Ministry of Lands | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
+
+`sat_base_parcel__party_owner__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| a legal entity (the agency of a foreign State, jurisdiction `AUS`) | freehold | 30.0000 | 2022-01-01 | 9999-12-31 |
+
+In all three cases the shares of one parcel add up to 100, but they are in two tables. The check is in Gold: it adds the shares of the open holdings of both Links and lists the assets where the sum is not 100.
+
 ## Modeling considerations
 
 - **Two Hubs, no umbrella.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub with its own Links to Location, to Party and to Government Authority. The family has no Hub: a shared key would have to be assigned by Nexus before any source row could load, and every Link would have to look it up.
@@ -97,6 +141,10 @@ Illustrative data. One building under strata title on a surveyed parcel in New Z
 - **The characteristics are an open list.** The number of toilets, the number of rooms, the material of the walls, the type of soil and the like are rows of the characteristic Satellites, not columns. The Code List says for each trait which value column it uses and in which unit, and the load checks the value (Principles, "Traits as rows"). A characteristic that is a fact about an asset and not about a person is not personal data, so there is no in-place twin.
 - **Identification and registration are as for a person.** Every parcel and every structure can have documents that identify it and proof of why it was registered. Identifiers are facts, not keys: the business key is the registry's own identifier, so a new title number or permit never changes a key. The registration Satellites keep a pointer to the evidence (Principles, "Evidence is a pointer to one stored object").
 - **Ownership is a Link to Party, with its own details.** The holder is a Party, so a person and a company are handled the same way. A government or a government agency is a holder through its own Link to Government Authority, which is a Platform object and not a Party; its Satellites are not personal data. When the State holds land and lends it to a tribe, there are two holdings of the same parcel. A holding by a party is personal data, because the holder can be a person. The legal nature of the title is the Code List `immovable_title_type`, not the list of Legal Entity, because the rights over land differ from the rights over shares.
+- **A shared holding is a row in each Link.** A parcel or a structure held by a government and by a party has one row in the Link to Government Authority and one in the Link to Party, each with its own share, title and dates. Two government agencies are two rows of the same Link. Each Satellite keeps only its own holding.
+- **The check across the two Links is a Gold responsibility.** The shares of the open holdings of a parcel are in two Satellites, so no table can check that they add up to 100. A Gold view reads both (`immovable_asset__holder`), adds the shares and lists the assets where the sum is not 100 (R13). The Vault stores what each source said.
+- **A foreign government agency is a Legal Entity.** Government Authority is the Platform object of the base jurisdiction, the one where Nexus is deployed. A foreign government agency is not part of it: it holds through the Party Link, as a Legal Entity, and it pays taxes as one. Its key includes `jurisdiction_code`, as for every Legal Entity, so the agency of one foreign State is never confused with that of another. The ownership Satellite of the Party Link is marked PII by rule, because the holder is usually a person or an entity; a Satellite row about a foreign agency does not change the rule. Whether an inter-governmental agreement lets a foreign agency be treated as a government agency is open (see Open decisions).
+- **The jurisdiction is part of the key of a Government Authority.** `jurisdiction_code` is in the business key of `hub_government_authority`, even though the Hub covers one jurisdiction today, so a second jurisdiction never needs a new key.
 - **Where Location roles come from.** The roles of a place for an asset (`boundary`, `footprint`, `entrance`, `address`) are the Code List `immovable_asset_location_role`, a list of its own, because the list `location_role` is limited to persons and entities by `party_type_code`.
 - **An open end is `9999-12-31`.** The end of a period is `9999-12-31` while it applies, and an unknown start is `1900-01-01` (Principles, "Validity ranges").
 - **Codes take their values from the Code List.** Every `_code` column of the family holds values that change without changing logic, except `valuation_status_code`, which is closed.
@@ -123,8 +171,9 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The Government Authority page: its Hub (assumed `hub_government_authority`), its key and who maintains it. The Links of both parts join it | Data Architecture Engineer and Platform | Drafted as a Platform object with its own outline; until then the Hub is drawn as defined elsewhere | Before the first State parcel is loaded |
+| The Government Authority page: its Hub (assumed `hub_government_authority`), its key, which includes `jurisdiction_code`, and who maintains it. The Hub covers only the base jurisdiction, the one where Nexus is deployed. The Links of both parts join it | Data Architecture Engineer and Platform | Drafted as a Platform object with its own outline; until then the Hub is drawn as defined elsewhere | Before the first State parcel is loaded |
 | Mortgages, easements, caveats and liens: they change the status of an asset, so each needs to be identified with its evidence. The recommended design is a Legal Instrument object: a Hub of the legal documents, one Link to each kind of subject (parcel, structure, movable asset, natural person, legal entity) with its own Satellite, a Link to the parties involved, and a Satellite for the status of the instrument. It is the most efficient because one mortgage over three parcels is one row, the status is tracked once, and the evidence is asked for once | Data Architecture Engineer and Data Product Owner | Drafted as its own page with an outline approved first; the status of an asset under it is a Gold view (R13) | Before the first mapping that needs them |
 | How the operations on a parcel or a building are tracked: divide, merge, join. An operation can be a change on the register, or a geographic process that physically cuts or joins the shapes | Data Architecture Engineer and Data Product Owner | Decided with the first jurisdiction that loads a subdivision or a merger; the direction is to record the operation and link the assets before and after it | Before the first subdivision is loaded |
 | How a jurisdiction sets up the valuation process: the methods, the allowed changes of status, who decides each, and the data each method needs so that a calculation process can run. A Code List that holds the process and its data requirements, not only the names of the methods | Data Product Owner, Taxation Contributions and Licences and Platform | Designed with the Code List page, from the first jurisdiction that configures a valuation process | When a jurisdiction is configured |
+| Whether an inter-governmental agreement lets a foreign government agency be treated as a government agency rather than as a Legal Entity that pays taxes, and what that changes for its holdings | Data Product Owner and Taxation Contributions and Licences | Decided with the first agreement that asks for it; until then the foreign agency is a Legal Entity | When the first such agreement is signed |
 | Which jurisdictions allow more than one accepted value of one asset at a time, so that the Gold check does not flag it | Data Product Owner and Taxation Contributions and Licences | Set for each jurisdiction in the Code List | When a jurisdiction is configured |
