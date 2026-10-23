@@ -17,7 +17,7 @@
 
 A Base Asset is the body of a mobile asset that the State identifies, registers, taxes or regulates: the hull of a vessel, the fuselage of an aircraft, the frame of a special vehicle. It keeps its identity for life, through the number stamped on it (an IMO number, a vehicle identification number, a tail number) or, where there is none, a number the platform assigns, as for a canoe. The parts that can be swapped, such as engines, are on the page [Swappable Component](Swappable_Component.md), and the make and the specification are on the page [Model Catalog](Model_Catalog.md).
 
-The holder of a base asset is a Party (a person or an entity) or a government authority; a public body is not a Party. The flag, which is the nationality of the asset, is not the holder's country and can change. A base asset has its own identifiers, its own proof of registration, its own characteristics and its own value.
+The holder of a base asset is a Party: a natural person or a legal entity, which includes a public body such as a government agency. The flag, which is the nationality of the asset, is not the holder's country and can change. A base asset has its own identifiers, its own proof of registration, its own characteristics and its own value.
 
 ## Why it is its own object
 
@@ -36,7 +36,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | Link | `lnk_base_asset__model_catalog` | The table that records which model an asset is, so that the make and the specification are held once for every asset of that model. An asset has one model at a time, and a correction is a new row. | one row per distinct combination of asset and model | `hub_base_asset`, `hub_model_catalog` |
 | Link | `lnk_base_asset__location` | The table that records that a place belongs to an asset: its port of registry, its home port or the place where it is based. The role and the period are recorded in `sat_base_asset__location__usage`. It is the way a place is attached to an asset. | one row per distinct combination of asset and location | `hub_base_asset`, `hub_location` |
 | Link | `lnk_base_asset__party_owner` | The table that records that a party holds an asset. The holder can be a natural person or a legal entity, and one asset can have many holders; the legal nature and the share of each holding are recorded in `sat_base_asset__party_owner__ownership`. | one row per distinct combination of asset and owner party | `hub_base_asset`, `hub_party` (owner) |
-| Link | `lnk_base_asset__government_authority` | The table that records that a government or a government agency holds an asset, for example a patrol vessel. One asset can have several; the legal nature and the share of each holding are recorded in `sat_base_asset__government_authority__ownership`. It is the holder table for public bodies, which are not parties, and sits beside `lnk_base_asset__party_owner`. | one row per distinct combination of asset and government authority | `hub_base_asset`, `hub_government_authority` |
 | Satellite | `sat_base_asset__description` | The table that records what an asset is, such as a vessel, an aircraft or a special vehicle, its class and the day it was built. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_asset__characteristic` | The table that records the characteristics of an asset, such as its length, its tonnage or the number of seats and engines, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
 | Satellite | `sat_base_asset__valuation` | The table that records each valuation of an asset: the method, the value, the day it refers to and where it stands in the process of the jurisdiction, from draft to accepted or rejected. A change of status is a new entry, so the earlier ones stay. | one row per parent key and valuation, for each time its values change | — |
@@ -46,11 +45,10 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | Satellite | `sat_base_asset__restriction` | The table that records each restriction that the State places on an asset, such as an embargo, a detention or a seizure, who imposed it, from which day and until which day, and the evidence held for it. A change is a new entry, so the earlier ones stay. | one row per parent key, restriction type and reference, for each time its values change | — |
 | Satellite | `sat_base_asset__location__usage` | The table that records how a place is used for an asset, such as its port of registry, its home port or its base, from which day and until which day, and the evidence held for it. An asset can have several places and a place can belong to several assets. | one row per parent key and role, for each time its values change | — |
 | Satellite | `sat_base_asset__party_owner__ownership` | The table that records each holding by which a party holds an asset: the legal nature of the title, the share and the dates it applies. Each type of title is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and title type, for each time its values change | — |
-| Satellite | `sat_base_asset__government_authority__ownership` | The table that records each holding by which a government or a government agency holds an asset: the legal nature of the title, the share and the dates it applies. A change is a new entry, so the earlier ones stay. | one row per parent key and title type, for each time its values change | — |
 
 `base_asset_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `base_asset_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_base_asset__model_catalog` says which model the asset is; `lnk_base_asset__swappable_component` says that a part is **fitted to** the asset and is defined on the page [Swappable Component](Swappable_Component.md). `lnk_base_asset__location` says where the asset is **based**, with the shape of `lnk_location__natural_person`. `lnk_base_asset__party_owner` says that a Party **holds** the asset, with the shape of `lnk_legal_entity__party_owner`. `lnk_base_asset__government_authority` says the same for a government or a government agency, which is a Platform object and not a Party. Each Link has its own Satellite for the details, except the Link to the model, which has none.
+`lnk_base_asset__model_catalog` says which model the asset is; `lnk_base_asset__swappable_component` says that a part is **fitted to** the asset and is defined on the page [Swappable Component](Swappable_Component.md). `lnk_base_asset__location` says where the asset is **based**, with the shape of `lnk_location__natural_person`. `lnk_base_asset__party_owner` says that a Party **holds** the asset, with the shape of `lnk_legal_entity__party_owner`. A government or a government agency holds in the same way, as a Legal Entity classified as public. Each Link has its own Satellite for the details, except the Link to the model, which has none.
 
 **Related pages.** The diagrams on this page draw the objects defined elsewhere with a note.
 
@@ -59,7 +57,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 - [Model Catalog](Model_Catalog.md): `hub_model_catalog`, joined by `lnk_base_asset__model_catalog`, which is defined on this page.
 - [Location](Location.md): `hub_location`, joined by `lnk_base_asset__location`.
 - [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): `hub_party`, joined by `lnk_base_asset__party_owner`.
-- Government Authority: `hub_government_authority`, joined by `lnk_base_asset__government_authority`. Its page is not written yet.
 
 ## Fields
 
@@ -76,7 +73,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
-
 ### lnk_base_asset__model_catalog
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -85,7 +81,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | `model_catalog_hk` | ◇ | `string` | No | No | — | Hash key of the model the asset is |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
 
 ### lnk_base_asset__location
 
@@ -96,7 +91,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
-
 ### lnk_base_asset__party_owner
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -105,17 +99,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
-
-### lnk_base_asset__government_authority
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the asset that is held |
-| `government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the government authority that holds it |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
 
 ### sat_base_asset__description
 
@@ -128,7 +111,6 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 
 ### sat_base_asset__characteristic
 
@@ -144,7 +126,6 @@ The characteristics of an asset are an open list, such as its length, its tonnag
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 
 ### sat_base_asset__valuation
 
@@ -165,7 +146,6 @@ Same shape and same rules as `sat_base_parcel__valuation`. An asset is valued on
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-
 ### sat_base_asset__identification
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -181,7 +161,6 @@ Same shape and same rules as `sat_base_parcel__valuation`. An asset is valued on
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-
 ### sat_base_asset__registration
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -194,7 +173,6 @@ Same shape and same rules as `sat_base_parcel__valuation`. An asset is valued on
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 
 ### sat_base_asset__flag
 
@@ -211,7 +189,6 @@ The flag is the nationality of the asset. It can change, as when an owner moves 
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 
 ### sat_base_asset__restriction
 
@@ -230,7 +207,6 @@ A restriction is a State-imposed status of the asset. It is not a mortgage or a 
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-
 ### sat_base_asset__location__usage
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -244,7 +220,6 @@ A restriction is a State-imposed status of the asset. It is not a mortgage or a 
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-
 ### sat_base_asset__party_owner__ownership
 
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
@@ -255,21 +230,6 @@ A restriction is a State-imposed status of the asset. It is not a mortgage or a 
 | `effective_date` |  | `date` | No | Yes | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
 | `end_date` |  | `date` | No | Yes | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and title type, the loader sets this to the day before it starts |
 | `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a bill of sale or a charter agreement; only the pointer is stored: e.g. `artifact://sale/s-3301`, `artifact://charter/c-55`, `artifact://certificate/c-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
-
-### sat_base_asset__government_authority__ownership
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_asset__government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `title_type_code` |  | `string` | No | No | — | The legal nature of the title over the asset, a value of the list `movable_title_type`: e.g. `full_ownership`, `bareboat_charter`, `finance_lease`, `co_ownership` |
-| `ownership_share_percent` |  | `decimal(7,4)` | No | No | — | The share of the asset this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and title type, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a bill of sale or a charter agreement; only the pointer is stored: e.g. `artifact://sale/s-3301`, `artifact://charter/c-55`, `artifact://certificate/c-9`; empty when there is none |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
@@ -341,7 +301,7 @@ Illustrative data. A cargo ship flagged in Vanuatu after it left the Marshall Is
 - **The model is joined by a Link.** `lnk_base_asset__model_catalog` joins the asset to its model, so the specification is held once. The asset's own measured characteristics are rows of `sat_base_asset__characteristic`, which override nothing in the catalog.
 - **The characteristics are an open list.** The length, the tonnage, the number of seats and engines and the like are rows of `sat_base_asset__characteristic`, not columns (Principles, "Traits as rows").
 - **The current position is not stored.** A vessel or an aircraft moves. Where it is based is a Location with a role; where it is at this moment is operational data and is outside this model.
-- **Shared rules.** Valuation and its statuses, identification and registration, ownership and its Link to Government Authority, validity ranges and codes follow the rules written on the page [Movable Assets](Movable_Assets.md), which are those of the page [Immovable Assets](Immovable_Assets.md). What is only the asset's: the definitive value is the Gold view `cur_base_asset__valuation_definitive`; the roles of a place for an asset are `port_of_registry`, `home_port` and `base_location`, the list `movable_asset_location_role`; the legal nature of a title is the list `movable_title_type`.
+- **Shared rules.** Valuation and its statuses, identification and registration, ownership, validity ranges and codes follow the rules written on the page [Movable Assets](Movable_Assets.md), which are those of the page [Immovable Assets](Immovable_Assets.md). What is only the asset's: the definitive value is the Gold view `cur_base_asset__valuation_definitive`; the roles of a place for an asset are `port_of_registry`, `home_port` and `base_location`, the list `movable_asset_location_role`; the legal nature of a title is the list `movable_title_type`.
 
 ## Diagram
 
@@ -349,7 +309,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 4 Links and 10 Satellites, with the Hubs of the model and Location, Party and Government Authority, and the Link and the Satellite of the parts, drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 3 Links and 9 Satellites, with the Hubs of the model, Location and Party, and the Link and the Satellite of the parts, drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Base Asset cluster, simplified](images/Diagrams_Base_Asset_Simplified.png)
 
@@ -363,7 +323,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The decisions shared by the three parts of the family: Government Authority, Legal Instrument for mortgages and liens, the valuation process, the depth of the containment of parts and the holders of parts | Data Architecture Engineer and Data Product Owner | Written once, on the page [Movable Assets](Movable_Assets.md) | See that page |
+| The decisions shared by the three parts of the family: Legal Instrument for mortgages and liens, the valuation process, the depth of the containment of parts and the holders of parts | Data Architecture Engineer and Data Product Owner | Written once, on the page [Movable Assets](Movable_Assets.md) | See that page |
 | How an asset known by a local number and later by an international one is joined to the same row, and who vouches for the match | Data Architecture Engineer and Data Product Owner | Decided with the first jurisdiction that registers an asset under two numbers; the direction is an enrichment layer, as for the places of a Location | Before the first such asset is loaded |
 | Which characteristics are required for each kind of asset, and their units | Data Product Owner | Set as values of the Code List list `asset_characteristic` | When a jurisdiction is configured |
 | Which source of record supplies `base_asset_bk` in each jurisdiction, and who assigns the key where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |

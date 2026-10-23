@@ -26,23 +26,23 @@ class FamilyPageTests(unittest.TestCase):
         text = self.text("Movable_Assets")
         self.assertEqual(vp.validate(text, base_dir=PAGES), [])
         self.assertEqual(sorted(set(vp.family_members(vp.parse_page(text)))), ["Base_Asset", "Model_Catalog", "Swappable_Component"])
-        merged = bd.load_model(bd.merge_family(text, PAGES), ["hub_location", "hub_party", "hub_government_authority"])
-        self.assertEqual(len([n for n in merged.nodes if not n.external]), 33)
+        merged = bd.load_model(bd.merge_family(text, PAGES), ["hub_location", "hub_party"])
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 29)
 
     def test_an_ordinary_page_is_not_a_family(self):
         self.assertIsNone(vp.family_members(vp.parse_page(self.text("Party"))))
 
     def test_a_family_that_links_one_page_is_refused(self):
-        text = self.text().replace("[Built Structure](Built_Structure.md) | 16", "Built Structure | 16")
-        text = text.replace("[Built Structure](Built_Structure.md), which is", "Built Structure, which is")
+        text = "\n".join(l.replace("[Built Structure](Built_Structure.md)", "Built Structure") if l.startswith("| [Built Structure]") else l
+                         for l in self.text().split("\n"))
         errors = vp.validate(text)
         self.assertTrue(any("family page" in e for e in errors), errors)
 
     def test_the_diagram_merges_the_parts_without_repeating_an_object(self):
-        merged = bd.load_model(bd.merge_family(self.text(), PAGES), ["hub_location", "hub_party", "hub_government_authority"])
+        merged = bd.load_model(bd.merge_family(self.text(), PAGES), ["hub_location", "hub_party"])
         names = [n.name for n in merged.nodes]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len([n for n in merged.nodes if not n.external]), 29)
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 25)
 
     def test_an_ordinary_page_is_merged_unchanged(self):
         text = self.text("Party")

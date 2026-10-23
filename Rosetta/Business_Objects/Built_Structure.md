@@ -17,7 +17,7 @@
 
 A Built Structure is what is built on a parcel and stays: a house, a hotel, an apartment unit, a pier, a turbine. A structure can contain other structures, such as the apartment units of a building under strata title, each with its own holder, and each structure is built from sub-structures. The State needs to identify it, register who holds it and value it for tax.
 
-The holder of a structure is a Party (a person or an entity) or a government authority; a public body is not a Party. The structure stands on a parcel, described on the page [Base Parcel](Base_Parcel.md). Every structure has its own identifiers, its own proof of registration, its own characteristics and its own value.
+The holder of a structure is a Party: a natural person or a legal entity, which includes a public body such as a government agency. The structure stands on a parcel, described on the page [Base Parcel](Base_Parcel.md). Every structure has its own identifiers, its own proof of registration, its own characteristics and its own value.
 
 ## Why it is its own object
 
@@ -38,7 +38,6 @@ If the parcel and the structure were one table, a unit in a strata building woul
 | Link | `lnk_built_structure__built_structure_hierarchy` | The table that records that one structure lies inside another, such as an apartment unit inside a building or a wing inside a hotel. It says which structure contains which; the kind of containment and the period are recorded in `sat_built_structure__built_structure_hierarchy__membership`. | one row per distinct combination of parent structure and member structure | `hub_built_structure` (parent), `hub_built_structure` (member) |
 | Link | `lnk_built_structure__location` | The table that records that a place belongs to a structure: its footprint, its entrance or its address. The role and the period are recorded in `sat_built_structure__location__usage`. It is the way a place is attached to a structure. | one row per distinct combination of structure and location | `hub_built_structure`, `hub_location` |
 | Link | `lnk_built_structure__party_owner` | The table that records that a party holds a structure. The holder can be a natural person or a legal entity, and one structure can have many holders; the legal nature and the share of each holding are recorded in `sat_built_structure__party_owner__ownership`. The holder of a structure can differ from the holder of the parcel under it. | one row per distinct combination of structure and owner party | `hub_built_structure`, `hub_party` (owner) |
-| Link | `lnk_built_structure__government_authority` | The table that records that a government or a government agency holds a structure, for example a public building. The legal nature and the share of each holding are recorded in `sat_built_structure__government_authority__ownership`. It is the holder table for public bodies, which are not parties, and sits beside `lnk_built_structure__party_owner`. | one row per distinct combination of structure and government authority | `hub_built_structure`, `hub_government_authority` |
 | Satellite | `sat_built_structure__description` | The table that records what a structure is, such as a house, a hotel, an apartment unit, a pier or a turbine, and the day it was completed. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_built_structure__characteristic` | The table that records the characteristics of a structure, such as the number of toilets and rooms, the material of the walls and the roof, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
 | Satellite | `sat_built_structure__valuation` | The table that records each valuation of a structure: the method, the value, the day it refers to and where it stands in the process of the jurisdiction, from draft to accepted or rejected. A change of status is a new entry, so the earlier ones stay. | one row per parent key and valuation, for each time its values change | — |
@@ -48,11 +47,10 @@ If the parcel and the structure were one table, a unit in a strata building woul
 | Satellite | `sat_built_structure__built_structure_hierarchy__membership` | The table that records the kind of containment between a structure and the structure inside it, such as a strata unit or a wing, the period in which it applies and why it ended. A change is a new entry, so the earlier ones stay. | one row per parent key and hierarchy type, for each time its values change | — |
 | Satellite | `sat_built_structure__location__usage` | The table that records how a place is used for a structure, such as its footprint, its entrance or its address, from which day and until which day, and the evidence held for it. A structure can have several places and a place can belong to several structures. | one row per parent key and role, for each time its values change | — |
 | Satellite | `sat_built_structure__party_owner__ownership` | The table that records each holding by which a party holds a structure: the legal nature of the title, the share and the dates it applies. Each type of title is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and title type, for each time its values change | — |
-| Satellite | `sat_built_structure__government_authority__ownership` | The table that records each holding by which a government or a government agency holds a structure: the legal nature of the title, the share and the dates it applies. A change is a new entry, so the earlier ones stay. | one row per parent key and title type, for each time its values change | — |
 
 `built_structure_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `built_structure_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_base_parcel__built_structure` says that a structure **stands on** a parcel; `lnk_built_structure__built_structure_hierarchy` says that a structure **lies inside** another, so an apartment unit is a structure inside the building and the building is a structure on the parcel. `lnk_built_structure__location` says where the structure **is**, with the shape of `lnk_location__natural_person`. `lnk_built_structure__party_owner` says that a Party **holds** the structure, with the shape of `lnk_legal_entity__party_owner`. `lnk_built_structure__government_authority` says the same for a government or a government agency, which is a Platform object and not a Party. Each Link has its own Satellite for the details.
+`lnk_base_parcel__built_structure` says that a structure **stands on** a parcel; `lnk_built_structure__built_structure_hierarchy` says that a structure **lies inside** another, so an apartment unit is a structure inside the building and the building is a structure on the parcel. `lnk_built_structure__location` says where the structure **is**, with the shape of `lnk_location__natural_person`. `lnk_built_structure__party_owner` says that a Party **holds** the structure, with the shape of `lnk_legal_entity__party_owner`. A government or a government agency holds in the same way, as a Legal Entity classified as public. Each Link has its own Satellite for the details.
 
 **Related pages.** The details of every object below are on its own page; the diagrams on this page draw them with a note.
 
@@ -60,7 +58,6 @@ If the parcel and the structure were one table, a unit in a strata building woul
 - [Base Parcel](Base_Parcel.md): `hub_base_parcel`, joined by `lnk_base_parcel__built_structure`, which is defined on this page.
 - [Location](Location.md): `hub_location`, joined by `lnk_built_structure__location`.
 - [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): `hub_party`, joined by `lnk_built_structure__party_owner`.
-- Government Authority: `hub_government_authority`, joined by `lnk_built_structure__government_authority`. Its page is not written yet.
 
 ## Fields
 
@@ -112,15 +109,6 @@ A containment between two structures. The **parent** is the structure that conta
 | --- | --- | --- | --- | --- | --- | --- |
 | `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure that is owned |
 | `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
-### lnk_built_structure__government_authority
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure that is held |
-| `government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the government authority that holds it |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -252,20 +240,6 @@ The kind of containment, its period and the reason it ended are one fact, so the
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-### sat_built_structure__government_authority__ownership
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_built_structure__government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `title_type_code` |  | `string` | No | No | — | The legal nature of the title over the structure, a value of the list `immovable_title_type`: e.g. `freehold`, `leasehold`, `customary_title`, `usufruct` |
-| `ownership_share_percent` |  | `decimal(7,4)` | No | No | — | The share of the structure this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and title type, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a title deed or a lease; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://certificate/c-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 ## Sources and mapping
 
 No endpoints declared yet
@@ -330,7 +304,7 @@ The valuation of a structure goes through its status in the same way as that of 
 ## Modeling considerations
 
 - **A structure can have several Locations,** as a parcel can: its footprint, its entrance and its address can each be their own Location, with their own role in `lnk_built_structure__location`. The Vault does not deduce one from another; see the [Location](Location.md) page.
-- **Parcel and structure are two Hubs.** The structure has its own key, lifecycle and holders, so it is its own Hub, with its own Links to Location, to Party and to Government Authority. It is joined to the parcel by `lnk_base_parcel__built_structure`, which is defined on this page and drawn on the page [Base Parcel](Base_Parcel.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
+- **Parcel and structure are two Hubs.** The structure has its own key, lifecycle and holders, so it is its own Hub, with its own Links to Location and to Party. It is joined to the parcel by `lnk_base_parcel__built_structure`, which is defined on this page and drawn on the page [Base Parcel](Base_Parcel.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
 - **The Link to the parcel is many to many.** A parcel can hold many structures and a structure, such as a pier or a large building, can stand on more than one parcel. The period and the reason it ended are in `sat_base_parcel__built_structure__period`.
 - **Containment has no fixed depth.** `lnk_built_structure__built_structure_hierarchy` joins the Hub to itself, as the hierarchy of Legal Entities does. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`). The level of a structure and its path to the parcel are computed in Gold (R13).
 - **A structure has at most one open parent for each kind of containment.** At most one row with `end_date` `9999-12-31` for each member and `hierarchy_type_code`. A structure cannot be its own ancestor; a row that would close a loop is parked by the load.
@@ -344,7 +318,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 5 Links and 10 Satellites, with the Hub of the parcel drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 4 Links and 9 Satellites, with the Hub of the parcel drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Built Structure cluster, simplified](images/Diagrams_Built_Structure_Simplified.png)
 
@@ -358,7 +332,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The decisions shared with the other part of the family: Government Authority, Legal Instrument for encumbrances, divide and merge operations, the valuation process and two accepted values | Data Architecture Engineer and Data Product Owner | Written once, on the page [Immovable Assets](Immovable_Assets.md) | See that page |
+| The decisions shared with the other part of the family: Legal Instrument for encumbrances, divide and merge operations, the valuation process and two accepted values | Data Architecture Engineer and Data Product Owner | Written once, on the page [Immovable Assets](Immovable_Assets.md) | See that page |
 | Which characteristics are required for each kind of structure, and their units | Data Product Owner | Set as values of the Code List list `structure_characteristic` | When a jurisdiction is configured |
 | Which source of record supplies `built_structure_bk` in each jurisdiction, and who assigns the key where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
 | The roles of a place for a structure and the kinds of holding of immovable property | Data Product Owner | Set as values of the Code List lists `immovable_asset_location_role` and `immovable_title_type` | When a jurisdiction is configured |

@@ -17,7 +17,7 @@
 
 A Base Parcel is a bounded portion of land, water or airspace over which someone holds a right, a restriction or a responsibility. The State needs to identify it, register who holds it, value it for tax and place it on the map. It may be surveyed as a polygon or a three-dimensional space, or known only by words or natural features, as in customary tenure. Land may belong to the State or to a tribe.
 
-The holder of a parcel is a Party (a person or an entity) or a government authority; a public body is not a Party. A parcel can hold many structures, and the structures are described on the page [Built Structure](Built_Structure.md). A parcel has its own identifiers, its own proof of registration, its own characteristics and its own value.
+The holder of a parcel is a Party: a natural person or a legal entity, which includes a public body such as a government agency. A parcel can hold many structures, and the structures are described on the page [Built Structure](Built_Structure.md). A parcel has its own identifiers, its own proof of registration, its own characteristics and its own value.
 
 ## Why it is its own object
 
@@ -35,7 +35,6 @@ If the parcel and the structure were one table, a demolished house would end the
 | Hub | `hub_base_parcel` | The table that holds the identifier by which the registry of record knows each parcel of land, water or airspace. It carries no description of the parcel. | one row per business key | `base_parcel_bk`: the identifier in the registry of record, or one assigned by the platform when there is none, with the jurisdiction and the key type |
 | Link | `lnk_base_parcel__location` | The table that records that a place belongs to a parcel: its boundary, a point on it or its address. The role and the period are recorded in `sat_base_parcel__location__usage`. It is the way a place is attached to a parcel. | one row per distinct combination of parcel and location | `hub_base_parcel`, `hub_location` |
 | Link | `lnk_base_parcel__party_owner` | The table that records that a party holds a parcel. The holder can be a natural person or a legal entity, and one parcel can have many holders; the legal nature and the share of each holding are recorded in `sat_base_parcel__party_owner__ownership`. | one row per distinct combination of parcel and owner party | `hub_base_parcel`, `hub_party` (owner) |
-| Link | `lnk_base_parcel__government_authority` | The table that records that a government or a government agency holds a parcel, for example State land. One parcel can have several; the legal nature and the share of each holding are recorded in `sat_base_parcel__government_authority__ownership`. It is the holder table for public bodies, which are not parties, and sits beside `lnk_base_parcel__party_owner`. | one row per distinct combination of parcel and government authority | `hub_base_parcel`, `hub_government_authority` |
 | Satellite | `sat_base_parcel__description` | The table that records what a parcel covers (land, water or airspace), how its use is classified, the kind of tenure over it and the area recorded for it, with how that area was obtained: measured from coordinates or written by someone. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__boundary` | The table that records how the boundary of a parcel is known when it is not a surveyed shape: in words, by a natural feature or by custom, with the day it was agreed and the evidence held for it. It is personal data. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__characteristic` | The table that records the characteristics of a parcel, such as the type of soil, the access road or the flood zone, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
@@ -44,11 +43,10 @@ If the parcel and the structure were one table, a demolished house would end the
 | Satellite | `sat_base_parcel__registration` | The table that records why and when a parcel was registered (a survey, a title deed, a testimony or a court order) and points to the evidence. | one row per parent key, registration basis and identifier type, for each time its values change | — |
 | Satellite | `sat_base_parcel__location__usage` | The table that records how a place is used for a parcel, such as its boundary, a point on it or its address, from which day and until which day, and the evidence held for it. A parcel can have several places and a place can belong to several parcels. | one row per parent key and role, for each time its values change | — |
 | Satellite | `sat_base_parcel__party_owner__ownership` | The table that records each holding by which a party holds a parcel: the legal nature of the title, the share and the dates it applies. Each type of title is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and title type, for each time its values change | — |
-| Satellite | `sat_base_parcel__government_authority__ownership` | The table that records each holding by which a government or a government agency holds a parcel: the legal nature of the title, the share and the dates it applies, such as State land lent to a tribe. A change is a new entry, so the earlier ones stay. | one row per parent key and title type, for each time its values change | — |
 
 `base_parcel_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `base_parcel_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_base_parcel__location` says where the parcel **is**, with the shape of `lnk_location__natural_person`; the surveyed boundary of a parcel is a geometry of Location, not a column here. `lnk_base_parcel__party_owner` says that a Party **holds** the parcel, with the shape of `lnk_legal_entity__party_owner`. `lnk_base_parcel__government_authority` says the same for a government or a government agency, which is a Platform object and not a Party. Each Link has its own Satellite for the details.
+`lnk_base_parcel__location` says where the parcel **is**, with the shape of `lnk_location__natural_person`; the surveyed boundary of a parcel is a geometry of Location, not a column here. `lnk_base_parcel__party_owner` says that a Party **holds** the parcel, with the shape of `lnk_legal_entity__party_owner`. A government or a government agency holds in the same way, as a Legal Entity classified as public. Each Link has its own Satellite for the details.
 
 **Related pages.** The details of every object below are on its own page; the diagrams on this page draw them with a note.
 
@@ -56,7 +54,6 @@ If the parcel and the structure were one table, a demolished house would end the
 - [Built Structure](Built_Structure.md): `hub_built_structure`, and the Link `lnk_base_parcel__built_structure` with its Satellite `sat_base_parcel__built_structure__period`, which say that a structure **stands on** a parcel.
 - [Location](Location.md): `hub_location`, joined by `lnk_base_parcel__location`.
 - [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): `hub_party`, joined by `lnk_base_parcel__party_owner`.
-- Government Authority: `hub_government_authority`, joined by `lnk_base_parcel__government_authority`. Its page is not written yet.
 
 ## Fields
 
@@ -87,16 +84,7 @@ If the parcel and the structure were one table, a demolished house would end the
 | **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
 | --- | --- | --- | --- | --- | --- | --- |
 | `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel that is owned |
-| `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity; how a government or a government agency is a holder is an open decision |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
-### lnk_base_parcel__government_authority
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel that is held |
-| `government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the government authority that holds it |
+| `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity, which includes a public body |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -219,20 +207,6 @@ One row for each valuation and each change of its status. The value, the method 
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-### sat_base_parcel__government_authority__ownership
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_parcel__government_authority_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `title_type_code` |  | `string` | No | No | — | The legal nature of the title over the parcel, a value of the list `immovable_title_type`: e.g. `freehold`, `leasehold`, `customary_title`, `usufruct` |
-| `ownership_share_percent` |  | `decimal(7,4)` | No | No | — | The share of the parcel this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and title type, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a title deed or a lease; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://certificate/c-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 ## Sources and mapping
 
 No endpoints declared yet
@@ -252,7 +226,7 @@ No endpoints declared yet
 | Two accepted values for one parcel at once, from two processes | Jurisdictions that allow different values for different purposes, such as tax and insurance | Allowed or not by the jurisdiction. Both are stored. The risk is not two values but not noticing that there are two, so Gold flags an asset with more than one accepted value where the jurisdiction does not allow it | Rows with `accepted` in the valuation Satellites; the check is in Gold |
 | The area is measured in one jurisdiction and written by someone in another | Jurisdictions with coordinates for every parcel, and jurisdictions where the area is copied from a document | The area keeps how it was obtained | `area_basis_code` in `sat_base_parcel__description` |
 | A valuation is refused, objected to or taken back | Jurisdictions with an appeal process | The valuation stays on record with its status; it never becomes the definitive value | `valuation_status_code` `rejected` or `withdrawn` |
-| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land: in some the tribe holds the land, in others the government holds it and lends it to the tribe | The holder can be a person, an entity, or a government or a government agency. The government holds through its own Link, the tribe through the Party Link, and the loan is the holding of the tribe, with its own dates | `lnk_base_parcel__government_authority` for the government; `lnk_base_parcel__party_owner` with a `title_type_code` such as `customary_title` or `state_lease` for the tribe |
+| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land: in some the tribe holds the land, in others the government holds it and lends it to the tribe | The State is a Legal Entity classified as public and the tribe is a Legal Entity classified as collective, so each holds through the same Link, and the loan is the holding of the tribe, with its own dates | Two rows of `lnk_base_parcel__party_owner`, with a `title_type_code` such as `state_title` for the State and `customary_title` or `state_lease` for the tribe |
 | A parcel of water or airspace | Jurisdictions that register water or airspace rights | The same object, with another `parcel_kind_code` and a three-dimensional shape in Location | `parcel_kind_code` in `sat_base_parcel__description` |
 
 ## Examples
@@ -308,11 +282,11 @@ The definitive value in Gold is `435000.00` from `REVAL-2026-02`. The refused va
 
 ## Modeling considerations
 
-- **Parcel and structure are two Hubs.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub, and the parcel has its own Links to Location, to Party and to Government Authority. They are joined by `lnk_base_parcel__built_structure`, defined on the page [Built Structure](Built_Structure.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
+- **Parcel and structure are two Hubs.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub, and the parcel has its own Links to Location and to Party. They are joined by `lnk_base_parcel__built_structure`, defined on the page [Built Structure](Built_Structure.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
 - **A parcel can have several Locations.** The address, the shape and the zone of a parcel can each be its own Location, one row for each in `lnk_base_parcel__location` with its own role, when the sources deliver them separately; when one source delivers them together they hang off one Location. The Vault does not deduce one from another, because in some jurisdictions that is not possible; the enrichment layer described on the [Location](Location.md) page does it and contrasts the result with what the sources delivered.
 - **The shape of a parcel is a Location.** Whether a parcel is a polygon, a point or a three-dimensional volume is a geometry of Location, joined by `lnk_base_parcel__location`. The Satellite `sat_base_parcel__boundary` holds only what a shape cannot: the boundary in words, by a natural feature or by custom. A parcel can have both.
 - **The characteristics are an open list.** The type of soil, the access road, the flood zone and the like are rows of `sat_base_parcel__characteristic`, not columns. The Code List says for each characteristic which value column it uses and in which unit, and the load checks the value (Principles, "Traits as rows"). A characteristic that is a fact about a parcel and not about a person is not personal data, so there is no in-place twin.
-- **Shared rules.** Valuation and its statuses, two accepted values, identification and registration, ownership, the roles of a place, validity ranges and codes follow the rules written on the page [Immovable Assets](Immovable_Assets.md). What is only the parcel's: the definitive value is the Gold view `cur_base_parcel__valuation_definitive`; `sat_base_parcel__registration` keeps the pointer to the evidence of the registration; when the State holds land and lends it to a tribe there are two holdings of the same parcel, the government's through `lnk_base_parcel__government_authority` and the tribe's through `lnk_base_parcel__party_owner`; the roles of a place for a parcel are `boundary` and `address`.
+- **Shared rules.** Valuation and its statuses, two accepted values, identification and registration, ownership, the roles of a place, validity ranges and codes follow the rules written on the page [Immovable Assets](Immovable_Assets.md). What is only the parcel's: the definitive value is the Gold view `cur_base_parcel__valuation_definitive`; `sat_base_parcel__registration` keeps the pointer to the evidence of the registration; when the State holds land and lends it to a tribe there are two holdings of the same parcel, the State's and the tribe's, each a row of `lnk_base_parcel__party_owner`; the roles of a place for a parcel are `boundary` and `address`.
 - **Area, distance and containment in space are not stored.** The area of a shape, the distance between two parcels and whether a structure lies inside a parcel are computed in Gold (R13). The area that someone wrote, in a title or a declaration, is a fact and is stored as such with `area_basis_code`; where the jurisdiction has coordinates, the area measured from them is a Gold value.
 
 ## Diagram
@@ -321,7 +295,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 3 Links and 9 Satellites, with the Hub, the Link and the Satellite of the structure drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 2 Links and 8 Satellites, with the Hub, the Link and the Satellite of the structure drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Base Parcel cluster, simplified](images/Diagrams_Base_Parcel_Simplified.png)
 
@@ -335,7 +309,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The decisions shared with the other part of the family: Government Authority, Legal Instrument for encumbrances, divide and merge operations, the valuation process and two accepted values | Data Architecture Engineer and Data Product Owner | Written once, on the page [Immovable Assets](Immovable_Assets.md) | See that page |
+| The decisions shared with the other part of the family: Legal Instrument for encumbrances, divide and merge operations, the valuation process and two accepted values | Data Architecture Engineer and Data Product Owner | Written once, on the page [Immovable Assets](Immovable_Assets.md) | See that page |
 | Which characteristics are required for each kind of parcel, and their units | Data Product Owner | Set as values of the Code List list `parcel_characteristic` | When a jurisdiction is configured |
 | Which source of record supplies `base_parcel_bk` in each jurisdiction, and who assigns the key where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
 | The roles of a place for a parcel and the kinds of holding of immovable property | Data Product Owner | Set as values of the Code List lists `immovable_asset_location_role` and `immovable_title_type` | When a jurisdiction is configured |

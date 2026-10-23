@@ -45,9 +45,9 @@ Run a scenario by giving the skill the raw input and checking the result against
 
 **Input.** A draft that lists a ministry as a kind of Party.
 
-**Expected.** The ministry is recorded as the Government Authority object in Platform. No link from it to `hub_party` is created. The draft's role links stay as links to the Authority object.
+**Expected.** A ministry that holds rights or pays taxes is a Legal Entity with the class `public` in the criterion `sector`, and so a Party. The body that acts on the platform (issues, approves, restricts) is platform configuration, not a Party. The draft's role links to the ministry as a holder go through the Party Link.
 
-**Failures to watch for.** Creating `lnk_government_authority__party`.
+**Failures to watch for.** Creating `lnk_government_authority__party` or a Link from an asset to a Government Authority Hub.
 
 ## Scenario 4: An attribute that may or may not need history
 

@@ -275,22 +275,20 @@ def _frac(box: Box, y: float) -> float:
     return min(0.97, max(0.03, (y - box.y) / box.h))
 
 
-def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], cols: dict[str, float], y0: float) -> tuple[float, float]:
+def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], cols: dict[str, float], y0: float) -> float:
     """The Immovable Asset cluster, inside the Registries band, below everything else. The parcel Hub and the structure Hub
     stand in the middle column, the Link between them in between. Their Satellites are on the left. On the right, first the two
     ownership Links by a Party (left-aligned, their lines go up to hub_party along the corridor east of the chain), then, right-aligned,
-    the place Links (their lines go up to hub_location) and the government Links (their lines go east to hub_government_authority),
-    each Link with its Satellite under it. A Hub is as tall as the rows it serves, so the lines to it run level.
-    Returns the bottom edge and the height of the middle of the government rows."""
+    the place Links (their lines go up to hub_location), each Link with its Satellite under it. A Hub is as tall as the rows it
+    serves, so the lines to it run level. A public body holds through the Party Link, as a Legal Entity.
+    Returns the bottom edge."""
     B = L.boxes
     xL, wL, xM, wM, xR = cols["xL"], cols["wL"], cols["xM"], cols["wM"], cols["xR"]
-    P, S, GA = "hub_base_parcel", "hub_built_structure", "hub_government_authority"
+    P, S = "hub_base_parcel", "hub_built_structure"
     pairs = {"po": ("lnk_base_parcel__party_owner", "sat_base_parcel__party_owner__ownership"),
              "so": ("lnk_built_structure__party_owner", "sat_built_structure__party_owner__ownership"),
              "pl": ("lnk_base_parcel__location", "sat_base_parcel__location__usage"),
-             "sl": ("lnk_built_structure__location", "sat_built_structure__location__usage"),
-             "pg": ("lnk_base_parcel__government_authority", "sat_base_parcel__government_authority__ownership"),
-             "sg": ("lnk_built_structure__government_authority", "sat_built_structure__government_authority__ownership")}
+             "sl": ("lnk_built_structure__location", "sat_built_structure__location__usage")}
     chain_link, chain_sat = "lnk_base_parcel__built_structure", "sat_base_parcel__built_structure__period"
     hier, hier_sat = "lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership"
     sat_p, sat_s = sats_of(P, nodes, edges), sats_of(S, nodes, edges)
@@ -328,14 +326,14 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
 
     # parcel
     hubp, hubs = B[P], B[S]
-    hp = max(stack_h(sat_p, GAP_ROW), right_h(("pl", "pg")))
+    hp = max(stack_h(sat_p, GAP_ROW), right_h(("pl",)))
     top_p = y_own_end + 260
     hubp.h = hp
     hubp.x, hubp.y = xM + wM - hubp.w, top_p
     yy = top_p + (hp - stack_h(sat_p, GAP_ROW)) / 2
     for n in sat_p:
         yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
-    right_rows(("pl", "pg"), top_p, hp)
+    right_rows(("pl",), top_p, hp)
     # the Link between the two Hubs, its Satellite on its left
     cl, cs = B[chain_link], B[chain_sat]
     cl.x, cl.y = xM + wM - cl.w, top_p + hp + 110
@@ -344,7 +342,7 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     hl, hs_ = B[hier], B[hier_sat]
     left_s = stack_h(sat_s, GAP_ROW) + 110 + hl.h + 110 + hs_.h
     top_s = cl.y + cl.h + 110
-    hh = max(left_s, right_h(("sl", "sg")))
+    hh = max(left_s, right_h(("sl",)))
     hubs.h = hh
     hubs.x, hubs.y = xM + wM - hubs.w, top_s
     yy = top_s + (hh - left_s) / 2
@@ -353,7 +351,7 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     hl_top = yy - GAP_ROW + 110
     place(hier, xL + wL - hl.w, hl_top)
     place(hier_sat, xL + wL - hs_.w, hl_top + hl.h + 110)
-    right_rows(("sl", "sg"), top_s, hh)
+    right_rows(("sl",), top_s, hh)
 
     # ---- lines
     for hub, sats in ((hubp, sat_p), (hubs, sat_s)):
@@ -368,7 +366,7 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     for key in pairs:
         pair_line(*pairs[key])
     # the Links to the Hub of their own kind: level lines along the rows, the ownership Links from above
-    for key, hub in (("pl", hubp), ("pg", hubp), ("sl", hubs), ("sg", hubs)):
+    for key, hub in (("pl", hubp), ("sl", hubs)):
         link = B[pairs[key][0]]
         _line(L, link.name, hub.name, (0.0, 0.5), (1.0, _frac(hub, link.cy)))
     _line(L, pairs["po"][0], P, (0.0, 0.3), (1.0, 0.03))
@@ -378,11 +376,8 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     _line(L, pairs["so"][0], "hub_party", (0.0, 0.6), (1.0, 0.98))
     _line(L, pairs["pl"][0], "hub_location", (1.0, 0.5), (0.35, 1.0))
     _line(L, pairs["sl"][0], "hub_location", (1.0, 0.5), (0.65, 1.0))
-    _line(L, pairs["pg"][0], GA, (1.0, 0.5), (0.0, 0.3))
-    _line(L, pairs["sg"][0], GA, (1.0, 0.5), (0.0, 0.7))
     bottom = max(hubs.y + hubs.h, hs_.y + hs_.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in pairs))
-    gov_mid = (B[pairs["pg"][0]].cy + B[pairs["sg"][0]].cy) / 2
-    return bottom, gov_mid
+    return bottom
 
 
 def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
@@ -531,7 +526,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
     base_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h, loc_bottom)
-    imm_bottom, gov_mid = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, base_bottom + 260)
+    imm_bottom = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, base_bottom + 260)
     reg_bottom = max(base_bottom, imm_bottom) + BAND_PAD
     reg_w = max(reg_w, loc_right + BAND_PAD)
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
@@ -568,10 +563,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     hlc.y = (lc_top + lc_bottom) / 2 - hlc.h / 2
     for i, s in enumerate(lc_sats):
         _line(L, s, "hub_load_configuration", (1.0, 0.5), (0.0, (i + 0.5) / len(lc_sats)))
-    ga = L.boxes["hub_government_authority"]
-    ga.h = max(ga.h, 300)
-    ga.x, ga.y = pxM + (pw_M - ga.w) / 2, gov_mid - ga.h / 2
-    plat_bottom = max(lc_bottom, hlc.y + hlc.h, ga.y + ga.h) + BAND_PAD
+    plat_bottom = max(lc_bottom, hlc.y + hlc.h) + BAND_PAD
     L.bands.append({"title": "Platform", "x": px, "y": by, "w": plat_w, "h": plat_bottom - by})
     L.legend_y = max(reg_bottom, plat_bottom) + 60
     L.uses = pu.uses_lines(nodes)

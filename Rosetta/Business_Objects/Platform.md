@@ -25,7 +25,7 @@ Platform objects follow the same page format as every other business object (see
 
 | **Object** | **What it will hold** | **Where it comes from** |
 | --- | --- | --- |
-| Government Authority | The public bodies that issue credentials and attest records. It is not a Party | Open decision on [Natural Person](Natural_Person.md) |
+| Government Authority | The configuration of the public bodies that act on the platform: who issues credentials, attests records, approves valuations and restricts assets, and what each may see. It is not a Party; a public body that holds rights or pays taxes is a [Legal Entity](Legal_Entity.md) classified as public | Open decision on [Natural Person](Natural_Person.md) |
 
 ## Rules for Platform objects
 

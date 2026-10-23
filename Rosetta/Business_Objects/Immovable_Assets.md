@@ -31,8 +31,8 @@ No Vault objects of its own: the objects of this family are defined once, on the
 
 | **Page** | **Objects** | **What it holds** |
 | --- | --- | --- |
-| [Base Parcel](Base_Parcel.md) | 13: the Hub `hub_base_parcel`, 3 Links and 9 Satellites | The parcel of land, water or airspace: its description and area, its boundary in words, its characteristics, its valuations, its identification and registration, and its Links to Location, to Party (holder) and to Government Authority |
-| [Built Structure](Built_Structure.md) | 16: the Hub `hub_built_structure`, 5 Links and 10 Satellites | The house, hotel, apartment unit, pier or turbine: its description, characteristics, valuations, identification and registration, its Links to Location, to Party and to Government Authority, the containment of structures inside structures, and the Link that places a structure on a parcel |
+| [Base Parcel](Base_Parcel.md) | 11: the Hub `hub_base_parcel`, 2 Links and 8 Satellites | The parcel of land, water or airspace: its description and area, its boundary in words, its characteristics, its valuations, its identification and registration, and its Links to Location and to Party (holder, which includes public bodies) |
+| [Built Structure](Built_Structure.md) | 14: the Hub `hub_built_structure`, 4 Links and 9 Satellites | The house, hotel, apartment unit, pier or turbine: its description, characteristics, valuations, identification and registration, its Links to Location and to Party, the containment of structures inside structures, and the Link that places a structure on a parcel |
 
 `lnk_base_parcel__built_structure` and its Satellite `sat_base_parcel__built_structure__period` say that a structure **stands on** a parcel. They are defined on [Built Structure](Built_Structure.md) and drawn on [Base Parcel](Base_Parcel.md). A parcel can hold many structures and a structure can stand on more than one parcel. `lnk_built_structure__built_structure_hierarchy` says that a structure **lies inside** another: an apartment unit is a structure inside the building, and the building is a structure on the parcel.
 
@@ -40,7 +40,7 @@ No Vault objects of its own: the objects of this family are defined once, on the
 
 - [Location](Location.md): where a parcel or a structure is.
 - [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): who holds it.
-- Government Authority: a government or a government agency that holds it. It is a Platform object and not a Party; its page is not written yet.
+- [Legal Entity](Legal_Entity.md): a government, a government agency or a foreign government agency that holds an asset is a Legal Entity classified as public, and holds through the same Link as any other party.
 - [Code List](Code_List.md): the values of every `_code` column of the family.
 
 ## Fields
@@ -53,7 +53,7 @@ No Vault objects of its own: the objects of this family are defined once, on the
 | `trait_code`, `value_text`, `value_number`, `measure_unit_code` | `sat_base_parcel__characteristic`, `sat_built_structure__characteristic` | One characteristic, such as the number of rooms or the material of the walls. The list is open and the Code List says which value column each trait uses |
 | `identification_type_code`, `identification_id`, `issuing_jurisdiction_code`, `issued_by_code`, `issue_date` | `sat_base_parcel__identification`, `sat_built_structure__identification` | A number or a document that identifies the asset, such as a cadastral number or a building permit |
 | `registration_basis_code`, `registration_date`, `artifact_uri` | `sat_base_parcel__registration`, `sat_built_structure__registration` | Why and when the asset was registered, and the pointer to the evidence |
-| `title_type_code`, `ownership_share_percent`, `effective_date`, `end_date` | the four ownership Satellites | The legal nature of a holding, its share and the dates it applies. The list is `immovable_title_type` |
+| `title_type_code`, `ownership_share_percent`, `effective_date`, `end_date` | the two ownership Satellites | The legal nature of a holding, its share and the dates it applies. The list is `immovable_title_type` |
 | `role_code` | `sat_base_parcel__location__usage`, `sat_built_structure__location__usage` | How a place is used for the asset. The list is `immovable_asset_location_role` |
 
 ## Sources and mapping
@@ -70,15 +70,15 @@ The cases that cross the two parts. The detail of each is on the page named in t
 | A building with many apartment units, each with its own holder (strata title) | Jurisdictions with unit or strata titles | The building is a structure on the parcel and each unit is a structure inside the building, with its own identifier, value and holder | `lnk_built_structure__built_structure_hierarchy` on [Built Structure](Built_Structure.md) |
 | A parcel with several structures, or a structure on several parcels | Any jurisdiction | One row in the Link for each combination | `lnk_base_parcel__built_structure` on [Built Structure](Built_Structure.md) |
 | The building is held by someone other than the holder of the land | Jurisdictions with leasehold or ground rent | Each has its own holding, through its own Link | `lnk_base_parcel__party_owner` and `lnk_built_structure__party_owner` |
-| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land | The government holds through its own Link, the tribe through the Party Link, and the loan is the holding of the tribe, with its own dates | `lnk_base_parcel__government_authority` and `lnk_base_parcel__party_owner` on [Base Parcel](Base_Parcel.md) |
+| Land that belongs to the State, to a tribe, or to the State and lent to a tribe | Jurisdictions with State land or tribal land | The State is a Legal Entity classified as public and the tribe a Legal Entity classified as collective, so each holds through the same Link, and the loan is the holding of the tribe, with its own dates | Two rows of `lnk_base_parcel__party_owner` on [Base Parcel](Base_Parcel.md) |
 | A parcel is divided or two parcels are merged, or a building is divided or joined | Any jurisdiction | The operation is a fact to track. The new parcels are new Hub rows and the old one ends. How the operation is recorded is open (see Open decisions) | New rows in `hub_base_parcel` or `hub_built_structure` |
 | The value is revised on a cycle by a method the jurisdiction sets | Jurisdictions that revalue on a cycle | Each revaluation is a valuation with its own reference and goes through the status process | Rows of the two valuation Satellites |
 | Two accepted values for one asset at once | Jurisdictions that allow different values for different purposes, such as tax and insurance | Allowed or not by the jurisdiction. Both are stored; Gold flags an asset with more than one accepted value where it is not allowed | Rows with `accepted` in the valuation Satellites; the check is in Gold |
 | A valuation is refused, objected to or taken back | Jurisdictions with an appeal process | The valuation stays on record with its status and never becomes the definitive value | `valuation_status_code` `rejected` or `withdrawn` |
 | The area is measured in one jurisdiction and written by someone in another | Jurisdictions with coordinates for every parcel, and jurisdictions where the area is copied from a document | The area keeps how it was obtained | `area_basis_code` on [Base Parcel](Base_Parcel.md) |
-| An asset held by the government and by a party | Any jurisdiction | Each holder has its own row, in its own Link; the shares are in the two Satellites and are added up in Gold | A row in `lnk_base_parcel__government_authority` and a row in `lnk_base_parcel__party_owner`, each with its `ownership_share_percent` |
-| An asset held by two government agencies | Any jurisdiction | Both rows go in the same Link, one for each agency | Two rows in `lnk_base_parcel__government_authority` |
-| An asset held by a government agency and by a foreign government agency | Any jurisdiction with foreign State holdings, such as an embassy or a consulate | The Government Authority Hub covers only the base jurisdiction, so the foreign agency is a Legal Entity and holds through the Party Link, with the jurisdiction that owns its key | A row in `lnk_base_parcel__government_authority` and a row in `lnk_base_parcel__party_owner` |
+| An asset held by the government and by a party | Any jurisdiction | Both are Legal Entities or persons, so each holder is a row of the same Link, with its own share | Two rows of `lnk_base_parcel__party_owner`, each with its `ownership_share_percent` |
+| An asset held by two government agencies | Any jurisdiction | Each agency is a Legal Entity classified as public, and each is a row of the same Link | Two rows of `lnk_base_parcel__party_owner` |
+| An asset held by a government agency and by a foreign government agency | Any jurisdiction with foreign State holdings, such as an embassy or a consulate | The foreign agency is a Legal Entity classified as public, with the jurisdiction that owns its key; that it is foreign is worked out in Gold by comparing its jurisdiction with the base one | Two rows of `lnk_base_parcel__party_owner` |
 
 ## Examples
 
@@ -90,61 +90,50 @@ Illustrative data. One building under strata title on a surveyed parcel in New Z
 4. **The values.** The parcel is revalued in 2026: the first draft is refused and a second one is accepted. The unit has its own valuations. The definitive value of the parcel is `435000.00`, from the accepted valuation `REVAL-2026-02`. It is computed in Gold from the valuation rows; the refused valuation stays on record.
 5. **The family view.** A Gold view reads the parcel and the building together, so that a property tax bill asks for "the immovable asset `P-5501`" and gets both values and both holders.
 
-**Shared holdings.** Three cases of one parcel with more than one holder. The holder is shown by name here; in the tables it is the hash key of the Hub. Illustrative data; the parcel is `P-7020` in New Zealand.
+**Shared holdings.** Three cases of one parcel with more than one holder. The holder is shown by name here; in the tables it is the hash key of the Party. Illustrative data; the parcel is `P-7020` in New Zealand. A government, an agency and a foreign agency are Legal Entities classified as public, so every holder goes through the same Link and the same Satellite.
 
-*A government and a party.* The State holds 60% and a company holds 40%. Each holding is in its own Link, so there is one row in each Satellite.
-
-`sat_base_parcel__government_authority__ownership`
-
-| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
-| --- | --- | --- | --- | --- |
-| Ministry of Lands | state_title | 60.0000 | 2022-01-01 | 9999-12-31 |
+*A government and a party.* The State holds 60% and a company holds 40%: two rows, one for each holder.
 
 `sat_base_parcel__party_owner__ownership`
 
 | **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
 | --- | --- | --- | --- | --- |
+| a legal entity classified as public (the State, Ministry of Lands) | state_title | 60.0000 | 2022-01-01 | 9999-12-31 |
 | a legal entity (a company) | leasehold | 40.0000 | 2022-01-01 | 9999-12-31 |
 
-*Two government agencies.* Both holdings are in `lnk_base_parcel__government_authority`, one row for each agency.
-
-`sat_base_parcel__government_authority__ownership`
-
-| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
-| --- | --- | --- | --- | --- |
-| Ministry of Lands | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
-| Housing Agency | state_title | 30.0000 | 2022-01-01 | 9999-12-31 |
-
-*A government agency and a foreign government agency.* The agency of the base jurisdiction holds 70%. The foreign agency is a Legal Entity, so it holds through the Party Link, and its jurisdiction is part of its key, as for every Legal Entity.
-
-`sat_base_parcel__government_authority__ownership`
-
-| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
-| --- | --- | --- | --- | --- |
-| Ministry of Lands | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
+*Two government agencies.* One row for each agency.
 
 `sat_base_parcel__party_owner__ownership`
 
 | **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
 | --- | --- | --- | --- | --- |
-| a legal entity (the agency of a foreign State, jurisdiction `AUS`) | freehold | 30.0000 | 2022-01-01 | 9999-12-31 |
+| a public legal entity (Ministry of Lands) | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
+| a public legal entity (Housing Agency) | state_title | 30.0000 | 2022-01-01 | 9999-12-31 |
 
-In all three cases the shares of one parcel add up to 100, but they are in two tables. The check is in Gold: it adds the shares of the open holdings of both Links and lists the assets where the sum is not 100.
+*A government agency and a foreign government agency.* The agency of the base jurisdiction holds 70%. The foreign agency is also a public Legal Entity, and its jurisdiction is part of its key, as for every Legal Entity.
+
+`sat_base_parcel__party_owner__ownership`
+
+| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
+| --- | --- | --- | --- | --- |
+| a public legal entity (Ministry of Lands) | state_title | 70.0000 | 2022-01-01 | 9999-12-31 |
+| a public legal entity (the agency of a foreign State, jurisdiction `AUS`) | freehold | 30.0000 | 2022-01-01 | 9999-12-31 |
+
+In all three cases the shares of one parcel add up to 100. The check is in Gold: it adds the shares of the open holdings of the parcel and lists the assets where the sum is not 100.
 
 ## Modeling considerations
 
-- **Two Hubs, no umbrella.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub with its own Links to Location, to Party and to Government Authority. The family has no Hub: a shared key would have to be assigned by Nexus before any source row could load, and every Link would have to look it up.
+- **Two Hubs, no umbrella.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub with its own Links to Location and to Party. The family has no Hub: a shared key would have to be assigned by Nexus before any source row could load, and every Link would have to look it up.
 - **The family is read in Gold.** Views such as `immovable_asset__valuation_definitive` and `immovable_asset__holder` read the two parts together. They are Gold objects (R13) and are not stored.
 - **Valuation is a fact with a process.** A value changes with time, and a value is not used until the jurisdiction has accepted it. The Vault stores every valuation with its method, its value, the day it refers to and its status, and a change of status is a new row, so the process stays visible. The rules (which method, which status can follow which, who decides) are values and rules of the Code List, not tables. The definitive value is the Gold view `cur_<part>__valuation_definitive`: the accepted valuation with the latest `valuation_date`. It is a responsibility of the Gold layer and is not stored (R13).
 - **Two accepted values are allowed or not by the jurisdiction.** Two processes can each produce a value, for example one for tax and one for insurance, and both are stored. The danger is to believe there is only one and not detect the inconsistency. A Gold check lists the assets with more than one accepted valuation, and the jurisdiction says whether that is allowed.
 - **The status list is closed.** `valuation_status_code` is `draft`, `submitted`, `accepted`, `rejected` or `withdrawn`, because logic depends on `accepted`. A jurisdiction that needs another step maps it to one of these or asks to extend the list.
 - **The characteristics are an open list.** The number of toilets, the number of rooms, the material of the walls, the type of soil and the like are rows of the characteristic Satellites, not columns. The Code List says for each trait which value column it uses and in which unit, and the load checks the value (Principles, "Traits as rows"). A characteristic that is a fact about an asset and not about a person is not personal data, so there is no in-place twin.
 - **Identification and registration are as for a person.** Every parcel and every structure can have documents that identify it and proof of why it was registered. Identifiers are facts, not keys: the business key is the registry's own identifier, so a new title number or permit never changes a key. The registration Satellites keep a pointer to the evidence (Principles, "Evidence is a pointer to one stored object").
-- **Ownership is a Link to Party, with its own details.** The holder is a Party, so a person and a company are handled the same way. A government or a government agency is a holder through its own Link to Government Authority, which is a Platform object and not a Party; its Satellites are not personal data. When the State holds land and lends it to a tribe, there are two holdings of the same parcel. A holding by a party is personal data, because the holder can be a person. The legal nature of the title is the Code List `immovable_title_type`, not the list of Legal Entity, because the rights over land differ from the rights over shares.
-- **A shared holding is a row in each Link.** A parcel or a structure held by a government and by a party has one row in the Link to Government Authority and one in the Link to Party, each with its own share, title and dates. Two government agencies are two rows of the same Link. Each Satellite keeps only its own holding.
-- **The check across the two Links is a Gold responsibility.** The shares of the open holdings of a parcel are in two Satellites, so no table can check that they add up to 100. A Gold view reads both (`immovable_asset__holder`), adds the shares and lists the assets where the sum is not 100 (R13). The Vault stores what each source said.
-- **A foreign government agency is a Legal Entity.** Government Authority is the Platform object of the base jurisdiction, the one where Nexus is deployed. A foreign government agency is not part of it: it holds through the Party Link, as a Legal Entity, and it pays taxes as one. Its key includes `jurisdiction_code`, as for every Legal Entity, so the agency of one foreign State is never confused with that of another. The ownership Satellite of the Party Link is marked PII by rule, because the holder is usually a person or an entity; a Satellite row about a foreign agency does not change the rule. Whether an inter-governmental agreement lets a foreign agency be treated as a government agency is open (see Open decisions).
-- **The jurisdiction is part of the key of a Government Authority.** `jurisdiction_code` is in the business key of `hub_government_authority`, even though the Hub covers one jurisdiction today, so a second jurisdiction never needs a new key.
+- **Ownership is a Link to Party, with its own details.** The holder is a Party, so a person, a company and a public body are handled the same way. A government, a government agency or a foreign government agency is a Legal Entity classified as public, and holds through the same Link. When the State holds land and lends it to a tribe, there are two holdings of the same parcel. A holding by a party is personal data, because the holder can be a person, so the Satellite is marked PII; how the rows of public bodies are made readable is open (see Open decisions). The legal nature of the title is the Code List `immovable_title_type`, not the list of Legal Entity, because the rights over land differ from the rights over shares.
+- **A shared holding is a row for each holder.** A parcel or a structure held by a government and by a party has two rows of the Link to Party, each with its own share, title and dates. Two government agencies are two rows of the same Link. Each Satellite row keeps only its own holding.
+- **The check on the shares is a Gold responsibility.** The shares of the open holdings of a parcel are in rows of one Satellite, and no table can check that they add up to 100. A Gold view (`immovable_asset__holder`) adds them and lists the assets where the sum is not 100 (R13). The Vault stores what each source said.
+- **A public body is a Legal Entity.** A government, a ministry, an agency and a foreign government agency are Legal Entities with the class `public` in the criterion `sector` of `sat_legal_entity__classification`; a company is `private`. Their key includes `jurisdiction_code`, so the agency of one foreign State is never confused with that of another, and that an entity is foreign is worked out in Gold by comparing its jurisdiction with the base one (R13). The rules that apply to a public body, such as tax exemption or immunity, are classification rules in the Code List, by sector and jurisdiction, not tables. The authority that acts on the platform (issues, approves, restricts) is platform configuration and not an asset holder; see [Legal Entity](Legal_Entity.md).
 - **Where Location roles come from.** The roles of a place for an asset (`boundary`, `footprint`, `entrance`, `address`) are the Code List `immovable_asset_location_role`, a list of its own, because the list `location_role` is limited to persons and entities by `party_type_code`.
 - **An open end is `9999-12-31`.** The end of a period is `9999-12-31` while it applies, and an unknown start is `1900-01-01` (Principles, "Validity ranges").
 - **Codes take their values from the Code List.** Every `_code` column of the family holds values that change without changing logic, except `valuation_status_code`, which is closed.
@@ -157,7 +146,7 @@ Two pictures of the family: the two clusters together. Read the simplified one f
 
 ### Simplified version
 
-The shape of the family: 2 Hubs, 8 Links and 19 Satellites, each with its name and definition, and the Hubs of Location, Party and Government Authority drawn as defined on other pages. Use it to see how the two parts relate. It has no columns.
+The shape of the family: 2 Hubs, 6 Links and 17 Satellites, each with its name and definition, and the Hubs of Location and Party drawn as defined on other pages. Use it to see how the two parts relate. It has no columns.
 
 ![Immovable Assets cluster, simplified](images/Diagrams_Immovable_Assets_Simplified.png)
 
@@ -171,9 +160,9 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The Government Authority page: its Hub (assumed `hub_government_authority`), its key, which includes `jurisdiction_code`, and who maintains it. The Hub covers only the base jurisdiction, the one where Nexus is deployed. The Links of both parts join it | Data Architecture Engineer and Platform | Drafted as a Platform object with its own outline; until then the Hub is drawn as defined elsewhere | Before the first State parcel is loaded |
 | Mortgages, easements, caveats and liens: they change the status of an asset, so each needs to be identified with its evidence. The recommended design is a Legal Instrument object: a Hub of the legal documents, one Link to each kind of subject (parcel, structure, movable asset, natural person, legal entity) with its own Satellite, a Link to the parties involved, and a Satellite for the status of the instrument. It is the most efficient because one mortgage over three parcels is one row, the status is tracked once, and the evidence is asked for once | Data Architecture Engineer and Data Product Owner | Drafted as its own page with an outline approved first; the status of an asset under it is a Gold view (R13) | Before the first mapping that needs them |
 | How the operations on a parcel or a building are tracked: divide, merge, join. An operation can be a change on the register, or a geographic process that physically cuts or joins the shapes | Data Architecture Engineer and Data Product Owner | Decided with the first jurisdiction that loads a subdivision or a merger; the direction is to record the operation and link the assets before and after it | Before the first subdivision is loaded |
 | How a jurisdiction sets up the valuation process: the methods, the allowed changes of status, who decides each, and the data each method needs so that a calculation process can run. A Code List that holds the process and its data requirements, not only the names of the methods | Data Product Owner, Taxation Contributions and Licences and Platform | Designed with the Code List page, from the first jurisdiction that configures a valuation process | When a jurisdiction is configured |
-| Whether an inter-governmental agreement lets a foreign government agency be treated as a government agency rather than as a Legal Entity that pays taxes, and what that changes for its holdings | Data Product Owner and Taxation Contributions and Licences | Decided with the first agreement that asks for it; until then the foreign agency is a Legal Entity | When the first such agreement is signed |
+| How the rows of public Legal Entities are made readable without the clearance for personal data: row-level access on the class `public` of the criterion `sector`, or a Gold view of the public holdings | Platform | Decided with the access rules of the platform | Before the first public holding is loaded |
+| Which rules apply to a public Legal Entity, such as tax exemption, immunity and the treatment of a foreign government agency under an inter-governmental agreement | Data Product Owner and Taxation Contributions and Licences | Set as classification rules in the Code List, by sector and jurisdiction | When a jurisdiction is configured |
 | Which jurisdictions allow more than one accepted value of one asset at a time, so that the Gold check does not flag it | Data Product Owner and Taxation Contributions and Licences | Set for each jurisdiction in the Code List | When a jurisdiction is configured |

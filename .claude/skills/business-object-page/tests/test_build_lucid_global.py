@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 85)
+        self.assertEqual(len(self.by_name), 80)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -168,19 +168,15 @@ class GlobalDiagramTests(unittest.TestCase):
                      ("sat_party__sensitivity", "hub_party")):
             self.assertIn(pair, lines)
 
-    def test_immovable_asset_is_inside_the_registries_band_and_government_authority_is_in_the_platform_band(self):
+    def test_immovable_asset_is_inside_the_registries_band(self):
         reg = next(b for b in self.layout.bands if b["title"] == "Registries")
-        plat = next(b for b in self.layout.bands if b["title"] == "Platform")
         inside = lambda band, b: band["x"] <= b.x and b.x + b.w <= band["x"] + band["w"] and band["y"] <= b.y and b.y + b.h <= band["y"] + band["h"]  # noqa: E731
         for name, box in self.layout.boxes.items():
             if name.startswith(("hub_base_parcel", "hub_built_structure", "lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__")):
                 self.assertTrue(inside(reg, box), name)
-        self.assertTrue(inside(plat, self.layout.boxes["hub_government_authority"]))
         lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
         for pair in (("lnk_base_parcel__party_owner", "hub_party"), ("lnk_built_structure__party_owner", "hub_party"),
-                     ("lnk_base_parcel__location", "hub_location"), ("lnk_built_structure__location", "hub_location"),
-                     ("lnk_base_parcel__government_authority", "hub_government_authority"),
-                     ("lnk_built_structure__government_authority", "hub_government_authority")):
+                     ("lnk_base_parcel__location", "hub_location"), ("lnk_built_structure__location", "hub_location")):
             self.assertIn(pair, lines)
 
     def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):
