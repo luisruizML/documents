@@ -176,6 +176,7 @@ NAME_RE = {
 }
 PREFIX = {"Hub": "hub_", "Link": "lnk_", "Non-historized Link": "lnk_", "Satellite": "sat_"}
 ALLOWED_SHORT = {"id", "hk", "bk", "dts", "of", "to", "by", "in", "on", "no", "is"}
+APPROVED_ABBREVIATIONS = frozenset({"rrr"})   # agreed with the author: Right, Restriction, Responsibility (the Legal family)
 DECIMAL_RE = re.compile(r"^decimal\(\d+,\d+\)$")
 FIXED_RE = re.compile(r"^fixed\(\d+\)$")
 # The columns that open or close a validity range carry a sentinel, so a range join needs no test for null.
@@ -325,7 +326,7 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
                 errs.append(f"name: '{name}' link parts must be in alphabetical order: {order}")
         body = name[len(PREFIX[kind]):] if name.startswith(PREFIX[kind]) else name
         for token in (t for t in body.split("_") if t):
-            if len(token) <= 3 and token not in ALLOWED_SHORT and token not in approved:
+            if len(token) <= 3 and token not in ALLOWED_SHORT and token not in approved and token not in APPROVED_ABBREVIATIONS:
                 errs.append(f"name: '{name}' contains '{token}', an abbreviation that is not on the approved list")
         errs += _check_definition(name, row)
         grain = _strip(row.get("Grain", ""))

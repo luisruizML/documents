@@ -11,13 +11,13 @@
 | Scope | Shared |
 | Status | Draft |
 | Version | 0.1 |
-| Last updated | 2026-10-23 |
+| Last updated | 2026-10-24 |
 
 ## Definition
 
 A Swappable Component is a part that can be taken off one mobile asset and fitted to another, such as an engine, a propeller, a gearbox or a rotor, and that the State identifies on its own, usually by its serial number. It is fitted to a base asset for a period and can later be fitted to another one. A part can contain other parts, such as a turbocharger inside an engine.
 
-The holder of a part is a Party (a person, an entity or a public body), and can differ from the holder of the asset it is fitted to, as with a leased engine. A part has its own identifiers, its own proof of registration, its own characteristics and its own value. The asset it is fitted to is on the page [Base Asset](Base_Asset.md), and its make and specification are on the page [Model Catalog](Model_Catalog.md).
+Who holds a part, and every other right, restriction or responsibility over it, is the object [RRR](RRR.md), and it can differ from what binds the asset it is fitted to, as with a leased engine. A part has its own identifiers, its own proof of registration, its own characteristics and its own value. The asset it is fitted to is on the page [Base Asset](Base_Asset.md), and its make and specification are on the page [Model Catalog](Model_Catalog.md).
 
 ## Why it is its own object
 
@@ -35,7 +35,6 @@ The holder of a part is a Party (a person, an entity or a public body), and can 
 | Link | `lnk_base_asset__swappable_component` | The table that records that a part is fitted to an asset. A part can be taken off one asset and fitted to another, and an asset has many parts; the period and the position are recorded in `sat_base_asset__swappable_component__period`. | one row per distinct combination of asset and part | `hub_base_asset`, `hub_swappable_component` |
 | Link | `lnk_model_catalog__swappable_component` | The table that records which model a part is, so that the make and the specification are held once for every part of that model. A part has one model at a time, and a correction is a new row. | one row per distinct combination of model and part | `hub_model_catalog`, `hub_swappable_component` |
 | Link | `lnk_swappable_component__swappable_component_hierarchy` | The table that records that one part lies inside another, such as a turbocharger inside an engine. It says which part contains which; the kind of containment and the period are recorded in `sat_swappable_component__swappable_component_hierarchy__period`. | one row per distinct combination of parent part and member part | `hub_swappable_component` (parent), `hub_swappable_component` (member) |
-| Link | `lnk_party_owner__swappable_component` | The table that records that a party holds a part, which can differ from the holder of the asset it is fitted to, as with a leased engine. The legal nature and the share of each holding are recorded in `sat_party_owner__swappable_component__ownership`. | one row per distinct combination of part and owner party | `hub_swappable_component`, `hub_party` (owner) |
 | Satellite | `sat_swappable_component__description` | The table that records what a part is, such as an engine, a propeller, a gearbox or a rotor, and the day it was built. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_swappable_component__characteristic` | The table that records the characteristics of a part, such as its power, its fuel type or its hours of use, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
 | Satellite | `sat_swappable_component__valuation` | The table that records each valuation of a part: the method, the value, the day it refers to and where it stands in the process of the jurisdiction, from draft to accepted or rejected. A change of status is a new entry, so the earlier ones stay. | one row per parent key and valuation, for each time its values change | — |
@@ -43,18 +42,17 @@ The holder of a part is a Party (a person, an entity or a public body), and can 
 | Satellite | `sat_swappable_component__registration` | The table that records why and when a part was registered (a maker's certificate, a bill of sale, an inspection or a declaration of the owner) and points to the evidence. | one row per parent key, registration basis and identifier type, for each time its values change | — |
 | Satellite | `sat_base_asset__swappable_component__period` | The table that records the period in which a part is fitted to an asset, where on it, and why it left, such as removed or replaced. A change is a new entry, so the earlier ones stay. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_swappable_component__swappable_component_hierarchy__period` | The table that records the kind of containment between a part and the part inside it, such as a sub-assembly or an accessory, the period in which it applies and why it ended. A change is a new entry, so the earlier ones stay. | one row per parent key and hierarchy type, for each time its values change | — |
-| Satellite | `sat_party_owner__swappable_component__ownership` | The table that records each holding by which a party holds a part: the legal nature of the title, the share and the dates it applies. Each type of title is its own entry, and a change is a new entry, so the earlier ones stay. It is personal data. | one row per parent key and title type, for each time its values change | — |
 
 `swappable_component_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `swappable_component_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
-`lnk_base_asset__swappable_component` says that a part is **fitted to** an asset and is defined on this page, for the part is the side that moves; `lnk_swappable_component__swappable_component_hierarchy` says that a part **lies inside** another. `lnk_model_catalog__swappable_component` says which model the part is. `lnk_party_owner__swappable_component` says who holds the part, a person, an entity or a public body, with the shape of the Link of the asset. A part has no Link to Location: where it is is where the asset it is fitted to is based.
+`lnk_base_asset__swappable_component` says that a part is **fitted to** an asset and is defined on this page, for the part is the side that moves; `lnk_swappable_component__swappable_component_hierarchy` says that a part **lies inside** another. `lnk_model_catalog__swappable_component` says which model the part is. `lnk_rrr__swappable_component` says what binds the part, ownership and a lease included; it is defined on the page [RRR](RRR.md). A part has no Link to Location: where it is is where the asset it is fitted to is based.
 
 **Related pages.** The diagrams on this page draw the objects defined elsewhere with a note.
 
 - [Movable Assets](Movable_Assets.md): the family page, with the rules that the three parts share and the decisions that are open for all.
 - [Base Asset](Base_Asset.md): `hub_base_asset`, joined by `lnk_base_asset__swappable_component`, which is defined on this page.
 - [Model Catalog](Model_Catalog.md): `hub_model_catalog`, joined by `lnk_model_catalog__swappable_component`, which is defined on this page.
-- [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): `hub_party`, joined by `lnk_party_owner__swappable_component`.
+- [RRR](RRR.md), with [Legal](Legal.md): the rights, restrictions and responsibilities over a part, ownership included, joined by `lnk_rrr__swappable_component`, which is defined there. Who holds them is a [Party](Party.md), a [Natural Person](Natural_Person.md) or a [Legal Entity](Legal_Entity.md); a government, an agency or a foreign government agency is a Legal Entity classified as public.
 
 ## Fields
 
@@ -97,15 +95,6 @@ A containment between two parts. The **parent** is the part that contains, such 
 | --- | --- | --- | --- | --- | --- | --- |
 | `parent_swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the part that contains |
 | `member_swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the part inside it |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-
-### lnk_party_owner__swappable_component
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the part that is owned |
-| `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 
@@ -213,20 +202,6 @@ The kind of containment, its period and the reason it ended are one fact, so the
 | `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
 
-### sat_party_owner__swappable_component__ownership
-
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_party_owner__swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `title_type_code` |  | `string` | No | Yes | — | The legal nature of the title over the part, a value of the list `movable_title_type`: e.g. `full_ownership`, `bareboat_charter`, `finance_lease`, `co_ownership` |
-| `ownership_share_percent` |  | `decimal(7,4)` | No | Yes | — | The share of the part this holding represents, from 0 to 100: e.g. `100.0000`, `50.0000`, `33.3333` |
-| `effective_date` |  | `date` | No | Yes | `1900-01-01` | First day this holding applies; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | Yes | `9999-12-31` | Last day this holding applies; `9999-12-31` while it still does. When a new row starts for the same key and title type, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a bill of sale or a charter agreement; only the pointer is stored: e.g. `artifact://sale/s-3301`, `artifact://charter/c-55`, `artifact://certificate/c-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
-
 ## Sources and mapping
 
 No endpoints declared yet
@@ -238,7 +213,7 @@ No endpoints declared yet
 | An engine moved from one ship to another | Any jurisdiction | The part keeps its key; the first fitting ends and a second one starts | Two rows of `sat_base_asset__swappable_component__period`, the first with `end_reason_code` `removed` |
 | An engine fitted to two assets in turn with a gap in between | Any jurisdiction | There is no asset for the days in between, and no row | The `end_date` of one row and the `effective_date` of the next |
 | A part inside another, such as a turbocharger inside an engine | Any jurisdiction | The containment is a Link of its own, with its kind and period | `lnk_swappable_component__swappable_component_hierarchy` with `hierarchy_type_code` `sub_assembly` |
-| A leased engine on a ship that belongs to another company | Jurisdictions that record the holders of parts | Each holder has its own holding, through its own Link | `lnk_party_owner__swappable_component` and `lnk_base_asset__party_owner` with different parties |
+| A leased engine on a ship that belongs to another company | Jurisdictions that record the holders of parts | Each holder has its own bond, an RRR | `lnk_rrr__swappable_component` and `lnk_base_asset__rrr` with different parties, on [RRR](RRR.md) |
 | A part with no serial number | Any jurisdiction | The platform assigns the key, and any local number is an identifier of its own | `key_type_code` `platform_assigned`; a `local_part_number` row in `sat_swappable_component__identification` |
 | The value of an asset and the value of its parts | Jurisdictions that value parts | Each is valued on its own and the values are not added in the Vault | Rows of both valuation Satellites; the total is a Gold value |
 
@@ -266,11 +241,7 @@ Illustrative data. The engine `ENG-77` is fitted to the ship `9876543` described
 | rated_power | (empty) | 7200 | kilowatt |
 | fuel_type | marine_diesel | (empty) | (empty) |
 
-`sat_party_owner__swappable_component__ownership`
-
-| **holder** | **title_type_code** | **ownership_share_percent** | **effective_date** | **end_date** |
-| --- | --- | --- | --- | --- |
-| a legal entity (a leasing company) | finance_lease | 100.0000 | 2024-08-10 | 9999-12-31 |
+The engine is held by a leasing company from 2024-08-10: an RRR of the class right and the type `finance_lease`, joined to the engine by `lnk_rrr__swappable_component` and to the company by `lnk_party__rrr` (see [RRR](RRR.md)).
 
 ## Modeling considerations
 
@@ -278,8 +249,8 @@ Illustrative data. The engine `ENG-77` is fitted to the ship `9876543` described
 - **Containment has no fixed depth.** `lnk_swappable_component__swappable_component_hierarchy` joins the Hub to itself, as for structures. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List. The level of a part and its path to the asset are computed in Gold (R13). A part has at most one open parent for each kind of containment.
 - **The characteristics are an open list.** The power, the fuel type, the hours of use and the like are rows of `sat_swappable_component__characteristic`, not columns (Principles, "Traits as rows").
 - **A part has no place of its own.** Where a part is, is where the asset it is fitted to is based. A part that is not fitted to any asset has no place in this model.
-- **The holders of parts depend on the configuration.** The Link to Party exists for every part. A jurisdiction that records only the holder of the asset leaves it empty; the worst case, where every part has its own holder, needs no other table.
-- **Shared rules.** Valuation and its statuses, identification and registration, ownership, validity ranges and codes follow the rules written on the page [Movable Assets](Movable_Assets.md). What is only the part's: the definitive value is the Gold view `cur_swappable_component__valuation_definitive`; the legal nature of a title is the list `movable_title_type`.
+- **The holders of parts depend on the configuration.** The Link to the RRR exists for every part. A jurisdiction that records only the bonds of the asset leaves it empty; the worst case, where every part has its own holder, needs no other table.
+- **Shared rules.** Valuation and its statuses, identification and registration, validity ranges and codes follow the rules written on the page [Movable Assets](Movable_Assets.md). What is only the part's: the definitive value is the Gold view `cur_swappable_component__valuation_definitive`; who holds the part and what binds it are the Legal objects.
 
 ## Diagram
 
@@ -287,7 +258,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 4 Links and 8 Satellites, with the Hubs of the asset and the model and the Hub of Party drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 3 Links and 7 Satellites, with the Hubs of the asset and the model, and the Hub, Link and Satellites of the RRR, drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Swappable Component cluster, simplified](images/Diagrams_Swappable_Component_Simplified.png)
 
@@ -301,7 +272,7 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| The decisions shared by the three parts of the family: Legal Instrument for mortgages and liens, the valuation process, the depth of the containment of parts and the holders of parts | Data Architecture Engineer and Data Product Owner | Written once, on the page [Movable Assets](Movable_Assets.md) | See that page |
+| The decisions shared by the three parts of the family: the valuation process, the depth of the containment of parts and the holders of parts | Data Architecture Engineer and Data Product Owner | Written once, on the page [Movable Assets](Movable_Assets.md) | See that page |
 | Which characteristics are required for each kind of part, and their units | Data Product Owner | Set as values of the Code List list `component_characteristic` | When a jurisdiction is configured |
 | Which source of record supplies `swappable_component_bk` in each jurisdiction, and who assigns the key where none exists | Platform configuration | Set in the Nexus configuration for each jurisdiction | When a jurisdiction is configured |
-| The kinds, classes and positions of assets and parts, and the kinds of holding of movable property | Data Product Owner | Set as values of the Code List lists `component_kind`, `component_position`, `component_hierarchy_type` and `movable_title_type` | When a jurisdiction is configured |
+| The kinds, classes and positions of assets and parts | Data Product Owner | Set as values of the Code List lists `component_kind`, `component_position` and `component_hierarchy_type`; the kinds of bond are on [RRR](RRR.md) | When a jurisdiction is configured |

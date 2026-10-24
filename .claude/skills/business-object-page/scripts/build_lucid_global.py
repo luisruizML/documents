@@ -22,7 +22,7 @@ import platform_usage as pu  # noqa: E402
 
 REPO = HERE.parents[3]
 PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Base_Parcel", "Built_Structure", "Base_Asset", "Swappable_Component",
-         "Model_Catalog", "Code_List", "Load_Configuration"]
+         "Model_Catalog", "Entitlement", "Credential", "RRR", "Code_List", "Load_Configuration"]
 
 # ---------------------------------------------------------------- style (from the Lucid proposal and the drawio files)
 # Same hues as the drawio files. The background is lighter; the border is the drawio fill.
@@ -276,22 +276,20 @@ def _frac(box: Box, y: float) -> float:
     return min(0.97, max(0.03, (y - box.y) / box.h))
 
 
-def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], cols: dict[str, float], y0: float) -> float:
-    """The Immovable Asset cluster, inside the Registries band, below everything else. The parcel Hub and the structure Hub
-    stand in the middle column, the Link between them in between. Their Satellites are on the left. On the right, first the two
-    ownership Links by a Party (left-aligned, their lines go up to hub_party along the corridor east of the chain), then, right-aligned,
-    the place Links (their lines go up to hub_location), each Link with its Satellite under it. A Hub is as tall as the rows it
-    serves, so the lines to it run level. A public body holds through the Party Link, as a Legal Entity.
-    Returns the bottom edge."""
+def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], cols: dict[str, float], y0: float, x_min: float) -> tuple[float, float]:
+    """The Immovable and Movable Asset clusters and the Legal cluster, inside the Registries band, below everything else.
+    The parcel, structure, asset, model and part Hubs stand in the middle column, the Links between them in between. Their Satellites
+    are on the left. On the right of each Hub, from the top: its Link to the RRR and its Link to the Entitlement (two columns, far
+    east of the Location cluster, each Link with its Satellite under it), and at the bottom the place Link (its line goes up to
+    hub_location). The Legal Hubs stand in the east: the credential and the entitlement at the top, the RRR as tall as the Hubs it
+    serves, so each Link to it runs level; the Links to a party sit at the top of the first column and their lines go up to hub_party
+    along the corridor east of the chain.
+    Returns the bottom edge and the right edge."""
     B = L.boxes
     xL, wL, xM, wM, xR = cols["xL"], cols["wL"], cols["xM"], cols["wM"], cols["xR"]
     P, S = "hub_base_parcel", "hub_built_structure"
-    pairs = {"po": ("lnk_base_parcel__party_owner", "sat_base_parcel__party_owner__ownership"),
-             "so": ("lnk_built_structure__party_owner", "sat_built_structure__party_owner__ownership"),
-             "pl": ("lnk_base_parcel__location", "sat_base_parcel__location__usage"),
+    pairs = {"pl": ("lnk_base_parcel__location", "sat_base_parcel__location__usage"),
              "sl": ("lnk_built_structure__location", "sat_built_structure__location__usage"),
-             "ao": ("lnk_base_asset__party_owner", "sat_base_asset__party_owner__ownership"),
-             "co": ("lnk_party_owner__swappable_component", "sat_party_owner__swappable_component__ownership"),
              "al": ("lnk_base_asset__location", "sat_base_asset__location__usage"),
              "fit": ("lnk_base_asset__swappable_component", "sat_base_asset__swappable_component__period")}
     chain_link, chain_sat = "lnk_base_parcel__built_structure", "sat_base_parcel__built_structure__period"
@@ -299,6 +297,22 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     sat_p, sat_s = sats_of(P, nodes, edges), sats_of(S, nodes, edges)
     sat_p = [n for n in sat_p if n not in (chain_sat,)]
     sat_s = [n for n in sat_s if n not in (hier_sat,)]
+
+    # ---- the Legal cluster: names
+    RRR, ENT, CRED = "hub_rrr", "hub_entitlement", "hub_credential"
+    cred_link, cred_sat = "lnk_credential__entitlement", "sat_credential__entitlement__period"
+    pr_link, pr_sat = "lnk_party__rrr", "sat_party__rrr__participation"
+    pe_link, pe_sat = "lnk_entitlement__party_holder", "sat_entitlement__party_holder__period"
+    rh_link, rh_sat = "lnk_rrr__rrr_hierarchy", "sat_rrr__rrr_hierarchy__derivation"
+    rrr_sub = {"P": ("lnk_base_parcel__rrr", "sat_base_parcel__rrr__period"),
+               "S": ("lnk_built_structure__rrr", "sat_built_structure__rrr__period"),
+               "A": ("lnk_base_asset__rrr", "sat_base_asset__rrr__period"),
+               "C": ("lnk_rrr__swappable_component", "sat_rrr__swappable_component__period")}
+    ent_sub = {"P": ("lnk_base_parcel__entitlement", "sat_base_parcel__entitlement__period"),
+               "S": ("lnk_built_structure__entitlement", "sat_built_structure__entitlement__period"),
+               "A": ("lnk_base_asset__entitlement", "sat_base_asset__entitlement__period")}
+    sat_ent, sat_rrr, sat_cred = sats_of(ENT, nodes, edges), sats_of(RRR, nodes, edges), sats_of(CRED, nodes, edges)
+    sat_rrr = [n for n in sat_rrr if n != rh_sat]
 
     def place(name, x, y):
         B[name].x, B[name].y = x, y
@@ -311,44 +325,84 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
         fl, fs = _pair_x(B[link], B[sat])
         _line(L, sat, link, (fs, 0.0), (fl, 1.0))
 
-    # ownership by a Party, at the top, left-aligned at xR, the Satellite under its Link
+    def pair_h(pair):
+        return B[pair[0]].h + 110 + B[pair[1]].h
+
+    def legal_h(key):
+        """The height the Legal pairs of a Hub need on its right: the RRR pair, the entitlement pair, margins."""
+        h = 60 + pair_h(rrr_sub[key])
+        if key in ent_sub:
+            h += 170 + pair_h(ent_sub[key])
+        return h + 170
+
+    # ---- the columns of the Legal cluster, east of the Location cluster
+    top_names = [pr_link, pr_sat, pe_link, pe_sat] + [n for k in pairs for n in pairs[k]]
+    xr2 = xR + max(B[n].w for n in top_names)
+    xa = max(xr2 + GAP_X, x_min)
+    wa = max(B[n].w for k in rrr_sub for n in rrr_sub[k])
+    xb = xa + wa + GAP_X
+    wb = max(B[n].w for k in ent_sub for n in ent_sub[k])
+    wh = max(B[n].w for n in (RRR, ENT, CRED, cred_link))
+    xh = xb + wb + 2 * GAP_X
+    xs = xh + wh + GAP_X
+    ws = max(B[n].w for n in sat_ent + sat_rrr + sat_cred + [cred_sat, rh_link, rh_sat])
+
+    # ---- the top zone: the credential, its Link and the entitlement, in one column, their Satellites on the right
+    hubR, hubE, hubK = B[RRR], B[ENT], B[CRED]
     y = y0
-    for key in ("po", "so", "ao", "co"):
-        link, sat = pairs[key]
-        y = place(link, xR, y) + 110
-        y = place(sat, xR, y) + 170
-    y_own_end = y - 170
-    xr2 = max(B[n].x + B[n].w for k in ("po", "so", "ao", "co") for n in pairs[k])
-    # the groups of the two Hubs
-    def right_rows(keys, top, height):
-        rows_h = sum(B[pairs[k][0]].h + 110 + B[pairs[k][1]].h for k in keys) + 130 * (len(keys) - 1)
-        yy = top + (height - rows_h) / 2
+    hubK.h = max(hubK.h, stack_h(sat_cred, GAP_ROW))
+    hubK.x, hubK.y = xh + (wh - hubK.w) / 2, y
+    yy = y + (hubK.h - stack_h(sat_cred, GAP_ROW)) / 2
+    for n in sat_cred:
+        yy = place(n, xs, yy) + GAP_ROW
+    ck, cs = B[cred_link], B[cred_sat]
+    ck.x, ck.y = xh + (wh - ck.w) / 2, hubK.y + hubK.h + 110
+    cs.x, cs.y = xs, ck.y + (ck.h - cs.h) / 2
+    hubE.h = max(hubE.h, stack_h(sat_ent, GAP_ROW))
+    hubE.x, hubE.y = xh + (wh - hubE.w) / 2, ck.y + ck.h + 110
+    yy = hubE.y + (hubE.h - stack_h(sat_ent, GAP_ROW)) / 2
+    for n in sat_ent:
+        yy = place(n, xs, yy) + GAP_ROW
+    # the Links to a party, at the top of the first column, left-aligned, the Satellite under its Link
+    pe_l, pe_s, pr_l, pr_s = B[pe_link], B[pe_sat], B[pr_link], B[pr_sat]
+    pe_l.x, pe_l.y = xR, hubE.y + 40
+    pe_s.x, pe_s.y = xR, pe_l.y + pe_l.h + 110
+    hubR.y = hubE.y + hubE.h + 160
+    pr_l.x, pr_l.y = xR, max(pe_s.y + pe_s.h + 170, hubR.y + 40)
+    pr_s.x, pr_s.y = xR, pr_l.y + pr_l.h + 110
+    top_zone_bottom = max(pr_s.y + pr_s.h, hubE.y + hubE.h, hubR.y + stack_h(sat_rrr, GAP_ROW))
+
+    def right_h(keys):
+        return sum(B[pairs[k][0]].h + 110 + B[pairs[k][1]].h for k in keys) + 130 * (len(keys) - 1)
+
+    def right_rows(keys, top, height, low=False):
+        rows_h = right_h(keys)
+        yy = top + height - rows_h - 60 if low else top + (height - rows_h) / 2
         for k in keys:
             link, sat = pairs[k]
             left = xr2 - max(B[link].w, B[sat].w) if k == "fit" else None   # its lines leave to the left: Link and Satellite share the left edge
             yy = place(link, left if left is not None else xr2 - B[link].w, yy) + 110
             yy = place(sat, left if left is not None else xr2 - B[sat].w, yy) + 130
-    right_h = lambda keys: sum(B[pairs[k][0]].h + 110 + B[pairs[k][1]].h for k in keys) + 130 * (len(keys) - 1)  # noqa: E731
 
     # parcel
     hubp, hubs = B[P], B[S]
-    hp = max(stack_h(sat_p, GAP_ROW), right_h(("pl",)))
-    top_p = y_own_end + 260
+    hp = max(stack_h(sat_p, GAP_ROW), right_h(("pl",)) + legal_h("P"))
+    top_p = top_zone_bottom + 260
     hubp.h = hp
     hubp.x, hubp.y = xM + wM - hubp.w, top_p
     yy = top_p + (hp - stack_h(sat_p, GAP_ROW)) / 2
     for n in sat_p:
         yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
-    right_rows(("pl",), top_p, hp)
+    right_rows(("pl",), top_p, hp, low=True)
     # the Link between the two Hubs, its Satellite on its left
-    cl, cs = B[chain_link], B[chain_sat]
+    cl, cs_ = B[chain_link], B[chain_sat]
     cl.x, cl.y = xM + wM - cl.w, top_p + hp + 110
-    cs.x, cs.y = xL + wL - cs.w, cl.y + (cl.h - cs.h) / 2
+    cs_.x, cs_.y = xL + wL - cs_.w, cl.y + (cl.h - cs_.h) / 2
     # structure
     hl, hs_ = B[hier], B[hier_sat]
     left_s = stack_h(sat_s, GAP_ROW) + 110 + hl.h + 110 + hs_.h
     top_s = cl.y + cl.h + 110
-    hh = max(left_s, right_h(("sl",)))
+    hh = max(left_s, right_h(("sl",)) + legal_h("S"))
     hubs.h = hh
     hubs.x, hubs.y = xM + wM - hubs.w, top_s
     yy = top_s + (hh - left_s) / 2
@@ -357,11 +411,10 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     hl_top = yy - GAP_ROW + 110
     place(hier, xL + wL - hl.w, hl_top)
     place(hier_sat, xL + wL - hs_.w, hl_top + hl.h + 110)
-    right_rows(("sl",), top_s, hh)
+    right_rows(("sl",), top_s, hh, low=True)
 
     # ---- the Movable Assets cluster, below the Immovable one: asset, model and part in the middle column, the two Links between
-    # them under one another; the Links to Party are at the top with the other two, the Link that fits a part to an asset
-    # stands beside the model, on the right.
+    # them under one another; the Link that fits a part to an asset stands beside the model, on the right.
     A, M, C = "hub_base_asset", "hub_model_catalog", "hub_swappable_component"
     link_am, link_mc = "lnk_base_asset__model_catalog", "lnk_model_catalog__swappable_component"
     chier, chier_sat = "lnk_swappable_component__swappable_component_hierarchy", "sat_swappable_component__swappable_component_hierarchy__period"
@@ -371,13 +424,13 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     am, mc, hc_, hcs = B[link_am], B[link_mc], B[chier], B[chier_sat]
     bottom_s = max(hubs.y + hubs.h, hs_.y + hs_.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in ("pl", "sl")))
     top_a = bottom_s + 260
-    ha = max(stack_h(sat_a, GAP_ROW), right_h(("al",)))
+    ha = max(stack_h(sat_a, GAP_ROW), right_h(("al",)) + legal_h("A"))
     hubA.h = ha
     hubA.x, hubA.y = xM + wM - hubA.w, top_a
     yy = top_a + (ha - stack_h(sat_a, GAP_ROW)) / 2
     for n in sat_a:
         yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
-    right_rows(("al",), top_a, ha)
+    right_rows(("al",), top_a, ha, low=True)
     am.x, am.y = xM + wM - am.w, top_a + ha + 110
     top_m = am.y + am.h + 110
     hm = max(stack_h(sat_m, GAP_ROW), right_h(("fit",)))
@@ -390,7 +443,7 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     mc.x, mc.y = xM + wM - mc.w, top_m + hm + 110
     top_c = mc.y + mc.h + 110
     left_c = stack_h(sat_c, GAP_ROW) + 110 + hc_.h + 110 + hcs.h
-    hubC.h = left_c
+    hubC.h = max(left_c, legal_h("C"))
     hubC.x, hubC.y = xM + wM - hubC.w, top_c
     yy = top_c
     for n in sat_c:
@@ -399,6 +452,29 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     place(chier, xL + wL - hc_.w, hc_top)
     place(chier_sat, xL + wL - hcs.w, hc_top + hc_.h + 110)
 
+    # ---- the Legal pairs on the right of each Hub, and the RRR Hub as tall as the rows it serves
+    heads = (("P", hubp), ("S", hubs), ("A", hubA), ("C", hubC))
+    for key, hub in heads:
+        y = hub.y + 60
+        lk, st = rrr_sub[key]
+        place(lk, xa, y)
+        place(st, xa, y + B[lk].h + 110)
+        y = y + pair_h(rrr_sub[key]) + 170
+        if key in ent_sub:
+            lk, st = ent_sub[key]
+            place(lk, xb + wb - B[lk].w, y)      # right-aligned: the lines up to hub_entitlement leave from one edge and clear the Satellites above
+            place(st, xb + wb - B[st].w, y + B[lk].h + 110)
+    hubR.h = hubC.y + hubC.h - hubR.y
+    hubR.x = xh + (wh - hubR.w) / 2
+    rl_h, rs_h = B[rh_link], B[rh_sat]
+    sats_total = stack_h(sat_rrr, GAP_ROW) + 110 + rl_h.h + 110 + rs_h.h
+    yy = hubR.y + (hubR.h - sats_total) / 2
+    for n in sat_rrr:
+        yy = place(n, xs, yy) + GAP_ROW
+    hr_top = yy - GAP_ROW + 110
+    place(rh_link, xs, hr_top)
+    place(rh_sat, xs, hr_top + rl_h.h + 110)
+
     # ---- lines
     for hub, sats in ((hubp, sat_p), (hubs, sat_s)):
         for n in sats:
@@ -406,7 +482,7 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     _line(L, chain_sat, chain_link, (1.0, 0.5), (0.0, 0.5))
     _line(L, chain_link, P, (0.5, 0.0), (0.5, 1.0))
     _line(L, chain_link, S, (0.5, 1.0), (0.5, 0.0))
-    _line(L, hier_sat, hier, *( (( _pair_x(hl, hs_)[1], 0.0), (_pair_x(hl, hs_)[0], 1.0)) ))
+    _line(L, hier_sat, hier, *(((_pair_x(hl, hs_)[1], 0.0), (_pair_x(hl, hs_)[0], 1.0))))
     _line(L, hier, S, (1.0, 0.3), (0.0, _frac(hubs, hl.y + 0.3 * hl.h)))
     _line(L, hier, S, (1.0, 0.7), (0.0, _frac(hubs, hl.y + 0.7 * hl.h)))
     for hub, sats in ((hubA, sat_a), (hubM, sat_m), (hubC, sat_c)):
@@ -422,27 +498,46 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     _line(L, chier, C, (1.0, 0.7), (0.0, _frac(hubC, hc_.y + 0.7 * hc_.h)))
     for key in pairs:
         pair_line(*pairs[key])
-    # the Links to the Hub of their own kind: level lines along the rows, the ownership Links from above
+    # the place Links go to the Hub of their own kind along the row, and up to hub_location
     for key, hub in (("pl", hubp), ("sl", hubs), ("al", hubA)):
         link = B[pairs[key][0]]
         _line(L, link.name, hub.name, (0.0, 0.5), (1.0, _frac(hub, link.cy)))
-    _line(L, pairs["po"][0], P, (0.0, 0.3), (1.0, 0.03))
-    _line(L, pairs["so"][0], S, (0.0, 0.3), (1.0, 0.03))
-    # the Links to the Hubs defined on other pages
-    _line(L, pairs["po"][0], "hub_party", (0.0, 0.6), (1.0, 0.925))
-    _line(L, pairs["so"][0], "hub_party", (0.0, 0.6), (1.0, 0.945))
-    _line(L, pairs["ao"][0], A, (0.0, 0.3), (1.0, 0.03))
-    _line(L, pairs["co"][0], C, (0.0, 0.3), (1.0, 0.03))
-    _line(L, pairs["ao"][0], "hub_party", (0.0, 0.6), (1.0, 0.965))
-    _line(L, pairs["co"][0], "hub_party", (0.0, 0.6), (1.0, 0.985))
     _line(L, pairs["al"][0], "hub_location", (1.0, 0.5), (0.5, 1.0))
     _line(L, pairs["fit"][0], A, (0.0, 0.35), (1.0, 0.97))
     _line(L, pairs["fit"][0], C, (0.0, 0.65), (1.0, 0.03))
-    _line(L, link_am, M, (0.5, 1.0), (0.5, 0.0)) if False else None
     _line(L, pairs["pl"][0], "hub_location", (1.0, 0.5), (0.35, 1.0))
     _line(L, pairs["sl"][0], "hub_location", (1.0, 0.5), (0.65, 1.0))
-    bottom = max(hubC.y + hubC.h, hcs.y + hcs.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in pairs))
-    return bottom
+    # the Legal cluster: Satellites of the Hubs, the Link of the credential, the Links to a party, the Links to the things
+    for hub, sats in ((hubK, sat_cred), (hubE, sat_ent), (hubR, sat_rrr)):
+        for n in sats:
+            _line(L, n, hub.name, (0.0, 0.5), (1.0, _frac(hub, B[n].cy)))
+    _line(L, cred_sat, cred_link, (0.0, 0.5), (1.0, 0.5))
+    _line(L, cred_link, CRED, (0.5, 0.0), (0.5, 1.0))
+    _line(L, cred_link, ENT, (0.5, 1.0), (0.5, 0.0))
+    _line(L, rh_sat, rh_link, *(((_pair_x(rl_h, rs_h)[1], 0.0), (_pair_x(rl_h, rs_h)[0], 1.0))))
+    _line(L, rh_link, RRR, (0.0, 0.3), (1.0, _frac(hubR, rl_h.y + 0.3 * rl_h.h)))
+    _line(L, rh_link, RRR, (0.0, 0.7), (1.0, _frac(hubR, rl_h.y + 0.7 * rl_h.h)))
+    pair_line(pe_link, pe_sat)
+    pair_line(pr_link, pr_sat)
+    _line(L, pe_link, "hub_party", (0.0, 0.6), (1.0, 0.945))
+    _line(L, pr_link, "hub_party", (0.0, 0.6), (1.0, 0.965))
+    _line(L, pe_link, ENT, (1.0, 0.5), (0.0, _frac(hubE, B[pe_link].cy)))
+    _line(L, pr_link, RRR, (1.0, 0.5), (0.0, _frac(hubR, B[pr_link].cy)))
+    for key, hub in heads:
+        lk, st = rrr_sub[key]
+        pair_line(lk, st)
+        link = B[lk]
+        _line(L, lk, hub.name, (0.0, 0.5), (1.0, _frac(hub, link.cy)))
+        _line(L, lk, RRR, (1.0, 0.5), (0.0, _frac(hubR, link.cy)))
+    for (key, hub), frac in zip(heads, (0.15, 0.4, 0.65)):
+        lk, st = ent_sub[key]
+        pair_line(lk, st)
+        link = B[lk]
+        _line(L, lk, hub.name, (0.0, 0.5), (1.0, _frac(hub, link.cy)))
+        _line(L, lk, ENT, (1.0, 0.5), (0.0, frac))
+    bottom = max(hubC.y + hubC.h, hcs.y + hcs.h, hubR.y + hubR.h, max(B[pairs[k][1]].y + B[pairs[k][1]].h for k in pairs))
+    right = xs + ws
+    return bottom, right
 
 
 def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
@@ -594,9 +689,9 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
     base_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h, loc_bottom)
-    imm_bottom = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, base_bottom + 260)
+    imm_bottom, imm_right = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, base_bottom + 260, loc_right + GAP_X)
     reg_bottom = max(base_bottom, imm_bottom) + BAND_PAD
-    reg_w = max(reg_w, loc_right + BAND_PAD)
+    reg_w = max(reg_w, loc_right + BAND_PAD, imm_right + BAND_PAD)
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 
     # ---- Platform band, to the right of the Registries band

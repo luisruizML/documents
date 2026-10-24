@@ -69,7 +69,7 @@ class PlanTests(unittest.TestCase):
 
     def test_the_real_pages_file_names_all_the_pages(self):
         pages = sync.load_pages()["pages"]
-        self.assertEqual(sorted(pages), ["Base_Asset", "Base_Parcel", "Built_Structure", "Code_List", "Immovable_Assets", "Legal_Entity", "Load_Configuration", "Location", "Model_Catalog", "Movable_Assets", "Natural_Person", "Party", "Swappable_Component"])
+        self.assertEqual(sorted(pages), ["Base_Asset", "Base_Parcel", "Built_Structure", "Code_List", "Credential", "Entitlement", "Immovable_Assets", "Legal", "Legal_Entity", "Load_Configuration", "Location", "Model_Catalog", "Movable_Assets", "Natural_Person", "Party", "RRR", "Swappable_Component"])
 
     def test_every_real_image_exists(self):
         steps = sync.plan(sync.load_pages()["pages"], {})

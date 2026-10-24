@@ -74,8 +74,9 @@ class GraphDiagramTests(unittest.TestCase):
 
     def test_no_structural_crossings_and_no_overlaps(self):
         # the Hubs and Links of the Immovable Asset cluster join Party and Location in a way that the force-directed layout cannot
-        # always draw flat (the layout keeps the smallest of the pictures within 2 crossings of the best; today 4); the few crossings left are drawn with a line jump
-        self.assertLessEqual(self.layout.crossings, 6)
+        # always draw flat, and the Legal cluster joins each of four kinds of asset and Party to two Hubs (the layout keeps the smallest of the
+        # pictures within 2 crossings of the best; today 9); the crossings left are drawn with a line jump
+        self.assertLessEqual(self.layout.crossings, 12)
         self.assertEqual(self.layout.overlaps, 0)
 
     def test_attachment_points_lie_inside_the_box(self):

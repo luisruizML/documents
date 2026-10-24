@@ -17,6 +17,10 @@ An object shared by several domains is one page, listed once with every domain i
 | Base Asset | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Base Asset](Base_Asset.md) |
 | Swappable Component | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Swappable Component](Swappable_Component.md) |
 | Model Catalog | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Model Catalog](Model_Catalog.md) |
+| Legal | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Legal](Legal.md) |
+| Entitlement | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Entitlement](Entitlement.md) |
+| Credential | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Credential](Credential.md) |
+| RRR | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [RRR](RRR.md) |
 
 ### Platform objects
 
@@ -37,7 +41,7 @@ Hubs are circles, Links are hexagons and Satellites are small squares, each with
 
 ![Simplified graph](images/Lucid_Simplified_Graph.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/764bbd00-fe69-4061-8d17-4249660c3624/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/9024eae6-8170-4f8c-abe2-509465311728/view)
 
 ### Simplified version
 
@@ -45,7 +49,7 @@ Every object as a box with its name and its grain: what one row of the table sta
 
 ![Simplified version](images/Lucid_Simplified_Version.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/4ca7a389-f932-49ff-8d30-64ecf58eb555/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/3b3e0195-4c2f-4ca5-b0ee-19f8374a9c95/view)
 
 ### Full version
 
@@ -53,7 +57,7 @@ Every object with its definition written in its box. Registries and Platform are
 
 ![Full version](images/Lucid_Full_Model.png)
 
-[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/75d0c576-8f34-4e96-81e8-5fc5c189996f/view)
+[Open the interactive diagram in Lucidchart](https://lucid.app/lucidchart/6a2ee3c8-02e2-4377-9875-eab127398726/view)
 
 | **Color** | **Object** |
 | --- | --- |

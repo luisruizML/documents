@@ -27,7 +27,20 @@ class FamilyPageTests(unittest.TestCase):
         self.assertEqual(vp.validate(text, base_dir=PAGES), [])
         self.assertEqual(sorted(set(vp.family_members(vp.parse_page(text)))), ["Base_Asset", "Model_Catalog", "Swappable_Component"])
         merged = bd.load_model(bd.merge_family(text, PAGES), ["hub_location", "hub_party"])
-        self.assertEqual(len([n for n in merged.nodes if not n.external]), 29)
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 24)
+
+    def test_the_legal_family_validates_and_merges_its_three_parts(self):
+        text = self.text("Legal")
+        self.assertEqual(vp.validate(text, base_dir=PAGES), [])
+        self.assertEqual(sorted(set(vp.family_members(vp.parse_page(text)))), ["Credential", "Entitlement", "RRR"])
+        merged = bd.load_model(bd.merge_family(text, PAGES), ["hub_party"])
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 36)
+
+    def test_ownership_is_an_rrr_and_not_a_link_of_the_asset_pages(self):
+        for name in ("Base_Parcel", "Built_Structure", "Base_Asset", "Swappable_Component"):
+            text = self.text(name)
+            self.assertNotIn("__party_owner", text, name)
+            self.assertNotIn("title_type_code", text, name)
 
     def test_an_ordinary_page_is_not_a_family(self):
         self.assertIsNone(vp.family_members(vp.parse_page(self.text("Party"))))
@@ -42,7 +55,7 @@ class FamilyPageTests(unittest.TestCase):
         merged = bd.load_model(bd.merge_family(self.text(), PAGES), ["hub_location", "hub_party"])
         names = [n.name for n in merged.nodes]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len([n for n in merged.nodes if not n.external]), 25)
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 21)
 
     def test_an_ordinary_page_is_merged_unchanged(self):
         text = self.text("Party")

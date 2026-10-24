@@ -40,9 +40,9 @@ class IndexTests(unittest.TestCase):
         self.assertIn("(images/Diagrams_Natural_Person_Full.png)", self.text)
 
     def test_index_shows_graph_simplified_version_and_full_version_in_that_order_each_under_a_title(self):
-        order = [("### Graph", "images/Lucid_Simplified_Graph.png", "764bbd00-fe69-4061-8d17-4249660c3624"),
-                 ("### Simplified version", "images/Lucid_Simplified_Version.png", "4ca7a389-f932-49ff-8d30-64ecf58eb555"),
-                 ("### Full version", "images/Lucid_Full_Model.png", "75d0c576-8f34-4e96-81e8-5fc5c189996f")]
+        order = [("### Graph", "images/Lucid_Simplified_Graph.png", "9024eae6-8170-4f8c-abe2-509465311728"),
+                 ("### Simplified version", "images/Lucid_Simplified_Version.png", "3b3e0195-4c2f-4ca5-b0ee-19f8374a9c95"),
+                 ("### Full version", "images/Lucid_Full_Model.png", "6a2ee3c8-02e2-4377-9875-eab127398726")]
         at = [[self.text.index(part) for part in step] for step in order]
         for position in at:
             self.assertEqual(position, sorted(position))
@@ -50,7 +50,7 @@ class IndexTests(unittest.TestCase):
 
     def test_index_shows_the_global_lucid_model(self):
         self.assertIn("## The full picture", self.text)
-        self.assertIn("lucid.app/lucidchart/75d0c576-8f34-4e96-81e8-5fc5c189996f", self.text)
+        self.assertIn("lucid.app/lucidchart/6a2ee3c8-02e2-4377-9875-eab127398726", self.text)
         self.assertNotIn("Global_Model.png", self.text)
 
     def test_every_table_header_is_bold(self):

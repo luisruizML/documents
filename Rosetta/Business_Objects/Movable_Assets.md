@@ -11,7 +11,7 @@
 | Scope | Shared |
 | Status | Draft |
 | Version | 0.1 |
-| Last updated | 2026-10-23 |
+| Last updated | 2026-10-24 |
 
 ## Definition
 
@@ -31,8 +31,8 @@ No Vault objects of its own: the objects of this family are defined once, on the
 
 | **Page** | **Objects** | **What it holds** |
 | --- | --- | --- |
-| [Base Asset](Base_Asset.md) | 13: the Hub `hub_base_asset`, 3 Links and 9 Satellites | The hull, fuselage or frame: its description, characteristics, valuations, identification and registration, its flag and its restrictions, its Links to Location (port of registry or base), and to Party (holder, which includes public bodies), and the Link to its model |
-| [Swappable Component](Swappable_Component.md) | 13: the Hub `hub_swappable_component`, 4 Links and 8 Satellites | The engine or other part: its description, characteristics, valuations, identification and registration, its Link to Party, the containment of parts inside parts, the Link to its model and the Link that fits it to an asset |
+| [Base Asset](Base_Asset.md) | 10: the Hub `hub_base_asset`, 2 Links and 7 Satellites | The hull, fuselage or frame: its description, characteristics, valuations, identification and registration, its flag, its Link to Location (port of registry or base) and the Link to its model |
+| [Swappable Component](Swappable_Component.md) | 11: the Hub `hub_swappable_component`, 3 Links and 7 Satellites | The engine or other part: its description, characteristics, valuations, identification and registration, the containment of parts inside parts, the Link to its model and the Link that fits it to an asset |
 | [Model Catalog](Model_Catalog.md) | 3: the Hub `hub_model_catalog` and 2 Satellites | The make and model, held once: its kind, maker and name, and its specification as characteristics |
 
 `lnk_base_asset__swappable_component` and its Satellite `sat_base_asset__swappable_component__period` say that a part is **fitted to** an asset, and are defined on [Swappable Component](Swappable_Component.md), the side that moves. `lnk_base_asset__model_catalog` says which model an asset is, and is defined on [Base Asset](Base_Asset.md). `lnk_model_catalog__swappable_component` says which model a part is, and is defined on [Swappable Component](Swappable_Component.md). Every Link is defined on the page of the side that depends on the other, and drawn on both.
@@ -40,8 +40,7 @@ No Vault objects of its own: the objects of this family are defined once, on the
 **Related pages.** Each part has its own Links to other objects, listed on its page:
 
 - [Location](Location.md): where an asset is based. A part has no place of its own.
-- [Party](Party.md), with [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md): who holds an asset or a part.
-- [Legal Entity](Legal_Entity.md): a government, a government agency or a foreign government agency that holds an asset is a Legal Entity classified as public.
+- [Legal](Legal.md), with [RRR](RRR.md), [Entitlement](Entitlement.md) and [Credential](Credential.md): who holds an asset or a part, what binds it (a mortgage, an embargo, a lease) and the licences that apply to it. A government, a government agency or a foreign government agency that holds an asset is a [Legal Entity](Legal_Entity.md) classified as public, and takes part in an RRR like any Party.
 - [Immovable Assets](Immovable_Assets.md): the family whose rules for valuation and holdings these assets follow.
 - [Code List](Code_List.md): the values of every `_code` column of the family.
 
@@ -55,7 +54,6 @@ No Vault objects of its own: the objects of this family are defined once, on the
 | `trait_code`, `value_text`, `value_number`, `measure_unit_code` | the three characteristic Satellites | One characteristic, such as the length of a ship or the power of an engine. The list is open and the Code List says which value column each trait uses |
 | `identification_type_code`, `identification_id`, `issuing_jurisdiction_code`, `issued_by_code`, `issue_date` | `sat_base_asset__identification`, `sat_swappable_component__identification` | A number or a document that identifies the asset or the part besides its key, such as a hull number, a call sign or a serial number |
 | `registration_basis_code`, `registration_date`, `artifact_uri` | `sat_base_asset__registration`, `sat_swappable_component__registration` | Why and when the asset or the part was registered, and the pointer to the evidence |
-| `title_type_code`, `ownership_share_percent`, `effective_date`, `end_date` | the two ownership Satellites | The legal nature of a holding, its share and the dates it applies. The list is `movable_title_type` |
 | `model_kind_code`, `manufacturer_name`, `model_name` | `sat_model_catalog__description` | What a model describes and who makes it |
 
 ## Sources and mapping
@@ -68,17 +66,17 @@ The cases that cross the parts. The detail of each is on the page named in the l
 
 | **Edge case** | **Where it happens** | **Approach** | **Vault effect** |
 | --- | --- | --- | --- |
-| A ship flagged in an open registry whose owner is in another country | Open registries such as the Marshall Islands and Vanuatu | The flag and the holder are separate facts; the flag is the nationality of the asset and changes on its own | `sat_base_asset__flag` and `lnk_base_asset__party_owner` on [Base Asset](Base_Asset.md) |
+| A ship flagged in an open registry whose owner is in another country | Open registries such as the Marshall Islands and Vanuatu | The flag and the holder are separate facts; the flag is the nationality of the asset and changes on its own | `sat_base_asset__flag` on [Base Asset](Base_Asset.md) and an RRR through `lnk_base_asset__rrr` on [RRR](RRR.md) |
 | A small craft with no stamped identifier, such as a canoe | Pacific jurisdictions | The platform assigns the key, and the number that the local authority issues is an identifier of its own | `platform_assigned` key in `hub_base_asset`; `sat_base_asset__identification` |
 | An engine moved from one ship to another | Any jurisdiction | The part keeps its key; the first fitting ends and a second one starts | Two rows of `sat_base_asset__swappable_component__period` on [Swappable Component](Swappable_Component.md) |
-| A leased engine on a ship that belongs to another company | Jurisdictions that record the holders of parts | Each holder has its own holding, through its own Link | `lnk_party_owner__swappable_component` and `lnk_base_asset__party_owner` |
+| A leased engine on a ship that belongs to another company | Jurisdictions that record the holders of parts | Each holder has its own bond, an RRR | `lnk_rrr__swappable_component` and `lnk_base_asset__rrr` on [RRR](RRR.md) |
 | A part inside another part, such as a turbocharger in an engine | Any jurisdiction | The containment is a Link of its own, with its kind and period | `lnk_swappable_component__swappable_component_hierarchy` |
-| An asset under an embargo, a detention or a seizure | Any jurisdiction | The restriction is a fact with its period and its evidence, and it does not change the holder | `sat_base_asset__restriction` on [Base Asset](Base_Asset.md) |
-| A mortgage or a lien over a ship or an aircraft | Any jurisdiction | It is a legal instrument and not a restriction by the State; it is stored with the Legal Instrument object when that is written | Open (see Open decisions) |
+| An asset under an embargo, a detention or a seizure | Any jurisdiction | The restriction is an RRR of the class restriction, with its period and its evidence, and it does not change the holder | `lnk_base_asset__rrr` on [RRR](RRR.md) |
+| A mortgage or a lien over a ship or an aircraft | Any jurisdiction | A restriction with the bank as holder and the borrower as counterparty; the deed is a pointer on the RRR | `lnk_base_asset__rrr` and `sat_rrr__registration` on [RRR](RRR.md) |
 | The same specification repeated on a thousand aircraft of one type | Any jurisdiction | The specification is held once for the model, and each asset joins it | `lnk_base_asset__model_catalog` and `sat_model_catalog__characteristic` |
 | A model known by the code of the maker and by a standard designation | Any jurisdiction | The designation that the source delivers is the key; the other is an identifier of the same model | `key_type_code` in `hub_model_catalog` |
 | The value of an asset and the value of its parts | Jurisdictions that value parts | Each is valued on its own and the values are not added in the Vault | Rows of both valuation Satellites; the total is a Gold value |
-| An asset held by the government and by a party, or by a government agency and a foreign government agency | Any jurisdiction | The same rules as for immovable assets: a public body is a Legal Entity classified as public, each holder has a row of the same Link, and the shares are added up in Gold | See the shared holdings on [Immovable Assets](Immovable_Assets.md) |
+| An asset held by the government and by a party, or by a government agency and a foreign government agency | Any jurisdiction | The same rules as for immovable assets: a public body is a Legal Entity classified as public, each holder takes part in an RRR through the same Link, and the shares are added up in Gold | See the shared holdings on [Legal](Legal.md) and [RRR](RRR.md) |
 
 ## Examples
 
@@ -87,8 +85,8 @@ Illustrative data. A cargo ship followed from its registration to the swap of it
 1. **The model.** The engine model `MAN-L7` and the hull model of the ship are rows of `hub_model_catalog`, each with its specification as characteristics (see [Model Catalog](Model_Catalog.md)).
 2. **The ship.** `9876543` is the IMO number of the ship, so it is the key of a row of `hub_base_asset`. It was flagged in the Marshall Islands until 2021 and in Vanuatu since then: two rows of `sat_base_asset__flag` (see [Base Asset](Base_Asset.md)). A row of `lnk_base_asset__model_catalog` joins it to its model.
 3. **The engine.** `ENG-77` is a row of `hub_swappable_component`. It is fitted to the ship from 2012 to 2024, and then to another ship: two rows of the period Satellite (see [Swappable Component](Swappable_Component.md)).
-4. **The holders.** The shipping company holds the ship through `lnk_base_asset__party_owner`. A leasing company holds the engine through `lnk_party_owner__swappable_component` with the title `finance_lease`.
-5. **The restriction and the values.** The ship was held in port for two weeks in 2025: a row of `sat_base_asset__restriction` with its dates. The ship and the engine each have their own valuations that go through draft, submitted and accepted; the definitive value of each is computed in Gold.
+4. **The holders.** The shipping company holds the ship through an RRR of the type `full_ownership`, joined by `lnk_base_asset__rrr`. A leasing company holds the engine through an RRR of the type `finance_lease`, joined by `lnk_rrr__swappable_component` (see [RRR](RRR.md)).
+5. **The restriction and the values.** The ship was held in port for two weeks in 2025: an RRR of the class restriction with its dates, joined by `lnk_base_asset__rrr`. The ship and the engine each have their own valuations that go through draft, submitted and accepted; the definitive value of each is computed in Gold.
 6. **The family view.** A Gold view reads the ship, its parts and its model together, so that a tonnage tax bill asks for "the movable asset `9876543`" and gets the ship, its engine and their values.
 
 ## Modeling considerations
@@ -99,11 +97,11 @@ Illustrative data. A cargo ship followed from its registration to the swap of it
 - **Parts contain parts from the first version.** The hierarchy Link of parts exists now, as for structures. How many levels a kind of containment may have is `max_depth_count` in the Code List, so the depth is a rule and not a table.
 - **The model is held once.** One Hub holds the models of assets and of parts, with a `model_kind_code`. A Hub for each kind is added only if the keys or lifecycles of a kind differ. The check that an engine model joins parts and a hull model joins assets is in Gold (R13).
 - **The flag is a history, and it is not the owner's country.** The flag is the nationality of the asset and changes on its own; it is a Satellite of the asset.
-- **A restriction by the State is not a legal instrument.** An embargo, a detention or a seizure is a Satellite of the asset. A mortgage or a lien needs its evidence, its parties and its status, and is the Legal Instrument object, which also serves immovable assets, persons and entities (see Open decisions).
-- **Valuation, holdings and shared holdings follow the rules of immovable assets.** The valuation is a Satellite for each Hub that is valued, with every fact kept and the definitive value in Gold; the status list is closed; two accepted values are allowed or not by the jurisdiction; a holder is a Party, and a public body, domestic or foreign, is a Legal Entity classified as public; the shares of the holders are added up in Gold. These rules are written on the page [Immovable Assets](Immovable_Assets.md) and are not repeated.
+- **Restrictions, mortgages and liens are RRRs.** An embargo, a detention, a seizure, a mortgage or a lien binds the asset whoever owns it. Each is an RRR of the class restriction with its parties, its period, its status and a pointer to its evidence, on the page [RRR](RRR.md). There is no Legal Instrument object.
+- **Valuation, holdings and shared holdings follow the rules of immovable assets.** The valuation is a Satellite for each Hub that is valued, with every fact kept and the definitive value in Gold; the status list is closed; two accepted values are allowed or not by the jurisdiction; a holder is a Party in an RRR, and a public body, domestic or foreign, is a Legal Entity classified as public; the shares of the holders are added up in Gold. The valuation rules are written on the page [Immovable Assets](Immovable_Assets.md) and the holding rules on the page [Legal](Legal.md); they are not repeated.
 - **The characteristics are an open list.** The length of a ship, the seats of an aircraft and the power of an engine are rows of the characteristic Satellites, not columns (Principles, "Traits as rows").
 - **Where the asset is based is a Location; where it is now is not stored.** `lnk_base_asset__location` attaches a place with a role, such as the port of registry. The position of a ship or an aircraft at this moment is operational data, outside this model.
-- **The holders of parts depend on the configuration of the platform.** The Link to Party exists for every part. A jurisdiction that records only the holder of the asset leaves it empty; the case where every part has its own holder needs no other table.
+- **The holders of parts depend on the configuration of the platform.** The Link to the RRR exists for every part. A jurisdiction that records only the bonds of the asset leaves it empty; the case where every part has its own holder needs no other table.
 - **An open end is `9999-12-31`.** The end of a period is `9999-12-31` while it applies, and an unknown start is `1900-01-01` (Principles, "Validity ranges").
 - **Codes take their values from the Code List.** Every `_code` column of the family holds values that change without changing logic, except `valuation_status_code`, which is closed.
 
@@ -113,7 +111,7 @@ Two pictures of the family: the three clusters together. Read the simplified one
 
 ### Simplified version
 
-The shape of the family: 3 Hubs, 7 Links and 19 Satellites, each with its name and definition, and the Hubs of Location and Party drawn as defined on other pages. Use it to see how the three parts relate. It has no columns.
+The shape of the family: 3 Hubs, 5 Links and 16 Satellites, each with its name and definition, and the Hub of Location and the Legal objects drawn as defined on other pages. Use it to see how the three parts relate. It has no columns.
 
 ![Movable Assets cluster, simplified](images/Diagrams_Movable_Assets_Simplified.png)
 
@@ -127,7 +125,6 @@ The same objects, each with its Fields table (column, role, type, null, PII, def
 
 | **Decision** | **Owner** | **How it is decided** | **Decide by** |
 | --- | --- | --- | --- |
-| Mortgages, liens and other legal instruments over a ship, an aircraft or a part. The recommended design is the Legal Instrument object described on [Immovable Assets](Immovable_Assets.md): a Hub of the legal documents, one Link to each kind of subject, a Link to the parties involved and a Satellite for the status | Data Architecture Engineer and Data Product Owner | Drafted as its own page with an outline approved first | Before the first mapping that needs them |
 | How a jurisdiction sets up the valuation process for assets and parts. It is the same Code List design as for immovable assets, with the methods and the data each method needs | Data Product Owner, Taxation Contributions and Licences and Platform | Designed with the Code List page | When a jurisdiction is configured |
 | How many levels of containment of parts a jurisdiction allows, and the kinds of containment | Data Product Owner | Set as `max_depth_count` of each value of the Code List `component_hierarchy_type` | When a jurisdiction is configured |
 | Whether a jurisdiction records the holders of parts separately from the holder of the asset | Platform configuration | Set in the Nexus configuration for each jurisdiction; the tables exist in any case | When a jurisdiction is configured |

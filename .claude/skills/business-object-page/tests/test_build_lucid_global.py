@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 109)
+        self.assertEqual(len(self.by_name), 136)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -107,11 +107,14 @@ class GlobalDiagramTests(unittest.TestCase):
                 self.assertTrue(apart, f"{a.name} overlaps {b.name}")
 
     def test_no_two_lines_cross_except_the_ones_that_reach_the_asset_clusters(self):
-        """The long lines from the Immovable and Movable Assets clusters up to hub_party and hub_location cross the short lines of the
-        objects between them; those crossings are drawn with a line jump. Every other pair of lines is free of crossings."""
+        """The long lines from the Immovable and Movable Assets clusters up to hub_party and hub_location, and the lines of the Legal cluster
+        (each Link to a thing runs west to its Hub and east to the RRR or the entitlement) cross the short lines of the objects between
+        them; those crossings are drawn with a line jump. Every other pair of lines is free of crossings."""
         segs = g.segments(self.layout)
         mine = lambda ln: ln["child"].startswith(("lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__",  # noqa: E731
-                                                  "lnk_base_asset__", "lnk_party_owner__swappable", "lnk_model_catalog__", "sat_base_asset__", "sat_party_owner__swappable"))
+                                                  "lnk_base_asset__", "lnk_model_catalog__", "sat_base_asset__",
+                                                  "lnk_rrr__", "lnk_party__rrr", "lnk_entitlement__", "lnk_credential__", "sat_rrr__", "sat_party__rrr",
+                                                  "sat_entitlement__", "sat_credential__"))
         for i, (l1, a1, b1) in enumerate(segs):
             for l2, a2, b2 in segs[i + 1:]:
                 if mine(l1) or mine(l2):
@@ -173,10 +176,14 @@ class GlobalDiagramTests(unittest.TestCase):
         reg = next(b for b in self.layout.bands if b["title"] == "Registries")
         inside = lambda band, b: band["x"] <= b.x and b.x + b.w <= band["x"] + band["w"] and band["y"] <= b.y and b.y + b.h <= band["y"] + band["h"]  # noqa: E731
         for name, box in self.layout.boxes.items():
-            if name.startswith(("hub_base_parcel", "hub_built_structure", "lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__")):
+            if name.startswith(("hub_base_parcel", "hub_built_structure", "lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__",
+                                "hub_rrr", "hub_entitlement", "hub_credential", "lnk_rrr__", "lnk_party__rrr", "lnk_entitlement__", "lnk_credential__",
+                                "sat_rrr__", "sat_party__rrr", "sat_entitlement__", "sat_credential__")):
                 self.assertTrue(inside(reg, box), name)
         lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
-        for pair in (("lnk_base_parcel__party_owner", "hub_party"), ("lnk_built_structure__party_owner", "hub_party"),
+        for pair in (("lnk_party__rrr", "hub_party"), ("lnk_entitlement__party_holder", "hub_party"),
+                     ("lnk_party__rrr", "hub_rrr"), ("lnk_base_parcel__rrr", "hub_base_parcel"), ("lnk_base_parcel__rrr", "hub_rrr"),
+                     ("lnk_built_structure__entitlement", "hub_entitlement"), ("lnk_credential__entitlement", "hub_credential"),
                      ("lnk_base_parcel__location", "hub_location"), ("lnk_built_structure__location", "hub_location")):
             self.assertIn(pair, lines)
 
