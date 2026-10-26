@@ -72,9 +72,17 @@
 
   .node { cursor: pointer; transition: opacity .15s; }
   .node .shape { stroke-width: 1.6px; vector-effect: non-scaling-stroke; }
-  .label { font-family: var(--code); pointer-events: none; transition: opacity .15s; }
+  .label { font-family: var(--code); cursor: pointer; transition: opacity .15s; }
   .edge { stroke: #3A414A; stroke-width: 1.2px; vector-effect: non-scaling-stroke; transition: opacity .15s; }
-  .use { stroke: #B8B8B8; stroke-width: 1px; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+  .use { display: none; stroke: #B8B8B8; stroke-width: 1px; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+  #svg.uses-on .use, .use.hot { display: inline; }
+  .use.hot { stroke: #6E6E6E; stroke-width: 2px; opacity: 1; }
+  .clcard { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 0 0 8px; }
+  .clcard .col { font: 600 12.5px var(--code); }
+  .clcard .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #666; margin-top: 5px; }
+  .clcard p { margin: 1px 0 0; font-size: 12.5px; }
+  .show { font: 12.5px var(--body); border: 1px solid var(--gray); background: #fff; border-radius: 5px; padding: 3px 8px; cursor: pointer; margin: 4px 0 8px; }
+  .show:hover { background: var(--soft); }
   .dim { opacity: .09; }
   .edge.hot { stroke-width: 2.6px; }
   .selected .shape { stroke: var(--magenta) !important; stroke-width: 3.5px; }
@@ -135,7 +143,7 @@
   function rich(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>"); }
 
   // ---- the picture: lines behind the shapes, names on top
-  var gUse = el("g", { id: "gUse", style: "display:none" }, svg), gEdge = el("g", {}, svg), gNode = el("g", {}, svg), gLabel = el("g", {}, svg);
+  var gUse = el("g", { id: "gUse" }, svg), gEdge = el("g", {}, svg), gNode = el("g", {}, svg), gLabel = el("g", {}, svg);
   D.uses.forEach(function (u, i) {
     var a = D.items[u[0]], b = D.items[u[1]];
     useEl[i] = el("line", { "class": "use", x1: a.x, y1: a.y, x2: b.x, y2: b.y }, gUse);
@@ -161,7 +169,7 @@
     t.textContent = TAG[it.kind];
     var size = D.charWidth[it.kind] / 0.6, anchor = it.align === "left" ? "start" : it.align === "right" ? "end" : "middle";
     var lx = it.align === "left" ? it.lx - it.lw / 2 + 3 : it.align === "right" ? it.lx + it.lw / 2 - 3 : it.lx;
-    var lab = el("text", { "class": "label", x: lx, y: it.ly, "text-anchor": anchor, "dominant-baseline": "central", "font-size": size,
+    var lab = el("text", { "class": "label", "data-i": i, x: lx, y: it.ly, "text-anchor": anchor, "dominant-baseline": "central", "font-size": size,
       "font-weight": it.kind === "Hub" ? 700 : 400 }, gLabel);
     lab.textContent = it.name;
     nodeEl[i] = g; labelEl[i] = lab;
@@ -234,13 +242,15 @@
   svg.addEventListener("pointerup", function (ev) {
     var d = drag; drag = null; svg.classList.remove("dragging");
     if (!d || d.moved) return;
-    var n = ev.target.closest ? ev.target.closest(".node") : null;
-    if (n) select(+n.getAttribute("data-i")); else select(-1);
+    // the pointer is captured by the svg, so ask what is under it
+    var under = document.elementFromPoint(ev.clientX, ev.clientY);
+    var n = under && under.closest ? under.closest("[data-i]") : null;
+    if (n && svg.contains(n)) select(+n.getAttribute("data-i")); else select(-1);
   });
   document.getElementById("fit").onclick = fitAll;
   document.getElementById("zin").onclick = function () { zoom(0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
   document.getElementById("zout").onclick = function () { zoom(1 / 0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
-  document.getElementById("uses").onchange = function () { document.getElementById("gUse").style.display = this.checked ? "" : "none"; };
+  document.getElementById("uses").onchange = function () { svg.classList.toggle("uses-on", this.checked); };
   window.addEventListener("resize", function () { vb = fitted(vb); apply(); });
 
   // ---- the lists on the right
@@ -267,6 +277,15 @@
   }
   document.getElementById("q").addEventListener("input", function () { buildList(this.value); });
 
+  // ---- dashed lines: the Code List and Load Configuration objects an object uses
+  var PLATFORM = { hub_code_list: true, hub_load_configuration: true };
+  function partners(i) {
+    var out = [];
+    if (PLATFORM[D.items[i].name]) return out;
+    D.uses.forEach(function (u, j) { if (u[1] === i) out.push({ j: u[0], u: j }); else if (u[0] === i) out.push({ j: u[1], u: j }); });
+    return out;
+  }
+
   // ---- the Vault Info on the left
   var info = document.getElementById("info"), infoBody = document.getElementById("infoBody");
   function showInfo(i) {
@@ -288,7 +307,25 @@
     h += "<h3>Directly related (" + near.length + ")</h3><div class=\"rel\">" + near.map(function (j) {
       return '<button type="button" data-i="' + j + '">' + esc(D.items[j].name) + "</button>";
     }).join("") + "</div>";
+    var uses = partners(i);
+    if (uses.length) {
+      h += "<h3>Dashed lines (" + uses.length + ")</h3><p>" + (it.kind === "Satellite" ? "This Satellite" : "This object") +
+        " takes values from, or is loaded by, the platform objects below. Their lines are drawn in dark gray on the picture.</p><div class=\"rel\">" +
+        uses.map(function (p) { return '<button type="button" data-i="' + p.j + '">' + esc(D.items[p.j].name) + "</button>"; }).join("") +
+        '</div><button type="button" class="show" id="showUses">Show them on the picture</button>';
+    }
+    if (it.codeLists && it.codeLists.length) {
+      h += "<h3>Code List examples (" + it.codeLists.length + ")</h3>";
+      it.codeLists.forEach(function (c) {
+        h += '<div class="clcard"><div class="top"><span class="col">' + esc(c.column) + '</span><span class="cl">Code List: ' + esc(c.flag) + "</span></div>" +
+          '<div class="k">Where its values live</div><p>' + rich(c.where) + "</p>" +
+          '<div class="k">Why</div><p>' + rich(c.why) + "</p>" +
+          '<div class="k">Examples</div><p>' + rich(c.examples) + "</p></div>";
+      });
+    }
     infoBody.innerHTML = h; infoBody.scrollTop = 0;
+    var show = document.getElementById("showUses");
+    if (show) show.onclick = function () { go(fitted(boxOf(D.focus[it.name].nodes.concat(uses.map(function (p) { return p.j; }))))); };
     document.getElementById("closeInfo").onclick = function () { select(-1); };
     Array.prototype.forEach.call(infoBody.querySelectorAll(".rel button"), function (b) { b.onclick = function () { select(+b.getAttribute("data-i")); }; });
     info.classList.add("open");
@@ -299,12 +336,13 @@
     if (i === sel) i = -1;
     if (sel >= 0 && itemEl[sel]) itemEl[sel].removeAttribute("aria-current");
     sel = i;
-    var keep = null, hot = null;
+    var keep = null, hot = null, hotUse = {};
     kept = null;
     if (i >= 0) {
       var f = D.focus[D.items[i].name];
       keep = {}; f.nodes.forEach(function (j) { keep[j] = true; }); kept = keep;
       hot = {}; f.edges.forEach(function (j) { hot[j] = true; });
+      partners(i).forEach(function (p) { keep[p.j] = true; hotUse[p.u] = true; });
     }
     D.items.forEach(function (it, j) {
       var off = keep && !keep[j];
@@ -315,7 +353,7 @@
       edgeEl[j].classList.toggle("dim", !!(hot && !hot[j]));
       edgeEl[j].classList.toggle("hot", !!(hot && hot[j]));
     });
-    useEl.forEach(function (u) { u.classList.toggle("dim", !!keep); });
+    useEl.forEach(function (u, j) { u.classList.toggle("dim", !!keep && !hotUse[j]); u.classList.toggle("hot", !!hotUse[j]); });
     if (i >= 0) {
       if (itemEl[i]) { itemEl[i].setAttribute("aria-current", "true"); itemEl[i].scrollIntoView({ block: "nearest" }); }
       showInfo(i);

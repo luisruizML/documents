@@ -33,6 +33,32 @@ class HtmlGraphTests(unittest.TestCase):
         self.assertIn("natural_person_bk", hub["businessKey"])
         self.assertIn("Code List", hub["fields"][0])
 
+    def test_every_field_linked_to_the_code_list_carries_its_examples(self):
+        flagged = 0
+        for it in self.items:
+            cols = [c["column"] for c in it["codeLists"]]
+            expect = [f["Column"] for f in it["fields"] if f.get("Code List") in ("List", "Closed")]
+            self.assertEqual(cols, expect, it["name"])
+            flagged += len(cols)
+            for c in it["codeLists"]:
+                self.assertTrue(c["where"] and c["why"] and c["examples"], (it["name"], c["column"]))
+        self.assertGreater(flagged, 150)
+        ident = self.items[self.index["sat_natural_person__identification"]]["codeLists"][0]
+        self.assertEqual(ident["column"], "identification_type_code")
+        self.assertIn("passport", ident["examples"])
+
+    def test_the_template_selects_on_a_click_in_the_picture_like_in_the_list(self):
+        html = hg.TEMPLATE.read_text(encoding="utf-8")
+        self.assertIn("elementFromPoint", html)   # the svg captures the pointer, so event.target is the svg
+        self.assertIn('"data-i": i, x: lx', html)  # the names are clickable too
+        self.assertIn("hotUse", html)              # the dashed lines of the selection are drawn
+
+    def test_a_dashed_line_belongs_to_the_object_it_touches(self):
+        sat = self.index["sat_natural_person__identification"]
+        touching = [u for u in self.data["uses"] if sat in u]
+        self.assertEqual(len(touching), 1)
+        self.assertEqual(self.items[touching[0][0]]["name"], "hub_code_list")
+
     def test_clicking_a_hub_keeps_its_links_and_satellites_and_the_satellites_of_those_links(self):
         focus = self.data["focus"]["hub_natural_person"]
         names = {self.items[i]["name"] for i in focus["nodes"]}

@@ -47,6 +47,24 @@ def vault_rows(pages_dir: Path = PAGES_DIR) -> dict[str, dict]:
     return out
 
 
+def code_list_examples(pages_dir: Path = PAGES_DIR) -> dict[str, dict]:
+    """`{"<vault table>.<column>": {where, why, examples}}` from the Code List table "Which code columns are values of a
+    Code List", the texts as written on the page."""
+    rows = vp.code_list_table((pages_dir / "Code_List.md").read_text(encoding="utf-8"))
+    return {key: {"where": cells[1], "why": cells[2], "examples": cells[3]} for key, cells in rows.items()}
+
+
+def code_lists_of(name: str, fields: list[dict], examples: dict[str, dict]) -> list[dict]:
+    """The fields of `name` that are linked to the Code List, each with where its values live and examples."""
+    out = []
+    for f in fields:
+        flag = f.get("Code List", "—")
+        row = examples.get(f"{name}.{f.get('Column', '')}")
+        if flag in ("List", "Closed") and row:
+            out.append({"column": f["Column"], "flag": flag, **row})
+    return out
+
+
 def focus_of(name: str, kinds: dict[str, str], edges: list[tuple[str, str]]) -> dict:
     """What stays visible when `name` is selected: the objects directly related to it, and when one of those is a Link,
     the Satellites of that Link. `edges` are the indexes of the lines drawn between the visible objects that belong to
@@ -75,6 +93,7 @@ def build_data(nodes=None, edges=None) -> dict:
         nodes, edges = g.load_all()
     L, uses = lg.build(nodes, edges)
     meta = vault_rows()
+    examples = code_list_examples()
     kinds = {n: p.kind for n, p in L.items.items()}
     order = sorted(L.items, key=lambda n: (KIND_ORDER[kinds[n]], n))
     xs = [v for p in L.items.values() for v in (p.rect[0], p.rect[2], p.label_rect[0], p.label_rect[2])]
@@ -91,6 +110,7 @@ def build_data(nodes=None, edges=None) -> dict:
             "definition": meta.get(name, {}).get("definition") or node.definition, "grain": node.grain,
             "businessKey": meta.get(name, {}).get("business_key", ""),
             "fields": fields,
+            "codeLists": code_lists_of(name, fields, examples),
         })
     index = {n: i for i, n in enumerate(order)}
     return {
