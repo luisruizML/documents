@@ -78,7 +78,9 @@
   #svg.uses-on .use, .use.hot { display: inline; }
   .use.hot { stroke: #6E6E6E; stroke-width: 2px; opacity: 1; }
   .clcard { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin: 0 0 8px; }
-  .clcard .col { font: 600 12.5px var(--code); }
+  .clcard .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+  .clcard .cl { flex: none; font-size: 11px; padding: 1px 7px; border-radius: 9px; border: 1px solid var(--teal); background: #E3FBF8; }
+  .clcard .col { word-break: break-all; font: 600 12.5px var(--code); }
   .clcard .k { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #666; margin-top: 5px; }
   .clcard p { margin: 1px 0 0; font-size: 12.5px; }
   .show { font: 12.5px var(--body); border: 1px solid var(--gray); background: #fff; border-radius: 5px; padding: 3px 8px; cursor: pointer; margin: 4px 0 8px; }
