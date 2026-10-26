@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nexus Rosetta Vault graph</title>
+<style>
+  :root {
+    --indigo: #3A0CA3; --teal: #45E3CD; --magenta: #F72586; --gray: #A6A8AB; --ink: #000; --paper: #fff;
+    --line: #E4E4E8; --soft: #F6F4FC;
+    --hub: #8F63F4; --link: #A2F1E6; --sat: #FCB3D5; --sat-place: #FEDBEB;
+    --title: Mulish, Arial, sans-serif; --body: Arial, sans-serif; --code: "Courier New", monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 14px; }
+  #app { display: flex; height: 100vh; min-height: 520px; }
+  aside { background: var(--paper); border-color: var(--line); display: flex; flex-direction: column; min-height: 0; }
+  #info { width: 0; border-right: 1px solid var(--line); overflow: hidden; transition: width .2s ease; flex: none; }
+  #info.open { width: 440px; }
+  #info .inner { width: 440px; overflow-y: auto; padding: 16px 18px 28px; flex: 1; }
+  #list { width: 300px; border-left: 1px solid var(--line); flex: none; }
+  #stage { position: relative; flex: 1; min-width: 0; background: var(--paper); }
+  #svg { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #svg.dragging { cursor: grabbing; }
+  h1, h2, h3 { font-family: var(--title); margin: 0; }
+  .panel-head { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
+  .panel-head h2 { font-size: 15px; color: var(--indigo); }
+  .panel-head input { margin-top: 8px; width: 100%; padding: 7px 9px; border: 1px solid var(--gray); border-radius: 6px; font: inherit; }
+  .panel-head input:focus { outline: 2px solid var(--indigo); outline-offset: 1px; }
+  #items { overflow-y: auto; flex: 1; padding: 4px 0 20px; }
+  .group { padding: 12px 16px 4px; font-family: var(--title); font-weight: 700; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #555; }
+  .item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 16px; cursor: pointer; font: 12px var(--code); color: var(--ink); }
+  .item:hover { background: var(--soft); }
+  .item[aria-current="true"] { background: var(--indigo); color: #fff; }
+  .item:focus-visible { outline: 2px solid var(--magenta); outline-offset: -2px; }
+  .mark { flex: none; width: 12px; height: 12px; border: 1.5px solid #3A414A; background: var(--hub); }
+  .mark.Hub { border-radius: 50%; }
+  .mark.Link { background: var(--link); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border: 0; box-shadow: inset 0 0 0 2px #3A414A; }
+  .mark.Satellite { background: var(--sat); border-color: var(--magenta); }
+  .mark.Satellite.inplace { background: var(--sat-place); border-style: dashed; }
+  .item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .empty { padding: 12px 16px; color: #666; }
+
+  #info h1 { font-size: 17px; font-family: var(--code); word-break: break-all; color: var(--indigo); }
+  #info .chips { margin: 8px 0 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; background: var(--soft); border: 1px solid var(--line); }
+  #info h3 { margin: 18px 0 5px; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: #555; }
+  #info p { margin: 0; line-height: 1.45; }
+  code, .code { font-family: var(--code); font-size: 12.5px; background: var(--soft); padding: 0 3px; border-radius: 3px; }
+  .field { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-top: 7px; }
+  .field .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .field .col { font-family: var(--code); font-size: 12.5px; font-weight: 700; word-break: break-all; }
+  .field .role { font-size: 15px; color: var(--indigo); }
+  .field .meta { margin: 5px 0 3px; display: flex; gap: 5px; flex-wrap: wrap; }
+  .field .meta span { font-size: 11px; padding: 1px 7px; border-radius: 9px; border: 1px solid var(--line); background: #fff; }
+  .field .meta .pii { background: #FFE3EF; border-color: var(--magenta); }
+  .field .meta .cl { background: #E3FBF8; border-color: var(--teal); }
+  .field .desc { font-size: 12.5px; line-height: 1.4; color: #222; }
+  .rel { display: flex; flex-wrap: wrap; gap: 5px; }
+  .rel button { font: 11.5px var(--code); border: 1px solid var(--gray); background: #fff; border-radius: 4px; padding: 2px 6px; cursor: pointer; }
+  .rel button:hover { background: var(--soft); }
+  .close { float: right; border: 0; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: #555; }
+  .close:hover { color: var(--magenta); }
+
+  #bar { position: absolute; left: 12px; top: 12px; display: flex; gap: 8px; align-items: center; background: rgba(255,255,255,.94); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+  #bar button { font: 13px var(--body); border: 1px solid var(--gray); background: #fff; border-radius: 5px; padding: 4px 9px; cursor: pointer; }
+  #bar button:hover { background: var(--soft); }
+  #bar label { display: flex; align-items: center; gap: 5px; font-size: 12.5px; cursor: pointer; }
+  #legend { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 14px; align-items: center; background: rgba(255,255,255,.94); border: 1px solid var(--line); border-radius: 8px; padding: 7px 11px; font-size: 12px; flex-wrap: wrap; }
+  #legend span { display: flex; align-items: center; gap: 6px; }
+  #hint { position: absolute; right: 12px; bottom: 12px; font-size: 12px; color: #666; background: rgba(255,255,255,.9); padding: 4px 8px; border-radius: 6px; }
+
+  .node { cursor: pointer; transition: opacity .15s; }
+  .node .shape { stroke-width: 1.6px; vector-effect: non-scaling-stroke; }
+  .label { font-family: var(--code); pointer-events: none; transition: opacity .15s; }
+  .edge { stroke: #3A414A; stroke-width: 1.2px; vector-effect: non-scaling-stroke; transition: opacity .15s; }
+  .use { stroke: #B8B8B8; stroke-width: 1px; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
+  .dim { opacity: .09; }
+  .edge.hot { stroke-width: 2.6px; }
+  .selected .shape { stroke: var(--magenta) !important; stroke-width: 3.5px; }
+  @media (max-width: 900px) {
+    #app { flex-direction: column; height: auto; }
+    #stage { height: 62vh; flex: none; }
+    #info { width: 100% !important; height: 0; border-right: 0; border-top: 1px solid var(--line); }
+    #info.open { height: 46vh; }
+    #info .inner { width: 100%; }
+    #list { width: 100%; height: 34vh; border-left: 0; border-top: 1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="info" aria-label="Vault Info"><div class="inner" id="infoBody"></div></aside>
+  <main id="stage">
+    <svg id="svg" role="img" aria-label="Graph of the Hubs, Links and Satellites of the Business Objects"></svg>
+    <div id="bar">
+      <button id="fit" type="button" title="Show the whole graph">Fit all</button>
+      <button id="zin" type="button" aria-label="Zoom in">+</button>
+      <button id="zout" type="button" aria-label="Zoom out">&minus;</button>
+      <label><input type="checkbox" id="uses"> Code List and Load Configuration lines</label>
+    </div>
+    <div id="legend">
+      <span><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="#8F63F4" stroke="#3A414A" stroke-width="1.5"/></svg>Hub</span>
+      <span><svg width="18" height="16" viewBox="0 0 18 16"><polygon points="4,1.5 14,1.5 17,8 14,14.5 4,14.5 1,8" fill="#A2F1E6" stroke="#3A414A" stroke-width="1.5"/></svg>Link</span>
+      <span><svg width="16" height="16" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" fill="#FCB3D5" stroke="#F72586" stroke-width="1.5"/></svg>Satellite, history (default)</span>
+      <span><svg width="16" height="16" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" fill="#FEDBEB" stroke="#FCB3D5" stroke-width="1.5" stroke-dasharray="3 2"/></svg>Satellite, in place</span>
+    </div>
+    <div id="hint">Click an object or a name in the list. Drag to move, scroll to zoom, Esc to clear.</div>
+  </main>
+  <aside id="list" aria-label="Objects">
+    <div class="panel-head"><h2>Hubs, Links, Satellites</h2><input id="q" type="search" placeholder="Filter by name" aria-label="Filter the list by name"></div>
+    <div id="items"></div>
+  </aside>
+</div>
+<script id="data" type="application/json">/*DATA*/null</script>
+<script>
+(function () {
+  "use strict";
+  var D = JSON.parse(document.getElementById("data").textContent);
+  var NS = "http://www.w3.org/2000/svg";
+  var FILL = { Hub: "#8F63F4", Link: "#A2F1E6", Satellite: "#FCB3D5", place: "#FEDBEB" };
+  var LINE = { Hub: "#3A414A", Link: "#3A414A", Satellite: "#F72586", place: "#FCB3D5" };
+  var TAG = { Hub: "HUB", Link: "LINK", Satellite: "SAT" };
+  var svg = document.getElementById("svg"), stage = document.getElementById("stage");
+  var nodeEl = [], labelEl = [], edgeEl = [], useEl = [];
+  var sel = -1, vb = { x: D.box[0], y: D.box[1], w: D.box[2] - D.box[0], h: D.box[3] - D.box[1] }, anim = 0;
+
+  function el(tag, attrs, parent) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function rich(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+
+  // ---- the picture: lines behind the shapes, names on top
+  var gUse = el("g", { id: "gUse", style: "display:none" }, svg), gEdge = el("g", {}, svg), gNode = el("g", {}, svg), gLabel = el("g", {}, svg);
+  D.uses.forEach(function (u, i) {
+    var a = D.items[u[0]], b = D.items[u[1]];
+    useEl[i] = el("line", { "class": "use", x1: a.x, y1: a.y, x2: b.x, y2: b.y }, gUse);
+  });
+  D.edges.forEach(function (e, i) {
+    var a = D.items[e[0]], b = D.items[e[1]];
+    edgeEl[i] = el("line", { "class": "edge", x1: a.x, y1: a.y, x2: b.x, y2: b.y }, gEdge);
+  });
+  D.items.forEach(function (it, i) {
+    var key = it.kind === "Satellite" && it.inPlace ? "place" : it.kind;
+    var g = el("g", { "class": "node", "data-i": i, tabindex: "-1" }, gNode);
+    var shape;
+    if (it.kind === "Hub") shape = el("circle", { cx: it.x, cy: it.y, r: it.w / 2 }, g);
+    else if (it.kind === "Link") {
+      var R = it.w / 2, k = R * 0.866;
+      shape = el("polygon", { points: [[it.x - R, it.y], [it.x - R / 2, it.y - k], [it.x + R / 2, it.y - k], [it.x + R, it.y], [it.x + R / 2, it.y + k], [it.x - R / 2, it.y + k]].join(" ") }, g);
+    } else shape = el("rect", { x: it.x - it.w / 2, y: it.y - it.h / 2, width: it.w, height: it.h }, g);
+    shape.setAttribute("class", "shape");
+    shape.setAttribute("fill", FILL[key]); shape.setAttribute("stroke", LINE[key]);
+    if (key === "place") shape.setAttribute("stroke-dasharray", "6 4");
+    var t = el("text", { x: it.x, y: it.y, "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif",
+      "font-size": it.kind === "Hub" ? 40 : 15, "font-weight": it.kind === "Hub" ? 700 : 400, fill: "#000", "pointer-events": "none" }, g);
+    t.textContent = TAG[it.kind];
+    var size = D.charWidth[it.kind] / 0.6, anchor = it.align === "left" ? "start" : it.align === "right" ? "end" : "middle";
+    var lx = it.align === "left" ? it.lx - it.lw / 2 + 3 : it.align === "right" ? it.lx + it.lw / 2 - 3 : it.lx;
+    var lab = el("text", { "class": "label", x: lx, y: it.ly, "text-anchor": anchor, "dominant-baseline": "central", "font-size": size,
+      "font-weight": it.kind === "Hub" ? 700 : 400 }, gLabel);
+    lab.textContent = it.name;
+    nodeEl[i] = g; labelEl[i] = lab;
+  });
+
+  // ---- view: pan, zoom, fit
+  function aspect() { return Math.max(stage.clientWidth, 1) / Math.max(stage.clientHeight, 1); }
+  var kept = null;                // the objects that stay visible while one is selected
+  function apply() {
+    svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+    // while an object is selected the names of the objects around it grow, up to 2.2 times, to stay readable when zoomed out
+    var units = 9 * vb.w / Math.max(stage.clientWidth, 1);
+    D.items.forEach(function (it, i) {
+      var base = D.charWidth[it.kind] / 0.6, big = kept && kept[i] ? Math.min(Math.max(base, units), base * 2.2) : base;
+      labelEl[i].setAttribute("font-size", big);
+    });
+  }
+  function fitted(b) {            // a box grown to the aspect of the stage, same centre
+    var w = b.w, h = b.h, a = aspect();
+    if (w / h < a) w = h * a; else h = w / a;
+    return { x: b.x + b.w / 2 - w / 2, y: b.y + b.h / 2 - h / 2, w: w, h: h };
+  }
+  function go(target) {
+    cancelAnimationFrame(anim);
+    var from = { x: vb.x, y: vb.y, w: vb.w, h: vb.h }, t0 = performance.now();
+    (function step(now) {
+      var p = Math.min(1, (now - t0) / 260), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      ["x", "y", "w", "h"].forEach(function (k) { vb[k] = from[k] + (target[k] - from[k]) * e; });
+      apply();
+      if (p < 1) anim = requestAnimationFrame(step);
+    })(t0);
+  }
+  function whole() { return { x: D.box[0], y: D.box[1], w: D.box[2] - D.box[0], h: D.box[3] - D.box[1] }; }
+  function fitAll() { go(fitted(whole())); }
+  function boxOf(idx) {
+    var x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    idx.forEach(function (i) {
+      var it = D.items[i];
+      x0 = Math.min(x0, it.x - it.w / 2, it.lx - it.lw / 2); x1 = Math.max(x1, it.x + it.w / 2, it.lx + it.lw / 2);
+      y0 = Math.min(y0, it.y - it.h / 2, it.ly - it.lh / 2); y1 = Math.max(y1, it.y + it.h / 2, it.ly + it.lh / 2);
+    });
+    var pad = 140; x0 -= pad; y0 -= pad; x1 += pad; y1 += pad;
+    var w = Math.max(x1 - x0, 1500), h = Math.max(y1 - y0, 900);
+    return { x: (x0 + x1) / 2 - w / 2, y: (y0 + y1) / 2 - h / 2, w: w, h: h };
+  }
+  function zoom(f, cx, cy) {      // cx, cy: a point in picture units that stays where it is
+    var nx = cx - (cx - vb.x) * f, ny = cy - (cy - vb.y) * f;
+    vb = { x: nx, y: ny, w: vb.w * f, h: vb.h * f }; apply();
+  }
+  function toPicture(ev) {
+    var r = svg.getBoundingClientRect(), s = Math.max(vb.w / r.width, vb.h / r.height);
+    var ox = (r.width - vb.w / s) / 2, oy = (r.height - vb.h / s) / 2;
+    return { x: vb.x + (ev.clientX - r.left - ox) * s, y: vb.y + (ev.clientY - r.top - oy) * s, s: s };
+  }
+  svg.addEventListener("wheel", function (ev) {
+    ev.preventDefault(); cancelAnimationFrame(anim);
+    var p = toPicture(ev); zoom(ev.deltaY < 0 ? 0.85 : 1 / 0.85, p.x, p.y);
+  }, { passive: false });
+  var drag = null;
+  svg.addEventListener("pointerdown", function (ev) {
+    drag = { x: ev.clientX, y: ev.clientY, moved: false, vb: { x: vb.x, y: vb.y }, s: toPicture(ev).s };
+    svg.setPointerCapture(ev.pointerId);
+  });
+  svg.addEventListener("pointermove", function (ev) {
+    if (!drag) return;
+    var dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
+    if (!drag.moved && Math.hypot(dx, dy) > 4) { drag.moved = true; svg.classList.add("dragging"); cancelAnimationFrame(anim); }
+    if (drag.moved) { vb.x = drag.vb.x - dx * drag.s; vb.y = drag.vb.y - dy * drag.s; apply(); }
+  });
+  svg.addEventListener("pointerup", function (ev) {
+    var d = drag; drag = null; svg.classList.remove("dragging");
+    if (!d || d.moved) return;
+    var n = ev.target.closest ? ev.target.closest(".node") : null;
+    if (n) select(+n.getAttribute("data-i")); else select(-1);
+  });
+  document.getElementById("fit").onclick = fitAll;
+  document.getElementById("zin").onclick = function () { zoom(0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
+  document.getElementById("zout").onclick = function () { zoom(1 / 0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
+  document.getElementById("uses").onchange = function () { document.getElementById("gUse").style.display = this.checked ? "" : "none"; };
+  window.addEventListener("resize", function () { vb = fitted(vb); apply(); });
+
+  // ---- the lists on the right
+  var listEl = document.getElementById("items"), itemEl = [];
+  function buildList(filter) {
+    listEl.innerHTML = ""; itemEl = [];
+    var f = (filter || "").toLowerCase().trim(), any = false;
+    [["Hub", "Hubs"], ["Link", "Links"], ["Satellite", "Satellites"]].forEach(function (g) {
+      var rows = D.items.map(function (it, i) { return i; }).filter(function (i) { return D.items[i].kind === g[0] && D.items[i].name.toLowerCase().indexOf(f) >= 0; });
+      if (!rows.length) return;
+      any = true;
+      var h = document.createElement("div"); h.className = "group"; h.textContent = g[1] + " (" + rows.length + ")"; listEl.appendChild(h);
+      rows.forEach(function (i) {
+        var it = D.items[i], b = document.createElement("button");
+        b.type = "button"; b.className = "item"; b.setAttribute("data-i", i);
+        b.innerHTML = '<span class="mark ' + it.kind + (it.inPlace ? " inplace" : "") + '"></span><span class="name">' + esc(it.name) + "</span>";
+        b.title = it.name;
+        b.onclick = function () { select(i); };
+        listEl.appendChild(b); itemEl[i] = b;
+      });
+    });
+    if (!any) { var e = document.createElement("div"); e.className = "empty"; e.textContent = "No object matches."; listEl.appendChild(e); }
+    if (sel >= 0 && itemEl[sel]) itemEl[sel].setAttribute("aria-current", "true");
+  }
+  document.getElementById("q").addEventListener("input", function () { buildList(this.value); });
+
+  // ---- the Vault Info on the left
+  var info = document.getElementById("info"), infoBody = document.getElementById("infoBody");
+  function showInfo(i) {
+    var it = D.items[i], near = D.focus[it.name].nodes.filter(function (j) { return j !== i; });
+    var kind = it.kind === "Satellite" ? (it.inPlace ? "Satellite, updated in place" : "Satellite, keeps history") : it.kind;
+    var h = '<button class="close" type="button" aria-label="Close" id="closeInfo">&times;</button><h1>' + esc(it.name) + "</h1>" +
+      '<div class="chips"><span class="chip">' + esc(kind) + "</span>" + (it.page ? '<span class="chip">Page: ' + esc(it.page) + "</span>" : "") + "</div>" +
+      "<h3>Definition</h3><p>" + (it.definition ? rich(it.definition) : "Not stated.") + "</p>" +
+      "<h3>Grain</h3><p>" + (it.grain ? rich(it.grain) : "Not stated.") + "</p>" +
+      "<h3>Business key</h3><p>" + (it.businessKey && it.businessKey !== "—" ? rich(it.businessKey) : "None: it carries the key of its parent.") + "</p>" +
+      "<h3>Fields (" + it.fields.length + ")</h3>";
+    it.fields.forEach(function (f) {
+      var meta = ['<span class="code">' + esc(f.Type) + "</span>", "<span>Null: " + esc(f.Null) + "</span>",
+        '<span class="' + (f.PII === "Yes" ? "pii" : "") + '">PII: ' + esc(f.PII) + "</span>"];
+      if (f.Default && f.Default !== "—") meta.push("<span>Default: " + esc(f.Default) + "</span>");
+      if (f["Code List"] && f["Code List"] !== "—") meta.push('<span class="cl">Code List: ' + esc(f["Code List"]) + "</span>");
+      h += '<div class="field"><div class="top"><span class="col">' + esc(f.Column) + '</span><span class="role" title="Role">' + esc(f.Role) + '</span></div><div class="meta">' + meta.join("") + '</div><div class="desc">' + rich(f.Description) + "</div></div>";
+    });
+    h += "<h3>Directly related (" + near.length + ")</h3><div class=\"rel\">" + near.map(function (j) {
+      return '<button type="button" data-i="' + j + '">' + esc(D.items[j].name) + "</button>";
+    }).join("") + "</div>";
+    infoBody.innerHTML = h; infoBody.scrollTop = 0;
+    document.getElementById("closeInfo").onclick = function () { select(-1); };
+    Array.prototype.forEach.call(infoBody.querySelectorAll(".rel button"), function (b) { b.onclick = function () { select(+b.getAttribute("data-i")); }; });
+    info.classList.add("open");
+  }
+
+  // ---- selection: fade all but the related objects
+  function select(i) {
+    if (i === sel) i = -1;
+    if (sel >= 0 && itemEl[sel]) itemEl[sel].removeAttribute("aria-current");
+    sel = i;
+    var keep = null, hot = null;
+    kept = null;
+    if (i >= 0) {
+      var f = D.focus[D.items[i].name];
+      keep = {}; f.nodes.forEach(function (j) { keep[j] = true; }); kept = keep;
+      hot = {}; f.edges.forEach(function (j) { hot[j] = true; });
+    }
+    D.items.forEach(function (it, j) {
+      var off = keep && !keep[j];
+      nodeEl[j].classList.toggle("dim", !!off); labelEl[j].classList.toggle("dim", !!off);
+      nodeEl[j].classList.toggle("selected", j === i);
+    });
+    D.edges.forEach(function (e, j) {
+      edgeEl[j].classList.toggle("dim", !!(hot && !hot[j]));
+      edgeEl[j].classList.toggle("hot", !!(hot && hot[j]));
+    });
+    useEl.forEach(function (u) { u.classList.toggle("dim", !!keep); });
+    if (i >= 0) {
+      if (itemEl[i]) { itemEl[i].setAttribute("aria-current", "true"); itemEl[i].scrollIntoView({ block: "nearest" }); }
+      showInfo(i);
+      requestAnimationFrame(function () { go(fitted(boxOf(D.focus[D.items[i].name].nodes))); });
+      try { history.replaceState(null, "", "#" + D.items[i].name); } catch (e) { /* a file opened from a sandbox */ }
+    } else {
+      info.classList.remove("open");
+      requestAnimationFrame(fitAll);
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignored */ }
+    }
+  }
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && sel >= 0) select(-1); });
+
+  buildList("");
+  vb = fitted(vb); apply();
+  var start = decodeURIComponent((location.hash || "").slice(1));
+  if (start) for (var k = 0; k < D.items.length; k++) if (D.items[k].name === start) { select(k); break; }
+})();
+</script>
+</body>
+</html>
