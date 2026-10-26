@@ -56,132 +56,132 @@ If the parcel and the structure were one table, a demolished house would end the
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_base_parcel
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `base_parcel_bk` | ● | `string` | No | No | — | Identifier of the parcel in the registry of record, or one assigned by the platform when there is no registry |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `base_parcel_key_type`: e.g. `registry_parcel_id`, `customary_tenure_id`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `base_parcel_bk` | ● | `string` | No | No | — | — | Identifier of the parcel in the registry of record, or one assigned by the platform when there is no registry |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `base_parcel_key_type`: e.g. `registry_parcel_id`, `customary_tenure_id`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_parcel__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_base_parcel__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `parcel_kind_code` |  | `string` | No | No | — | What the parcel covers, a value of the list `parcel_kind`: e.g. `land`, `water`, `airspace`, `subsurface` |
-| `land_use_code` |  | `string` | Yes | No | null | How the jurisdiction classifies the use of the parcel, a value of the list `land_use`; empty when not classified: e.g. `residential`, `agricultural`, `forest`, `commercial` |
-| `tenure_type_code` |  | `string` | No | No | — | The kind of tenure over the parcel, a value of the list `tenure_type`: e.g. `freehold`, `leasehold`, `customary`, `state_land` |
-| `registered_area_number` |  | `decimal(18,4)` | Yes | No | null | The area recorded for the parcel, in the unit of `area_unit_code`; empty when none is recorded. Where the shape is known it is worked out in Gold and may differ from this value |
-| `area_basis_code` |  | `string` | Yes | No | null | How the recorded area was obtained, a value of the list `area_basis`; empty when `registered_area_number` is empty: e.g. `measured_from_coordinates`, `written_in_title`, `declared_by_holder`, `estimated` |
-| `area_unit_code` |  | `string` | Yes | No | null | Unit of the registered area, a value of the list `measure_unit`; empty when `registered_area_number` is empty: e.g. `square_metre`, `hectare`, `acre` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `parcel_kind_code` |  | `string` | No | No | — | List | What the parcel covers, a value of the list `parcel_kind`: e.g. `land`, `water`, `airspace`, `subsurface` |
+| `land_use_code` |  | `string` | Yes | No | null | List | How the jurisdiction classifies the use of the parcel, a value of the list `land_use`; empty when not classified: e.g. `residential`, `agricultural`, `forest`, `commercial` |
+| `tenure_type_code` |  | `string` | No | No | — | List | The kind of tenure over the parcel, a value of the list `tenure_type`: e.g. `freehold`, `leasehold`, `customary`, `state_land` |
+| `registered_area_number` |  | `decimal(18,4)` | Yes | No | null | — | The area recorded for the parcel, in the unit of `area_unit_code`; empty when none is recorded. Where the shape is known it is worked out in Gold and may differ from this value |
+| `area_basis_code` |  | `string` | Yes | No | null | List | How the recorded area was obtained, a value of the list `area_basis`; empty when `registered_area_number` is empty: e.g. `measured_from_coordinates`, `written_in_title`, `declared_by_holder`, `estimated` |
+| `area_unit_code` |  | `string` | Yes | No | null | List | Unit of the registered area, a value of the list `measure_unit`; empty when `registered_area_number` is empty: e.g. `square_metre`, `hectare`, `acre` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__boundary
 
 A parcel with no survey is known by words or by a natural feature, as in customary tenure. This Satellite is personal data because the words can name neighbours. The surveyed shape, when there is one, is not here: it is a Location (see Modeling considerations).
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `boundary_type_code` |  | `string` | No | No | — | How the boundary is known, a value of the list `boundary_type`: e.g. `surveyed`, `textual`, `natural_feature`, `customary` |
-| `boundary_text` |  | `string` | Yes | Yes | null | The boundary in words, for a parcel with no survey: e.g. `from the large banyan tree to the river bend, then along the footpath`. It can name neighbours, so it is personal data; empty when the boundary is a surveyed shape |
-| `agreed_date` |  | `date` | Yes | No | null | The day the boundary was agreed, surveyed or witnessed; empty when unknown |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a survey plan, a sketch map or a record of the witnesses; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://sketch/k-44`, `artifact://witness/w-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `boundary_type_code` |  | `string` | No | No | — | List | How the boundary is known, a value of the list `boundary_type`: e.g. `surveyed`, `textual`, `natural_feature`, `customary` |
+| `boundary_text` |  | `string` | Yes | Yes | null | — | The boundary in words, for a parcel with no survey: e.g. `from the large banyan tree to the river bend, then along the footpath`. It can name neighbours, so it is personal data; empty when the boundary is a surveyed shape |
+| `agreed_date` |  | `date` | Yes | No | null | — | The day the boundary was agreed, surveyed or witnessed; empty when unknown |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a survey plan, a sketch map or a record of the witnesses; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://sketch/k-44`, `artifact://witness/w-9`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__characteristic
 
 The characteristics of a parcel are an open list, so each is a row and not a column (Principles, "Traits as rows"). A new characteristic is a new value of the Code List `parcel_characteristic` and changes no table. The Code List says, for each one, which value column is used (`value_data_type_code`), and the load checks the value against it. A characteristic that is not personal data has no in-place twin: history is kept.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `trait_code` |  | `string` | No | No | — | Which characteristic this row holds, a value of the list `parcel_characteristic`: e.g. `soil_type`, `access_road`, `slope_percent`, `flood_zone` |
-| `value_text` |  | `string` | Yes | No | null | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
-| `value_number` |  | `decimal(18,6)` | Yes | No | null | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
-| `measure_unit_code` |  | `string` | Yes | No | null | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `square_metre`, `percent` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `trait_code` |  | `string` | No | No | — | List | Which characteristic this row holds, a value of the list `parcel_characteristic`: e.g. `soil_type`, `access_road`, `slope_percent`, `flood_zone` |
+| `value_text` |  | `string` | Yes | No | null | — | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
+| `value_number` |  | `decimal(18,6)` | Yes | No | null | — | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `square_metre`, `percent` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__valuation
 
 One row for each valuation and each change of its status. The value, the method and the status are one fact, so they share a Satellite. The row of a status change repeats the value, and the earlier rows stay. Which method a jurisdiction uses, which status changes are allowed and who decides them are values and rules of the Code List (`valuation_method`, `valuation_status`). The definitive value is not stored: the Gold view `cur_base_parcel__valuation_definitive` returns, for each parcel, the accepted valuation with the latest `valuation_date` (R13).
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `valuation_ref` |  | `string` | No | No | — | Identifier of the valuation in the source of record, part of the grain so that several valuations of one parcel can be open at once: e.g. `V-2026-0412`, `REVAL-2025-77`, `OBJ-12` |
-| `valuation_method_code` |  | `string` | No | No | — | The method by which the value was worked out, a value of the list `valuation_method` that the jurisdiction sets: e.g. `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
-| `value_amount` |  | `decimal(18,2)` | No | No | — | The value, in the currency of `currency_code`: e.g. `185000.00`, `1250000.00`, `42500.00` |
-| `currency_code` |  | `string` | No | No | — | Currency of the value, ISO 4217: e.g. `WST`, `PGK`, `NZD` |
-| `valuation_date` |  | `date` | No | No | — | The day the value refers to, which is not the day it was entered |
-| `valuation_status_code` |  | `string` | No | No | `draft` | Where the valuation stands in the process of the jurisdiction. One of `draft` (being prepared, no effect), `submitted` (sent for decision), `accepted` (approved, and may be used as the definitive value), `rejected` (refused, never used), `withdrawn` (taken back before a decision) |
-| `decision_date` |  | `date` | Yes | No | null | The day the status became `accepted`, `rejected` or `withdrawn`; empty while the valuation is a draft or submitted |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the valuation report or the decision; only the pointer is stored: e.g. `artifact://valuation/v-0412`, `artifact://decision/d-2026-88`, `artifact://report/r-31`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `valuation_ref` |  | `string` | No | No | — | — | Identifier of the valuation in the source of record, part of the grain so that several valuations of one parcel can be open at once: e.g. `V-2026-0412`, `REVAL-2025-77`, `OBJ-12` |
+| `valuation_method_code` |  | `string` | No | No | — | List | The method by which the value was worked out, a value of the list `valuation_method` that the jurisdiction sets: e.g. `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `value_amount` |  | `decimal(18,2)` | No | No | — | — | The value, in the currency of `currency_code`: e.g. `185000.00`, `1250000.00`, `42500.00` |
+| `currency_code` |  | `string` | No | No | — | List | Currency of the value, ISO 4217: e.g. `WST`, `PGK`, `NZD` |
+| `valuation_date` |  | `date` | No | No | — | — | The day the value refers to, which is not the day it was entered |
+| `valuation_status_code` |  | `string` | No | No | `draft` | Closed | Where the valuation stands in the process of the jurisdiction. One of `draft` (being prepared, no effect), `submitted` (sent for decision), `accepted` (approved, and may be used as the definitive value), `rejected` (refused, never used), `withdrawn` (taken back before a decision) |
+| `decision_date` |  | `date` | Yes | No | null | — | The day the status became `accepted`, `rejected` or `withdrawn`; empty while the valuation is a draft or submitted |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the valuation report or the decision; only the pointer is stored: e.g. `artifact://valuation/v-0412`, `artifact://decision/d-2026-88`, `artifact://report/r-31`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__identification
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `identification_type_code` |  | `string` | No | No | — | Kind of document or number, a value of the list `base_parcel_identification_type`: e.g. `cadastral_number`, `title_deed_number`, `survey_plan_number`, `customary_land_register_number` |
-| `identification_id` |  | `string` | No | No | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `CAD-77-0412`, `TD-2210`, `SP-1198` |
-| `issuing_jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `issued_by_code` |  | `string` | Yes | No | null | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `land_registry`, `survey_office`, `building_authority` |
-| `issue_date` |  | `date` | Yes | No | null | When the document was issued; empty when unknown |
-| `expiry_date` |  | `date` | Yes | No | null | When the document stops being valid; empty if it does not expire |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `identification_type_code` |  | `string` | No | No | — | List | Kind of document or number, a value of the list `base_parcel_identification_type`: e.g. `cadastral_number`, `title_deed_number`, `survey_plan_number`, `customary_land_register_number` |
+| `identification_id` |  | `string` | No | No | — | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `CAD-77-0412`, `TD-2210`, `SP-1198` |
+| `issuing_jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `issued_by_code` |  | `string` | Yes | No | null | List | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `land_registry`, `survey_office`, `building_authority` |
+| `issue_date` |  | `date` | Yes | No | null | — | When the document was issued; empty when unknown |
+| `expiry_date` |  | `date` | Yes | No | null | — | When the document stops being valid; empty if it does not expire |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__registration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` |  | `string` | No | No | — | Why the base parcel was registered, a value of the list `parcel_registration_basis`: e.g. `survey`, `title_deed`, `customary_testimony`, `court_order` |
-| `registration_date` |  | `date` | No | No | — | When the base parcel was registered on this basis |
-| `identification_type_code` |  | `string` | Yes | No | null | Which identifier this evidence supports, a value of the list `base_parcel_identification_type`; empty when the evidence supports the registration as a whole: e.g. `cadastral_number`, `title_deed_number`, `building_permit_number` |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a survey plan, a title deed or a signed testimony of the village chief; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://deed/d-3301`, `artifact://testimony/t-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `registration_basis_code` |  | `string` | No | No | — | List | Why the base parcel was registered, a value of the list `parcel_registration_basis`: e.g. `survey`, `title_deed`, `customary_testimony`, `court_order` |
+| `registration_date` |  | `date` | No | No | — | — | When the base parcel was registered on this basis |
+| `identification_type_code` |  | `string` | Yes | No | null | List | Which identifier this evidence supports, a value of the list `base_parcel_identification_type`; empty when the evidence supports the registration as a whole: e.g. `cadastral_number`, `title_deed_number`, `building_permit_number` |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a survey plan, a title deed or a signed testimony of the village chief; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://deed/d-3301`, `artifact://testimony/t-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__location__usage
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_parcel__location_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` |  | `string` | No | No | — | How the parcel is placed, a value of the list `immovable_asset_location_role`: e.g. `boundary`, `footprint`, `entrance`, `address` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the place applies to the parcel; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the place applies to the parcel; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a survey or a plan; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://plan/p-18`, `artifact://map/m-7`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_parcel__location_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `role_code` |  | `string` | No | No | — | List | How the parcel is placed, a value of the list `immovable_asset_location_role`: e.g. `boundary`, `footprint`, `entrance`, `address` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the place applies to the parcel; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the place applies to the parcel; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a survey or a plan; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://plan/p-18`, `artifact://map/m-7`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

@@ -6,7 +6,7 @@ Three tables have a layout of their own (the others keep Confluence's default):
   Vault objects  Type and Name fit their texts on one line. Definition and Business key have the same width, and
                  Grain is the wildcard: table width - Definition - Business key - Type - Name.
   Fields         Every Fields table of the page shares the same widths. Column and Type fit their texts on one line,
-                 Role, Null, PII and Default share one narrow width, and Description takes the rest.
+                 Role, Null, PII and Default share one narrow width, Code List fits its header, and Description takes the rest.
 
 Vault objects and Fields cover the whole width of a page that is set to the wide appearance (PAGE_WIDTH). Widths are
 measured with Pillow in Arial and Courier New, then scaled, because the fonts of Confluence are wider.
@@ -26,7 +26,7 @@ SANS_PX = 14
 
 HEADER = ["Field", "Value"]
 VAULT = ["Type", "Name", "Definition", "Grain", "Business key"]
-FIELDS = ["Column", "Role", "Type", "Null", "PII", "Default", "Description"]
+FIELDS = ["Column", "Role", "Type", "Null", "PII", "Default", "Code List", "Description"]
 SHARED = ("Role", "Null", "PII", "Default")  # the four Fields columns that share one width
 PARAGRAPH_COLUMNS = ("Definition", "Description")
 
@@ -86,8 +86,9 @@ def fields_widths(bodies: list[list[list[str]]], total: int = PAGE_WIDTH) -> lis
     col = {name: [r[i] for r in rows] for i, name in enumerate(FIELDS)}
     shared = max(fit(name, col[name]) for name in SHARED)
     column_w, type_w = fit("Column", col["Column"]), fit("Type", col["Type"])
-    description = total - column_w - type_w - 4 * shared
-    return [column_w, shared, type_w, shared, shared, shared, description]
+    code_list_w = fit("Code List", col["Code List"])
+    description = total - column_w - type_w - 4 * shared - code_list_w
+    return [column_w, shared, type_w, shared, shared, shared, code_list_w, description]
 
 
 def document_widths(markdown: str) -> dict[str, list[int]]:

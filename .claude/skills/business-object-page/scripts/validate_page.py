@@ -211,6 +211,36 @@ def _type_ok(t: str) -> bool:
     return t in TYPES or bool(DECIMAL_RE.match(t)) or bool(FIXED_RE.match(t))
 
 
+def is_closed_description(desc: str) -> bool:
+    """A closed list is written in the Description with `One of` (or `Only`); a list value shows `e.g.` instead."""
+    return "e.g." not in desc and (desc.startswith(("One of", "Only")) or ". One of" in desc or ". Only" in desc)
+
+
+def expected_code_list_flag(table: str, col: str, desc: str) -> str:
+    """List, Closed or — for a column, from its name and its Description."""
+    if not col.endswith("_code") or col in NOT_A_LIST or f"{table}.{col}" in NOT_A_LIST:
+        return "—"
+    return "Closed" if is_closed_description(desc) else "List"
+
+
+def code_list_table(text: str) -> dict[str, list[str]]:
+    """The rows of the Code List page table "Which code columns are values of a Code List", as
+    `{"<vault table>.<column>": [Column, Where its values live, Why, Examples]}`."""
+    rows: dict[str, list[str]] = {}
+    inside = False
+    for line in parse_lines(text):
+        if line.startswith(CODE_LIST_BULLET):
+            inside = True
+        elif inside and line.startswith("- **"):
+            break
+        elif inside and line.startswith("| `"):
+            cells = _cells(line)
+            m = CODE_LIST_ROW_RE.match(cells[0])
+            if m:
+                rows[cells[0].strip("`")] = cells
+    return rows
+
+
 def _check_examples(table: str, col: str, desc: str) -> list[str]:
     """A _code column says what values look like: e.g. with three or more, or a closed list."""
     if "e.g." in desc:
@@ -371,6 +401,12 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
                     errs.append(f"fields: '{name}.{col}' must be Null No with Default `{sentinel}` (an open validity range uses the sentinel)")
             if col.endswith("_code"):
                 errs += _check_examples(name, col, r.get("Description", ""))
+            flag, want_flag = r.get("Code List", "").strip(), expected_code_list_flag(name, col, r.get("Description", ""))
+            if flag not in CODE_LIST_FLAGS:
+                errs.append(f"codelist: '{name}.{col}' Code List must be List, Closed or —, found '{flag}'")
+            elif flag != want_flag:
+                errs.append(f"codelist: '{name}.{col}' Code List must be {want_flag}, found '{flag}' "
+                            f"(a `_code` column is a List, or Closed when its Description says One of; any other column is —)")
             expected = _expected_role(col, kind, name)
             if r.get("Role", "").strip() != expected:
                 want = f"'{expected}' ({ROLES[expected]})" if expected else "no indicator"
@@ -403,6 +439,33 @@ def check_vault_objects(page: Page, approved: frozenset[str]) -> list[str]:
     return errs
 
 
+def check_code_list_rows(page: Page, text: str, base_dir: Path | None) -> list[str]:
+    """The Code List flags of this page and the rows of the Code List page agree, in both directions."""
+    own = CODE_LIST_BULLET in text
+    other = (base_dir / "Code_List.md") if base_dir else None
+    if not own and not (other and other.is_file()):
+        return []
+    rows = code_list_table(text if own else other.read_text(encoding="utf-8"))
+    fields = _fields_tables(page)
+    errs: list[str] = []
+    flagged = {}
+    for table, table_rows in fields.items():
+        for r in table_rows:
+            flag = r.get("Code List", "").strip()
+            if flag in ("List", "Closed"):
+                flagged[f"{table}.{_strip(r.get('Column', ''))}"] = flag
+    for key, flag in flagged.items():
+        if key not in rows:
+            errs.append(f"codelist: '{key}' is flagged {flag} but the Code List page has no row for it")
+        elif (flag == "Closed") != rows[key][1].startswith("Closed list"):
+            errs.append(f"codelist: '{key}' is flagged {flag} but its row on the Code List page says '{rows[key][1][:40]}'")
+    for key in rows:
+        table = key.split(".", 1)[0]
+        if table in fields and key not in flagged:
+            errs.append(f"codelist: the Code List page has a row for '{key}' but the column is not flagged List or Closed")
+    return errs
+
+
 def parse_lines(text: str) -> list[str]:
     cr, lf = chr(13), chr(10)
     return text.replace(cr + lf, lf).replace(cr, lf).split(lf)
@@ -429,6 +492,7 @@ def validate(text: str, base_dir: Path | None = None, approved: frozenset[str] =
     errs += check_jurisdictions(page)
     errs += check_diagram(page, base_dir)
     errs += check_decisions(page)
+    errs += check_code_list_rows(page, text, base_dir)
     return errs
 
 SOURCES_EMPTY = "No endpoints declared yet"
@@ -439,7 +503,13 @@ JURISDICTION_COLUMNS = ["Edge case", "Where it happens", "Approach", "Vault effe
 DECISION_COLUMNS = ["Decision", "Owner", "How it is decided", "Decide by"]
 BRONZE_RE = re.compile(r"^bronze\.[a-z0-9_]+__[a-z0-9_]+$")
 IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+\.png)\)")
-FIELD_COLUMNS = ["Column", "Role", "Type", "Null", "PII", "Default", "Description"]
+FIELD_COLUMNS = ["Column", "Role", "Type", "Null", "PII", "Default", "Code List", "Description"]
+CODE_LIST_FLAGS = ("List", "Closed", "—")
+# `_code` columns whose values are not a list: a postal code is an address value; the roles of the platform belong to
+# its access control, not to the Code List. A name alone covers the column everywhere; `table.column` covers one.
+NOT_A_LIST = frozenset({"postal_code", "sat_code_list__access.role_code"})
+CODE_LIST_BULLET = "- **Which code columns are values of a Code List"
+CODE_LIST_ROW_RE = re.compile(r"^`([a-z0-9_]+)\.([a-z0-9_]+)`$")
 ROLES = {"◆": "own hash key", "◇": "hash key of another object", "●": "business key", "▪": "load metadata", "Δ": "hashdiff"}
 
 

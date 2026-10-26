@@ -36,30 +36,30 @@ The links from the two specific objects to `hub_party` are defined on their own 
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_party
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `party_hk` | ◆ | `string` | No | No | — | Hash key, from the business key |
-| `party_bk` | ● | `string` | No | No | — | The party identifier assigned by Nexus |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `party_hk` | ◆ | `string` | No | No | — | — | Hash key, from the business key |
+| `party_bk` | ● | `string` | No | No | — | — | The party identifier assigned by Nexus |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_party__sensitivity
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `party_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `sensitivity_level_code` | | `string` | No | No | — | How sensitive the party is, a value of the list `sensitivity_level`; the levels and their names are decided by Platform and the Data Product Owner: e.g. `standard`, `restricted`, `high` |
-| `reason_code` | | `string` | No | No | — | Why the party has this level, a value of the list `sensitivity_reason`: e.g. `high_income`, `public_office`, `security_risk` |
-| `effective_date` | | `date` | No | No | `1900-01-01` | First day the level applies; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day the level applies; `9999-12-31` while it still does. When a new row starts, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the decision record held in Digital Artifact; only the pointer is stored: e.g. `artifact://sensitivity/s-310`, `artifact://decision/d-77`, `artifact://review/r-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `party_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `sensitivity_level_code` |  | `string` | No | No | — | List | How sensitive the party is, a value of the list `sensitivity_level`; the levels and their names are decided by Platform and the Data Product Owner: e.g. `standard`, `restricted`, `high` |
+| `reason_code` |  | `string` | No | No | — | List | Why the party has this level, a value of the list `sensitivity_reason`: e.g. `high_income`, `public_office`, `security_risk` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the level applies; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the level applies; `9999-12-31` while it still does. When a new row starts, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to the decision record held in Digital Artifact; only the pointer is stored: e.g. `artifact://sensitivity/s-310`, `artifact://decision/d-77`, `artifact://review/r-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

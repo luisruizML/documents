@@ -44,102 +44,102 @@ The hash keys `code_list_hk` and `code_value_hk` are computed from the normalize
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_code_list
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_list_hk` | ◆ | `string` | No | No | — | Hash key, from the business key |
-| `code_list_bk` | ● | `string` | No | No | — | Name of the list: e.g. `gender`, `jurisdiction`, `key_type` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_list_hk` | ◆ | `string` | No | No | — | — | Hash key, from the business key |
+| `code_list_bk` | ● | `string` | No | No | — | — | Name of the list: e.g. `gender`, `jurisdiction`, `key_type` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### hub_code_value
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_value_hk` | ◆ | `string` | No | No | — | Hash key, from the business key |
-| `code_value_bk` | ● | `string` | No | No | — | List name and code joined by a colon: e.g. `gender:female`, `jurisdiction:PNG`, `key_type:census_id` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_value_hk` | ◆ | `string` | No | No | — | — | Hash key, from the business key |
+| `code_value_bk` | ● | `string` | No | No | — | — | List name and code joined by a colon: e.g. `gender:female`, `jurisdiction:PNG`, `key_type:census_id` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_code_list__code_value
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_list_hk` | ◇ | `string` | No | No | — | Hash key of the code list |
-| `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the code value |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_list_hk` | ◇ | `string` | No | No | — | — | Hash key of the code list |
+| `code_value_hk` | ◇ | `string` | No | No | — | — | Hash key of the code value |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_code_value__label
 
 One row for each value and language. A jurisdiction with more than one official language has one row for each; a reader asks for a language and, when there is no row, falls back to the default language of the jurisdiction and then to `en`.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `language_code` | | `string` | No | No | — | Language of the label, BCP 47: e.g. `en`, `fr`, `sm` |
-| `label_short_name` | | `string` | Yes | No | null | Short name for small screens such as a phone: e.g. `F`, `PNG`, `Census id`; empty when `label_name` is short enough |
-| `label_name` | | `string` | No | No | — | Name shown to people on a tablet or a computer: e.g. `Female`, `Papua New Guinea`, `Census identifier` |
-| `description_text` | | `string` | Yes | No | null | What the value means, when the label is not enough |
-| `sort_order` | | `int` | No | No | `0` | Position when the list is shown in this language: e.g. `1`, `2`, `3` |
-| `status_code` | | `string` | No | No | — | One of `draft`, `active`, `retired` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_value_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `language_code` |  | `string` | No | No | — | List | Language of the label, BCP 47: e.g. `en`, `fr`, `sm` |
+| `label_short_name` |  | `string` | Yes | No | null | — | Short name for small screens such as a phone: e.g. `F`, `PNG`, `Census id`; empty when `label_name` is short enough |
+| `label_name` |  | `string` | No | No | — | — | Name shown to people on a tablet or a computer: e.g. `Female`, `Papua New Guinea`, `Census identifier` |
+| `description_text` |  | `string` | Yes | No | null | — | What the value means, when the label is not enough |
+| `sort_order` |  | `int` | No | No | `0` | — | Position when the list is shown in this language: e.g. `1`, `2`, `3` |
+| `status_code` |  | `string` | No | No | — | Closed | One of `draft`, `active`, `retired` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_code_value__validation
 
 The data type says which value column a consumer reads (R11): a trait such as `height` is a `decimal`, so its value is read from `value_number`, and a trait such as `blood_type` is a `string`, so it is read from `value_text`. Because the type is declared once here, the load casts each value once and parks a value that does not fit (R8). The pattern is a form check, not proof that the document exists.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) the pattern applies to, ISO 3166-1 alpha-3, or `any`: e.g. `COL`, `CUW`, `any` |
-| `value_data_type_code` | | `string` | No | No | — | Type of the values that use this code. One of `string`, `integer`, `decimal`, `date`, `boolean` |
-| `measure_unit_code` | | `string` | Yes | No | null | Usual unit of a numeric value, a value of the list `measure_unit`: e.g. `cm`, `kg`, `percent`; empty when the value has no unit |
-| `max_depth_count` | | `int` | Yes | No | null | Most levels a hierarchy of this kind may have, for a value that names a kind of hierarchy: e.g. `2`, `3`, `5`; empty for any other value |
-| `validation_pattern_text` | | `string` | Yes | No | null | Regular expression the written form must match: e.g. `^[A-Z]{2}[0-9]{6}$`, `^[0-9]{6,10}$`; empty when there is no rule |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_value_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) the pattern applies to, ISO 3166-1 alpha-3, or `any`: e.g. `COL`, `CUW`, `any` |
+| `value_data_type_code` |  | `string` | No | No | — | Closed | Type of the values that use this code. One of `string`, `integer`, `decimal`, `date`, `boolean` |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Usual unit of a numeric value, a value of the list `measure_unit`: e.g. `cm`, `kg`, `percent`; empty when the value has no unit |
+| `max_depth_count` |  | `int` | Yes | No | null | — | Most levels a hierarchy of this kind may have, for a value that names a kind of hierarchy: e.g. `2`, `3`, `5`; empty for any other value |
+| `validation_pattern_text` |  | `string` | Yes | No | null | — | Regular expression the written form must match: e.g. `^[A-Z]{2}[0-9]{6}$`, `^[0-9]{6,10}$`; empty when there is no rule |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_code_value__applicability
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_value_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) where the value is allowed, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `PNG`, `WSM`, `any` |
-| `party_type_code` | | `string` | No | No | `any` | Kind of party the value is allowed for. One of `natural_person`, `legal_entity`, `any`; `any` when the value does not depend on the kind of party |
-| `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the value is allowed there; `1900-01-01` when it has always been allowed |
-| `valid_to_date` | | `date` | No | No | `9999-12-31` | Last day the value is allowed there; `9999-12-31` while it is still allowed. When a newer row starts for the same value and jurisdiction, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_value_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) where the value is allowed, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `PNG`, `WSM`, `any` |
+| `party_type_code` |  | `string` | No | No | `any` | Closed | Kind of party the value is allowed for. One of `natural_person`, `legal_entity`, `any`; `any` when the value does not depend on the kind of party |
+| `valid_from_date` |  | `date` | No | No | `1900-01-01` | — | First day the value is allowed there; `1900-01-01` when it has always been allowed |
+| `valid_to_date` |  | `date` | No | No | `9999-12-31` | — | Last day the value is allowed there; `9999-12-31` while it is still allowed. When a newer row starts for the same value and jurisdiction, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_code_list__usage
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_list_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `usage_object_name` | | `string` | No | No | — | Vault object that uses the list: e.g. `hub_natural_person`, `sat_natural_person__demographics`, `sat_natural_person__identification` |
-| `usage_column_name` | | `string` | No | No | — | Column of that object that takes its values from the list: e.g. `jurisdiction_code`, `gender_code`, `issuing_jurisdiction_code` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_list_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `usage_object_name` |  | `string` | No | No | — | — | Vault object that uses the list: e.g. `hub_natural_person`, `sat_natural_person__demographics`, `sat_natural_person__identification` |
+| `usage_column_name` |  | `string` | No | No | — | — | Column of that object that takes its values from the list: e.g. `jurisdiction_code`, `gender_code`, `issuing_jurisdiction_code` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_code_list__access
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `code_list_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `role_code` | | `string` | No | No | — | Role the rule applies to: e.g. `registrar`, `auditor`, `analyst` |
-| `access_code` | | `string` | No | No | — | One of `read`, `read_masked`, `none` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `code_list_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `role_code` |  | `string` | No | No | — | — | Role the rule applies to: e.g. `registrar`, `auditor`, `analyst` |
+| `access_code` |  | `string` | No | No | — | Closed | One of `read`, `read_masked`, `none` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 
@@ -209,26 +209,192 @@ A value that is later given a new rule gets a new row, and the loader closes the
 - **Applicability is a scenario, not a copy.** The same value is one row; where and when it is allowed is in `sat_code_value__applicability`.
 - **A value can be limited to a kind of party.** `party_type_code` in `sat_code_value__applicability` says whether a value is for natural persons, legal entities or both. The load checks the value of a column against the kind of owner of the row: the table itself says it where each kind has its own Satellite or Link, as for the places of persons and entities, so no lookup is needed. A row that does not fit is parked with the reason, not rejected. The table itself accepts any combination.
 - **Access is enforced by Platform.** `sat_code_list__access` records the rule; the role-based access control of the platform applies it.
-- **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. The columns of the five pages:
+- **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. Every such column has one row below, named `<vault table>.<column>` so that a repeated name such as `role_code` is never ambiguous, and is flagged `List` or `Closed` in the Code List column of its Fields table. The validator checks that the flag and the row agree in both directions, and the gray dashed lines of the diagrams are read from these rows. The examples are the values the page of the column already gives:
 
-| **Column** | **Where its values live** | **Why** |
-| --- | --- | --- |
-| `jurisdiction_code`, `issuing_jurisdiction_code`, `event_place_jurisdiction_code` | List `jurisdiction` (ISO 3166-1: a country or a territory with its own code) | One list for every column that names a country or territory |
-| `key_type_code`, `name_type_code`, `identification_type_code`, `registration_basis_code`, `issued_by_code` | Lists `key_type`, `name_type`, `identification_type`, `registration_basis`, `issuer` | Each jurisdiction has its own values |
-| `script_code`, `language_code` | Lists `script` (ISO 15924) and `language` (BCP 47) | External standards, loaded as lists |
-| `gender_code`, `affiliation_type_code`, `affiliation_value_code` | Lists `gender`, `affiliation_type`, and one list for each affiliation type (`ethnicity`, `tribe`, `religion`) | Set by each jurisdiction and restricted by role |
-| `trait_code`, `measure_unit_code` | Lists `physical_trait` and `measure_unit` | A new trait or unit is a new value, not a new column |
-| `event_code` | Lists `person_event` and `legal_entity_event` | A new kind of event changes no table |
-| `relationship_type_code`, `end_reason_code`, `responsibility_basis_code` | Lists with the same names without `_code` | The values differ by jurisdiction |
-| `hierarchy_type_code` | List `legal_entity_hierarchy_type` | Each kind of grouping between legal entities is a value, with its own depth limit |
-| `hierarchy_type_code` (zones) | List `zone_hierarchy_type` | Each kind of division of the territory is a value, with its own depth limit |
-| `zone_scheme_code`, `zone_level_code`, `address_key_type`, `role_code` (place), `geometry_type_code`, `srs_code`, `accuracy_unit_code` | Lists `zone_scheme`, `zone_level`, `address_key_type`, `location_role`, `geometry_type`, `spatial_reference_system`, and the values of `measure_unit` | The Location page: each jurisdiction has its own zones and address keys, and a new kind of place or system is a value |
-| `criterion_code`, `classification_code`, `community_code`, `role_code` (representation), `registration_basis_code` (legal entity) | Lists `legal_form`, `classification_criterion`, one list for each criterion, `community`, `representation_role`, `legal_entity_registration_basis` | A value changes without any rule changing |
-| `sensitivity_level_code`, `reason_code` (sensitivity) | Lists `sensitivity_level`, `sensitivity_reason` | The levels are decided by Platform; `sensitivity_level_code` becomes a closed list if the access rules branch on it (open decision on the Party page) |
-| `parcel_kind_code`, `land_use_code`, `tenure_type_code`, `area_basis_code`, `boundary_type_code`, `structure_type_code`, `valuation_method_code`, `currency_code`, `role_code` (immovable asset) | Lists `parcel_kind`, `land_use`, `tenure_type`, `area_basis`, `boundary_type`, `structure_type`, `valuation_method` (with the data each method needs, see the Base Parcel page), `currency` (ISO 4217) and `immovable_asset_location_role`; the traits of a parcel and of a structure are the lists `parcel_characteristic` and `structure_characteristic` | The Base Parcel and Built Structure pages: each jurisdiction has its own land classification, tenure and valuation methods, and a new one is a value |
-| `asset_kind_code`, `asset_class_code`, `flag_state_code`, `registry_type_code`, `component_kind_code`, `position_code`, `model_kind_code`, `role_code` (movable asset) | Lists `asset_kind`, `asset_class`, `flag_registry_type`, `component_kind`, `component_position`, `component_hierarchy_type`, `model_kind` and `movable_asset_location_role`; the traits of an asset, a part and a model are the lists `asset_characteristic`, `component_characteristic` and `model_characteristic`; `flag_state_code` takes ISO 3166-1 alpha-3 values | The Movable Assets pages: each jurisdiction has its own classes of assets and registries, and a new one is a value |
-| `entitlement_type_code`, `activity_code`, `quota_type_code`, `period_code`, `credential_type_code`, `rrr_type_code`, `derivation_type_code`, `issuing_authority_code`, `imposed_by_code` | Lists `entitlement_type`, `entitlement_activity`, `quota_type`, `quota_period`, `credential_type`, `rrr_type` (which says the class of each type and which types are ownership), `rrr_derivation_type` and `issuer`; the keys, the registration bases and the reasons are the lists `entitlement_key_type`, `credential_key_type`, `rrr_key_type`, `rrr_registration_basis`, `entitlement_status_reason` and `credential_status_reason` | The Legal pages: each jurisdiction has its own rights, licences, credentials and kinds of bond, and a new one is a value; the authority that issues is a value of the platform configuration |
-| `status_code`, `event_status_code`, `relationship_status_code`, `value_data_type_code`, `party_type_code`, `access_code`, `mechanism_code`, `holding_type_code`, `liquidity_status_code`, `vesting_status_code`, `valuation_status_code`, `rrr_class_code`, `participation_role_code`, `form_code` | Closed lists, written in the Description | A rule branches on each value |
+| **Column** | **Where its values live** | **Why** | **Examples** |
+| --- | --- | --- | --- |
+| `sat_party__sensitivity.sensitivity_level_code` | List `sensitivity_level` | The levels are decided by Platform; the column becomes a closed list if the access rules branch on it (open decision on the Party page) | `standard`, `restricted`, `high` |
+| `sat_party__sensitivity.reason_code` | List `sensitivity_reason` | The reasons are decided by Platform, and a new one is a value | `high_income`, `public_office`, `security_risk` |
+| `hub_natural_person.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `PNG` (Papua New Guinea), `WSM` (Samoa), `NZL` (New Zealand) |
+| `hub_natural_person.key_type_code` | List `key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_person_id`, `civil_registry_number`, `census_id` |
+| `sat_natural_person__name.name_type_code` | List `name_type` | Each jurisdiction has its own kinds of name | `legal_name`, `alias`, `tribal_title`, `community_alias` |
+| `sat_natural_person__name.script_code` | List `script` (ISO 15924) | An external standard (ISO 15924), loaded as a list so every column reads the same way | `Latn` (Latin), `Cyrl` (Cyrillic), `Arab` (Arabic) |
+| `sat_natural_person__identification.identification_type_code` | List `identification_type` | Each jurisdiction has its own kinds of document and number | `passport`, `residence_permit`, `national_identity_number`, `community_card` |
+| `sat_natural_person__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `NZL` (New Zealand), `WSM` (Samoa), `PNG` (Papua New Guinea) |
+| `sat_natural_person__identification.issued_by_code` | List `issuer` | Each jurisdiction has its own authorities; the list `issuer` is kept by the platform configuration | `civil_registry`, `immigration_office`, `road_transport_authority` |
+| `sat_natural_person__registration.registration_basis_code` | List `registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `document`, `biometric`, `testimony`, `census` |
+| `sat_natural_person__lifecycle.event_code` | List `person_event` | A new kind of event changes no table | `birth`, `immigration`, `emigration`, `declared_missing`, `found`, `death`, `repatriation`, `burial` |
+| `sat_natural_person__lifecycle.event_place_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `PNG` (Papua New Guinea), `CUW` (Curaçao), `NZL` (New Zealand) |
+| `sat_natural_person__lifecycle.event_status_code` | Closed list, written in the Description | A rule branches on each value | `recorded`, `voided` |
+| `sat_natural_person__demographics.gender_code` | List `gender` | Set by each jurisdiction and restricted by role | `male`, `female`, `non_binary`, `unspecified` |
+| `sat_natural_person__demographics_history.gender_code` | List `gender` | Set by each jurisdiction and restricted by role | `male`, `female`, `non_binary`, `unspecified` |
+| `sat_natural_person__physical_traits.trait_code` | List `physical_trait` | A new trait is a new value, not a new column | `height`, `weight`, `blood_type` |
+| `sat_natural_person__physical_traits.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `cm`, `kg`, `lb` |
+| `sat_natural_person__physical_traits_history.trait_code` | List `physical_trait` | A new trait is a new value, not a new column | `height`, `weight`, `blood_type` |
+| `sat_natural_person__physical_traits_history.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `cm`, `kg`, `lb` |
+| `sat_natural_person__community_affiliation.affiliation_type_code` | List `affiliation_type` | Set by each jurisdiction and restricted by role | `ethnicity`, `tribe`, `religion` |
+| `sat_natural_person__community_affiliation.affiliation_value_code` | One list for each affiliation type (`ethnicity`, `tribe`, `religion`), named by the type | Set by each jurisdiction and restricted by role | `melanesian`, `huli`, `christian` |
+| `sat_natural_person__community_affiliation_history.affiliation_type_code` | List `affiliation_type` | Set by each jurisdiction and restricted by role | `ethnicity`, `tribe`, `religion` |
+| `sat_natural_person__community_affiliation_history.affiliation_value_code` | One list for each affiliation type (`ethnicity`, `tribe`, `religion`), named by the type | Set by each jurisdiction and restricted by role | `melanesian`, `huli`, `christian` |
+| `sat_natural_person__natural_person_relation__relationship.relationship_type_code` | List `relationship_type` | The values differ by jurisdiction | `spouse`, `parent`, `legal_guardian` |
+| `sat_natural_person__natural_person_relation__relationship.relationship_status_code` | Closed list, written in the Description | A rule branches on each value | `active`, `ended` |
+| `sat_natural_person__natural_person_relation__relationship.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `divorce`, `majority`, `death` |
+| `sat_natural_person__natural_person_relation__relationship.responsibility_basis_code` | List `responsibility_basis` | The values differ by jurisdiction | `minority`, `disability`, `court_appointment` |
+| `hub_legal_entity.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_legal_entity.key_type_code` | List `key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `tax_identification_number`, `company_registration_number`, `community_registry_code`, `holding_registry_code` |
+| `sat_legal_entity__name.name_type_code` | List `name_type` | Each jurisdiction has its own kinds of name | `legal_name`, `trading_name`, `community_name`, `alias` |
+| `sat_legal_entity__name.script_code` | List `script` (ISO 15924) | An external standard (ISO 15924), loaded as a list so every column reads the same way | `Latn` (Latin), `Cyrl` (Cyrillic), `Arab` (Arabic) |
+| `sat_legal_entity__identification.identification_type_code` | List `identification_type` | Each jurisdiction has its own kinds of document and number | `tax_identification_number`, `company_registration_number`, `community_registry_code`, `customary_land_registry_code` |
+| `sat_legal_entity__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `sat_legal_entity__identification.community_code` | List `community` | A community is set by each jurisdiction, and a new one is a value | `tari`, `kunai`, `mendi` |
+| `sat_legal_entity__registration.registration_basis_code` | List `legal_entity_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `certificate_of_incorporation`, `tax_registration`, `community_recognition` |
+| `sat_legal_entity__registration.identification_type_code` | List `identification_type` | Each jurisdiction has its own kinds of document and number | `tax_identification_number`, `company_registration_number`, `community_registry_code` |
+| `sat_legal_entity__classification.criterion_code` | List `classification_criterion` | A new way to classify an entity is a value | `formality`, `legal_form`, `sector`, `economic_activity` |
+| `sat_legal_entity__classification.classification_code` | One list for each criterion, named by the criterion (for example `legal_form`, `sector`) | Each criterion has its own classes, and a new class is a value | `corporate`, `public`, `limited_liability_company`, `holding` |
+| `sat_legal_entity__lifecycle.event_code` | List `legal_entity_event` | A new kind of event changes no table | `incorporation`, `formal_recognition`, `dissolution`, `bankruptcy`, `merger`, `restoration` |
+| `sat_legal_entity__lifecycle.event_place_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `sat_legal_entity__lifecycle.event_status_code` | Closed list, written in the Description | A rule branches on each value | `recorded`, `voided` |
+| `sat_legal_entity__natural_person__representation.role_code` | List `representation_role` | A new way for a person to act for an entity is a value | `director`, `representative`, `tribal_chief`, `trustee` |
+| `sat_legal_entity__party_owner__ownership.holding_type_code` | Closed list, written in the Description | A rule branches on each value | `full_ownership`, `bare_ownership`, `usufruct`, `beneficial_ownership`, `legal_nominee`, `synthetic_economic` |
+| `sat_legal_entity__party_owner__ownership.liquidity_status_code` | Closed list, written in the Description | A rule branches on each value | `unrestricted`, `attached_sequestered`, `pledged_retained`, `pledged_cash_sweep`, `escrow_locked` |
+| `sat_legal_entity__party_owner__ownership.vesting_status_code` | Closed list, written in the Description | A rule branches on each value | `fully_vested`, `unvested_subject_to_clawback` |
+| `sat_legal_entity__legal_entity_hierarchy__membership.hierarchy_type_code` | List `legal_entity_hierarchy_type` | Each kind of grouping between legal entities is a value, with its own depth limit | `holding_group`, `branch`, `division`, `government_department` |
+| `sat_legal_entity__legal_entity_hierarchy__membership.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `left_group`, `dissolved`, `merged` |
+| `hub_administrative_zone.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_administrative_zone.zone_scheme_code` | List `zone_scheme` | Each jurisdiction follows its own standards for zones, and a new one is a value | `iso_3166_2`, `national_census`, `electoral` |
+| `hub_address.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_address.key_type_code` | List `address_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_address_id`, `postal_address_id`, `platform_assigned` |
+| `sat_administrative_zone__description.zone_level_code` | List `zone_level` | Each jurisdiction divides its territory into its own levels, and a new level is a value | `province`, `district`, `ward` |
+| `sat_address__description.script_code` | List `script` (ISO 15924) | An external standard (ISO 15924), loaded as a list so every column reads the same way | `Latn` (Latin), `Cyrl` (Cyrillic), `Arab` (Arabic) |
+| `sat_geometry__shape.geometry_type_code` | List `geometry_type` | A new kind of shape is a value | `point`, `line`, `polygon` |
+| `sat_geometry__shape.srs_code` | List `spatial_reference_system` | A new reference system is a value | `EPSG:4326` (WGS 84), `EPSG:3832` (PDC Mercator), `EPSG:2193` (New Zealand Transverse Mercator 2000) |
+| `sat_geometry__shape.accuracy_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `metre`, `kilometre`, `foot` |
+| `sat_administrative_zone__administrative_zone_hierarchy__period.hierarchy_type_code` | List `zone_hierarchy_type` | Each kind of division of the territory is a value, with its own depth limit | `administrative`, `electoral`, `census` |
+| `sat_administrative_zone__administrative_zone_hierarchy__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `border_redrawn`, `merged`, `abolished` |
+| `sat_legal_entity__location__usage.role_code` | List `location_role` | A new way to use a place is a value; `party_type_code` in the Code List limits a value to natural persons or legal entities | `registered_office`, `branch_office`, `mailing_address` |
+| `sat_location__natural_person__usage.role_code` | List `location_role` | A new way to use a place is a value; `party_type_code` in the Code List limits a value to natural persons or legal entities | `residence`, `mailing_address`, `place_of_birth` |
+| `hub_base_parcel.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_base_parcel.key_type_code` | List `base_parcel_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_parcel_id`, `customary_tenure_id`, `platform_assigned` |
+| `sat_base_parcel__description.parcel_kind_code` | List `parcel_kind` | Each jurisdiction has its own land classification, and a new kind is a value | `land`, `water`, `airspace`, `subsurface` |
+| `sat_base_parcel__description.land_use_code` | List `land_use` | Each jurisdiction has its own land classification, and a new use is a value | `residential`, `agricultural`, `forest`, `commercial` |
+| `sat_base_parcel__description.tenure_type_code` | List `tenure_type` | Each jurisdiction has its own forms of tenure, and a new one is a value | `freehold`, `leasehold`, `customary`, `state_land` |
+| `sat_base_parcel__description.area_basis_code` | List `area_basis` | Each jurisdiction records an area in its own ways, and a new way is a value | `measured_from_coordinates`, `written_in_title`, `declared_by_holder`, `estimated` |
+| `sat_base_parcel__description.area_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `square_metre`, `hectare`, `acre` |
+| `sat_base_parcel__boundary.boundary_type_code` | List `boundary_type` | Each jurisdiction knows its boundaries in its own ways, and a new way is a value | `surveyed`, `textual`, `natural_feature`, `customary` |
+| `sat_base_parcel__characteristic.trait_code` | List `parcel_characteristic` | A new trait is a new value, not a new column | `soil_type`, `access_road`, `slope_percent`, `flood_zone` |
+| `sat_base_parcel__characteristic.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `metre`, `square_metre`, `percent` |
+| `sat_base_parcel__valuation.valuation_method_code` | List `valuation_method` | Each jurisdiction has its own valuation methods, and each method needs its own data | `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `sat_base_parcel__valuation.currency_code` | List `currency` (ISO 4217) | An external standard (ISO 4217), loaded as a list | `WST` (Samoan tala), `PGK` (Papua New Guinean kina), `NZD` (New Zealand dollar) |
+| `sat_base_parcel__valuation.valuation_status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `submitted`, `accepted`, `rejected`, `withdrawn` |
+| `sat_base_parcel__identification.identification_type_code` | List `base_parcel_identification_type` | Each jurisdiction has its own kinds of document and number | `cadastral_number`, `title_deed_number`, `survey_plan_number`, `customary_land_register_number` |
+| `sat_base_parcel__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `sat_base_parcel__identification.issued_by_code` | List `issuer` | Each jurisdiction has its own authorities; the list `issuer` is kept by the platform configuration | `land_registry`, `survey_office`, `building_authority` |
+| `sat_base_parcel__registration.registration_basis_code` | List `parcel_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `survey`, `title_deed`, `customary_testimony`, `court_order` |
+| `sat_base_parcel__registration.identification_type_code` | List `base_parcel_identification_type` | Each jurisdiction has its own kinds of document and number | `cadastral_number`, `title_deed_number`, `building_permit_number` |
+| `sat_base_parcel__location__usage.role_code` | List `immovable_asset_location_role` | A new way to place an asset is a value | `boundary`, `footprint`, `entrance`, `address` |
+| `hub_built_structure.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_built_structure.key_type_code` | List `built_structure_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_structure_id`, `permit_structure_id`, `platform_assigned` |
+| `sat_built_structure__description.structure_type_code` | List `structure_type` | Each jurisdiction has its own kinds of structure, and a new one is a value | `house`, `hotel`, `apartment_unit`, `pier`, `wind_turbine` |
+| `sat_built_structure__characteristic.trait_code` | List `structure_characteristic` | A new trait is a new value, not a new column | `toilet_count`, `room_count`, `wall_material`, `floor_count`, `roof_material` |
+| `sat_built_structure__characteristic.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `square_metre`, `metre`, `count` |
+| `sat_built_structure__valuation.valuation_method_code` | List `valuation_method` | Each jurisdiction has its own valuation methods, and each method needs its own data | `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `sat_built_structure__valuation.currency_code` | List `currency` (ISO 4217) | An external standard (ISO 4217), loaded as a list | `WST` (Samoan tala), `PGK` (Papua New Guinean kina), `NZD` (New Zealand dollar) |
+| `sat_built_structure__valuation.valuation_status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `submitted`, `accepted`, `rejected`, `withdrawn` |
+| `sat_built_structure__identification.identification_type_code` | List `built_structure_identification_type` | Each jurisdiction has its own kinds of document and number | `building_permit_number`, `unit_number`, `occupancy_certificate_number`, `street_number` |
+| `sat_built_structure__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `sat_built_structure__identification.issued_by_code` | List `issuer` | Each jurisdiction has its own authorities; the list `issuer` is kept by the platform configuration | `land_registry`, `survey_office`, `building_authority` |
+| `sat_built_structure__registration.registration_basis_code` | List `structure_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `building_permit`, `completion_certificate`, `inspection`, `owner_declaration` |
+| `sat_built_structure__registration.identification_type_code` | List `built_structure_identification_type` | Each jurisdiction has its own kinds of document and number | `cadastral_number`, `title_deed_number`, `building_permit_number` |
+| `sat_base_parcel__built_structure__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `demolished`, `moved`, `parcel_merged` |
+| `sat_built_structure__built_structure_hierarchy__membership.hierarchy_type_code` | List `structure_hierarchy_type` | Each kind of containment of a structure is a value, with its own depth limit | `strata_unit`, `wing`, `annex`, `floor` |
+| `sat_built_structure__built_structure_hierarchy__membership.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `demolished`, `merged`, `reorganized` |
+| `sat_built_structure__location__usage.role_code` | List `immovable_asset_location_role` | A new way to place an asset is a value | `boundary`, `footprint`, `entrance`, `address` |
+| `hub_base_asset.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_base_asset.key_type_code` | List `base_asset_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `imo_number`, `vehicle_identification_number`, `tail_number`, `platform_assigned` |
+| `sat_base_asset__description.asset_kind_code` | List `asset_kind` | Each jurisdiction has its own kinds of assets, and a new one is a value | `vessel`, `aircraft`, `special_vehicle`, `canoe` |
+| `sat_base_asset__description.asset_class_code` | List `asset_class` | Each jurisdiction has its own classes of assets, and a new one is a value | `fishing_vessel`, `helicopter`, `crane_truck` |
+| `sat_base_asset__characteristic.trait_code` | List `asset_characteristic` | A new trait is a new value, not a new column | `length_overall`, `gross_tonnage`, `seat_count`, `engine_count`, `hull_material` |
+| `sat_base_asset__characteristic.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `metre`, `tonne`, `count` |
+| `sat_base_asset__valuation.valuation_method_code` | List `valuation_method` | Each jurisdiction has its own valuation methods, and each method needs its own data | `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `sat_base_asset__valuation.currency_code` | List `currency` (ISO 4217) | An external standard (ISO 4217), loaded as a list | `WST` (Samoan tala), `PGK` (Papua New Guinean kina), `NZD` (New Zealand dollar) |
+| `sat_base_asset__valuation.valuation_status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `submitted`, `accepted`, `rejected`, `withdrawn` |
+| `sat_base_asset__identification.identification_type_code` | List `base_asset_identification_type` | Each jurisdiction has its own kinds of document and number | `hull_number`, `call_sign`, `maritime_mobile_service_identity`, `local_registration_number` |
+| `sat_base_asset__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `VUT` (Vanuatu), `MHL` (Marshall Islands) |
+| `sat_base_asset__identification.issued_by_code` | List `issuer` | Each jurisdiction has its own authorities; the list `issuer` is kept by the platform configuration | `maritime_authority`, `civil_aviation_authority`, `transport_registry` |
+| `sat_base_asset__registration.registration_basis_code` | List `asset_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `builder_certificate`, `bill_of_sale`, `inspection`, `owner_declaration` |
+| `sat_base_asset__registration.identification_type_code` | List `base_asset_identification_type` | Each jurisdiction has its own kinds of document and number | `hull_number`, `engine_serial_number`, `call_sign` |
+| `sat_base_asset__flag.flag_state_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | A flag is a country, so it reads the same list as every column that names one | `MHL` (Marshall Islands), `VUT` (Vanuatu), `WSM` (Samoa) |
+| `sat_base_asset__flag.registry_type_code` | List `flag_registry_type` | Each jurisdiction has its own registries, and a new one is a value | `national_registry`, `open_registry`, `bareboat_charter_registry` |
+| `sat_base_asset__location__usage.role_code` | List `movable_asset_location_role` | A new way to place an asset is a value | `port_of_registry`, `home_port`, `base_location` |
+| `hub_swappable_component.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_swappable_component.key_type_code` | List `swappable_component_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `engine_serial_number`, `manufacturer_part_number`, `platform_assigned` |
+| `sat_swappable_component__description.component_kind_code` | List `component_kind` | A new kind of part is a value | `engine`, `propeller`, `gearbox`, `rotor` |
+| `sat_swappable_component__characteristic.trait_code` | List `component_characteristic` | A new trait is a new value, not a new column | `rated_power`, `fuel_type`, `operating_hours`, `cylinder_count` |
+| `sat_swappable_component__characteristic.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `metre`, `tonne`, `count` |
+| `sat_swappable_component__valuation.valuation_method_code` | List `valuation_method` | Each jurisdiction has its own valuation methods, and each method needs its own data | `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `sat_swappable_component__valuation.currency_code` | List `currency` (ISO 4217) | An external standard (ISO 4217), loaded as a list | `WST` (Samoan tala), `PGK` (Papua New Guinean kina), `NZD` (New Zealand dollar) |
+| `sat_swappable_component__valuation.valuation_status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `submitted`, `accepted`, `rejected`, `withdrawn` |
+| `sat_swappable_component__identification.identification_type_code` | List `swappable_component_identification_type` | Each jurisdiction has its own kinds of document and number | `serial_number`, `type_certificate_number`, `local_part_number` |
+| `sat_swappable_component__identification.issuing_jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `VUT` (Vanuatu), `MHL` (Marshall Islands) |
+| `sat_swappable_component__identification.issued_by_code` | List `issuer` | Each jurisdiction has its own authorities; the list `issuer` is kept by the platform configuration | `maritime_authority`, `civil_aviation_authority`, `transport_registry` |
+| `sat_swappable_component__registration.registration_basis_code` | List `component_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `maker_certificate`, `bill_of_sale`, `inspection`, `owner_declaration` |
+| `sat_swappable_component__registration.identification_type_code` | List `swappable_component_identification_type` | Each jurisdiction has its own kinds of document and number | `hull_number`, `engine_serial_number`, `call_sign` |
+| `sat_base_asset__swappable_component__period.position_code` | List `component_position` | A new position on an asset is a value | `port_engine`, `starboard_engine`, `main_rotor` |
+| `sat_base_asset__swappable_component__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `removed`, `replaced`, `scrapped` |
+| `sat_swappable_component__swappable_component_hierarchy__period.hierarchy_type_code` | List `component_hierarchy_type` | Each kind of containment of a part is a value, with its own depth limit | `sub_assembly`, `accessory`, `module`, `attachment` |
+| `sat_swappable_component__swappable_component_hierarchy__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `removed`, `replaced`, `scrapped` |
+| `hub_model_catalog.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_model_catalog.key_type_code` | List `model_catalog_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `icao_type_designator`, `maker_model_code`, `platform_assigned` |
+| `sat_model_catalog__description.model_kind_code` | List `model_kind` | A new kind of model is a value | `vessel_hull`, `aircraft_airframe`, `engine`, `vehicle_chassis` |
+| `sat_model_catalog__characteristic.trait_code` | List `model_characteristic` | A new trait is a new value, not a new column | `seat_count`, `maximum_takeoff_weight`, `rated_power`, `fuel_type` |
+| `sat_model_catalog__characteristic.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `metre`, `tonne`, `count` |
+| `hub_entitlement.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_entitlement.key_type_code` | List `entitlement_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `licence_number`, `permit_reference`, `quota_certificate_number`, `platform_assigned` |
+| `sat_entitlement__description.entitlement_type_code` | List `entitlement_type` | Each jurisdiction has its own rights and licences, and a new one is a value | `driving_privilege`, `fishing_quota`, `change_of_use_permit`, `tourism_operation`, `residence_right`, `tax_holiday` |
+| `sat_entitlement__description.activity_code` | List `entitlement_activity` | A new activity is a value | `heavy_goods_driving`, `commercial_fishing`, `passenger_transport`, `residential_use` |
+| `sat_entitlement__description.issuing_authority_code` | List `issuer` | The authority that issues is a value of the platform configuration, not a Party | `transport_authority`, `fisheries_authority`, `planning_authority` |
+| `sat_entitlement__quota.quota_type_code` | List `quota_type` | A new thing to limit is a value | `catch_weight`, `fishing_days`, `passenger_count`, `vehicle_weight` |
+| `sat_entitlement__quota.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `tonne`, `day`, `person` |
+| `sat_entitlement__quota.period_code` | List `quota_period` | A new period is a value | `per_year`, `per_voyage`, `per_season` |
+| `sat_entitlement__status.status_code` | Closed list, written in the Description | A rule branches on each value | `active`, `suspended`, `revoked`, `surrendered` |
+| `sat_entitlement__status.reason_code` | List `entitlement_status_reason` | Each jurisdiction has its own reasons for a change of status | `court_order`, `unpaid_fee`, `holder_request`, `safety_breach` |
+| `sat_entitlement__party_holder__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `transferred`, `expired`, `deceased`, `surrendered` |
+| `sat_base_asset__entitlement__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `replaced`, `sold`, `expired` |
+| `sat_base_parcel__entitlement__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `replaced`, `sold`, `expired` |
+| `sat_built_structure__entitlement__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `replaced`, `sold`, `expired` |
+| `hub_credential.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_credential.key_type_code` | List `credential_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `card_number`, `certificate_serial`, `document_number`, `platform_assigned` |
+| `sat_credential__description.credential_type_code` | List `credential_type` | Each jurisdiction has its own credentials, and a new one is a value | `licence_card`, `certificate`, `smart_card`, `visa_label`, `permit_letter` |
+| `sat_credential__description.form_code` | Closed list, written in the Description | A rule branches on each value | `physical`, `digital` |
+| `sat_credential__description.issuing_authority_code` | List `issuer` | The authority that issues is a value of the platform configuration, not a Party | `transport_authority`, `fisheries_authority`, `immigration_authority` |
+| `sat_credential__status.status_code` | Closed list, written in the Description | A rule branches on each value | `active`, `lost`, `destroyed`, `stolen`, `surrendered`, `replaced`, `withheld`, `revoked` |
+| `sat_credential__status.reason_code` | List `credential_status_reason` | Each jurisdiction has its own reasons for a change of status | `hurricane`, `theft`, `renewal`, `damaged` |
+| `sat_credential__entitlement__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `replaced`, `expired`, `surrendered` |
+| `hub_rrr.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
+| `hub_rrr.key_type_code` | List `rrr_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_entry_id`, `deed_reference`, `decision_reference`, `platform_assigned` |
+| `sat_rrr__description.rrr_class_code` | Closed list, written in the Description | A rule branches on each value | `right`, `restriction`, `responsibility` |
+| `sat_rrr__description.rrr_type_code` | List `rrr_type` | Each jurisdiction has its own kinds of bond, and a new one is a value; the list says which class each belongs to and which are ownership | `freehold`, `leasehold`, `customary_title`, `state_title`, `mortgage`, `access_easement`, `embargo`, `river_cleanup` |
+| `sat_rrr__description.imposed_by_code` | List `issuer` | The authority that imposes is a value of the platform configuration, not a Party | `land_registry`, `maritime_authority`, `court` |
+| `sat_rrr__status.status_code` | Closed list, written in the Description | A rule branches on each value | `proposed`, `registered`, `disputed`, `discharged`, `cancelled` |
+| `sat_rrr__registration.registration_basis_code` | List `rrr_registration_basis` | Each jurisdiction accepts its own kinds of evidence for a registration | `title_deed`, `lease_agreement`, `court_order`, `customary_testimony` |
+| `sat_rrr__registration.identification_type_code` | List `rrr_identification_type` | Each jurisdiction has its own kinds of document and number | `deed_number`, `lease_number`, `case_number` |
+| `sat_party__rrr__participation.participation_role_code` | Closed list, written in the Description | A rule branches on each value | `holder`, `counterparty`, `authority` |
+| `sat_base_asset__rrr__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `discharged`, `sold`, `released` |
+| `sat_base_parcel__rrr__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `discharged`, `sold`, `released` |
+| `sat_built_structure__rrr__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `discharged`, `sold`, `released` |
+| `sat_rrr__swappable_component__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `discharged`, `sold`, `released` |
+| `sat_rrr__rrr_hierarchy__derivation.derivation_type_code` | List `rrr_derivation_type` | A new kind of derivation is a value | `lease`, `sublease`, `easement_grant`, `customary_allocation` |
+| `sat_rrr__rrr_hierarchy__derivation.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `expired`, `surrendered`, `merged` |
+| `sat_code_value__label.language_code` | List `language` (BCP 47) | An external standard (BCP 47), loaded as a list so every column reads the same way | `en` (English), `fr` (French), `sm` (Samoan) |
+| `sat_code_value__label.status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `active`, `retired` |
+| `sat_code_value__validation.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `COL` (Colombia), `CUW` (Curaçao), `any` |
+| `sat_code_value__validation.value_data_type_code` | Closed list, written in the Description | A rule branches on each value | `string`, `integer`, `decimal`, `date`, `boolean` |
+| `sat_code_value__validation.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `cm`, `kg`, `percent` |
+| `sat_code_value__applicability.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `PNG` (Papua New Guinea), `WSM` (Samoa), `any` |
+| `sat_code_value__applicability.party_type_code` | Closed list, written in the Description | A rule branches on each value | `natural_person`, `legal_entity`, `any`, `any` |
+| `sat_code_list__access.access_code` | Closed list, written in the Description | A rule branches on each value | `read`, `read_masked`, `none` |
+| `sat_load_configuration__mechanism.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `any` |
+| `sat_load_configuration__mechanism.mechanism_code` | Closed list, written in the Description | A rule branches on each value | `row_versioning`, `history` |
 
 - **A date range closes the one before it.** In `sat_code_value__applicability` and `sat_code_value__validation` a new row for the same value, jurisdiction and party type closes the open one: its end becomes the day before the new start (Principles, "Validity ranges").
 - **A hierarchy kind has a depth.** `max_depth_count` in `sat_code_value__validation` says how many levels a kind of hierarchy may have. It is a setting of the value, so a deeper hierarchy changes a number and no table.

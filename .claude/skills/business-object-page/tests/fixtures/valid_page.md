@@ -34,44 +34,44 @@ An order is created and closed on its own schedule, is identified by its own num
 
 ### hub_sample_order
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `sample_order_hk` | ◆ | `string` | No | No | — | Hash key |
-| `sample_order_bk` | ● | `string` | No | No | — | The order number |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `sample_order_hk` | ◆ | `string` | No | No | — | — | Hash key |
+| `sample_order_bk` | ● | `string` | No | No | — | — | The order number |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_customer__sample_order
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `customer_hk` | ◇ | `string` | No | No | — | Hash key of the customer |
-| `sample_order_hk` | ◇ | `string` | No | No | — | Hash key of the order |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `customer_hk` | ◇ | `string` | No | No | — | — | Hash key of the customer |
+| `sample_order_hk` | ◇ | `string` | No | No | — | — | Hash key of the order |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_sample_order__pricing
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `sample_order_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `total_amount` | | `decimal(18,2)` | No | No | — | Order total |
-| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |
-| `status_code` | | `string` | No | No | — | One of `open`, `paid`, `cancelled` |
-| `status_name` | | `string` | No | No | — | The label of the status |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `sample_order_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `total_amount` | | `decimal(18,2)` | No | No | — | — | Order total |
+| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |
+| `status_code` | | `string` | No | No | — | Closed | One of `open`, `paid`, `cancelled` |
+| `status_name` | | `string` | No | No | — | — | The label of the status |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### lnk_sample_order__shipment_event
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `sample_order_hk` | ◇ | `string` | No | No | — | Hash key of the order |
-| `shipment_event_hk` | ◇ | `string` | No | No | — | Hash key of the event |
-| `event_dts` | | `timestamptz` | No | No | — | When the event happened |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `sample_order_hk` | ◇ | `string` | No | No | — | — | Hash key of the order |
+| `shipment_event_hk` | ◇ | `string` | No | No | — | — | Hash key of the event |
+| `event_dts` | | `timestamptz` | No | No | — | — | When the event happened |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ## Sources and mapping
 

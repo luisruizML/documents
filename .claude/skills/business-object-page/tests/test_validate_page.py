@@ -112,36 +112,36 @@ class DefinitionTests(unittest.TestCase):
 
 
 class ValidityDateTests(unittest.TestCase):
-    ROW = "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
+    ROW = "| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
 
     def with_row(self, row: str) -> list[str]:
         return vp.validate(page(self.ROW, self.ROW + chr(10) + row))
 
     def test_an_open_end_carries_the_sentinel_default(self):
-        ok = "| `end_date` | | `date` | No | No | `9999-12-31` | Last day this state applies; `9999-12-31` while it still applies |"
+        ok = "| `end_date` | | `date` | No | No | `9999-12-31` | — | Last day this state applies; `9999-12-31` while it still applies |"
         self.assertEqual(self.with_row(ok), [])
 
     def test_an_end_date_that_is_null_is_reported(self):
-        bad = "| `end_date` | | `date` | Yes | No | null | Last day this state applies |"
+        bad = "| `end_date` | | `date` | Yes | No | null | — | Last day this state applies |"
         self.assertTrue(has(self.with_row(bad), "fields", "end_date"))
 
     def test_a_valid_to_date_without_the_sentinel_is_reported(self):
-        bad = "| `valid_to_date` | | `date` | No | No | — | Last day the value is allowed |"
+        bad = "| `valid_to_date` | | `date` | No | No | — | — | Last day the value is allowed |"
         self.assertTrue(has(self.with_row(bad), "fields", "valid_to_date"))
 
     def test_a_valid_from_date_carries_the_early_sentinel(self):
-        ok = "| `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the value is allowed |"
-        bad = "| `valid_from_date` | | `date` | No | No | — | First day the value is allowed |"
+        ok = "| `valid_from_date` | | `date` | No | No | `1900-01-01` | — | First day the value is allowed |"
+        bad = "| `valid_from_date` | | `date` | No | No | — | — | First day the value is allowed |"
         self.assertEqual(self.with_row(ok), [])
         self.assertTrue(has(self.with_row(bad), "fields", "valid_from_date"))
 
 
 class NumberTermTests(unittest.TestCase):
-    ROW = "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
+    ROW = "| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
 
     def test_a_number_is_a_decimal(self):
-        ok = "| `value_number` | | `decimal(18,6)` | Yes | No | null | A value |"
-        bad = "| `value_number` | | `string` | Yes | No | null | A value |"
+        ok = "| `value_number` | | `decimal(18,6)` | Yes | No | null | — | A value |"
+        bad = "| `value_number` | | `string` | Yes | No | null | — | A value |"
         self.assertEqual(vp.validate(page(self.ROW, self.ROW + chr(10) + ok)), [])
         self.assertTrue(has(vp.validate(page(self.ROW, self.ROW + chr(10) + bad)), "type", "_number"))
 
@@ -241,11 +241,11 @@ class VaultObjectTests(unittest.TestCase):
         self.assertTrue(has(errs, "fields", "Maybe"))
 
     def test_hub_fields_include_hash_and_business_key(self):
-        errs = errors("| `sample_order_bk` | ● | `string` | No | No | — | The order number |\n", "")
+        errs = errors("| `sample_order_bk` | ● | `string` | No | No | — | — | The order number |\n", "")
         self.assertTrue(has(errs, "fields", "sample_order_bk"))
 
     def test_satellite_fields_carry_parent_hash_key_and_no_business_key(self):
-        errs = errors("| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |", "| `currency_code` | | `string` | No | No | — | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |\n| `sample_order_bk` | ● | `string` | No | No | — | wrong |")
+        errs = errors("| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |", "| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |\n| `sample_order_bk` | ● | `string` | No | No | — | — | wrong |")
         self.assertTrue(has(errs, "fields", "_bk"))
 
 
@@ -334,7 +334,7 @@ class TableFormatTests(unittest.TestCase):
         cases = [
             ("| `sample_order_hk` | ◆ |", "| `sample_order_hk` | |", "sample_order_hk"),
             ("| `sample_order_bk` | ● |", "| `sample_order_bk` | ◆ |", "sample_order_bk"),
-            ("| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |\n\n### lnk_customer", "| `load_dts` | | `timestamptz` | No | No | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |\n\n### lnk_customer", "load_dts"),
+            ("| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |\n\n### lnk_customer", "| `load_dts` | | `timestamptz` | No | No | — | — | When Nexus first loaded the row |\n| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |\n\n### lnk_customer", "load_dts"),
             ("| `hashdiff` | Δ |", "| `hashdiff` | ▪ |", "hashdiff"),
         ]
         for old, new, col in cases:
@@ -377,9 +377,70 @@ class TemplateTests(unittest.TestCase):
         self.assertEqual(list(parsed.tables("Jurisdictions map")[0][0].keys()), vp.JURISDICTION_COLUMNS)
         self.assertEqual(list(parsed.tables("Open decisions")[0][0].keys()), vp.DECISION_COLUMNS)
         fields = vp._fields_tables(parsed)
-        self.assertEqual(list(next(iter(fields.values()))[0].keys()), ["Column", "Role", "Type", "Null", "PII", "Default", "Description"])
+        self.assertEqual(list(next(iter(fields.values()))[0].keys()), ["Column", "Role", "Type", "Null", "PII", "Default", "Code List", "Description"])
         self.assertEqual([r["Field"] for r in parsed.tables("Header")[0]], vp.HEADER_FIELDS)
 
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CodeListFlagTests(unittest.TestCase):
+    CURRENCY = "| `currency_code` | | `string` | No | No | — | List | ISO 4217 code, e.g. `WST`, `PGK`, `NZD` |"
+    STATUS = "| `status_code` | | `string` | No | No | — | Closed | One of `open`, `paid`, `cancelled` |"
+
+    def test_a_code_column_with_examples_is_a_list(self):
+        errs = errors(self.CURRENCY, self.CURRENCY.replace("| List |", "| — |"))
+        self.assertTrue(has(errs, "codelist", "must be List"))
+
+    def test_a_closed_description_is_closed(self):
+        errs = errors(self.STATUS, self.STATUS.replace("| Closed |", "| List |"))
+        self.assertTrue(has(errs, "codelist", "must be Closed"))
+
+    def test_a_column_that_is_not_a_code_is_a_dash(self):
+        row = "| `total_amount` | | `decimal(18,2)` | No | No | — | — | Order total |"
+        errs = errors(row, row.replace("| — | Order total", "| List | Order total"))
+        self.assertTrue(has(errs, "codelist", "must be —"))
+
+    def test_the_flag_is_one_of_three_words(self):
+        errs = errors(self.CURRENCY, self.CURRENCY.replace("| List |", "| Yes |"))
+        self.assertTrue(has(errs, "codelist", "List, Closed or"))
+
+    def test_a_postal_code_is_not_a_list(self):
+        self.assertEqual(vp.expected_code_list_flag("sat_address__description", "postal_code", "e.g. `1000`, `2000`, `3000`"), "—")
+
+
+class CodeListRowTests(unittest.TestCase):
+    """The flags of a page and the rows of the Code List page agree, in both directions."""
+
+    ROWS = ("- **Which code columns are values of a Code List.** Text.\n\n| **Column** | **Where its values live** | **Why** | **Examples** |\n"
+            "| --- | --- | --- | --- |\n"
+            "| `sat_sample_order__pricing.currency_code` | List `currency` | ISO 4217 | `WST` |\n"
+            "| `sat_sample_order__pricing.status_code` | Closed list, written in the Description | A rule branches | `open` |\n"
+            "\n- **Next.** x\n")
+
+    def run_check(self, rows, text=None):
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "Code_List.md").write_text(rows, encoding="utf-8")
+            text = text or page()
+            return vp.check_code_list_rows(vp.parse_page(text), text, Path(tmp))
+
+    def test_matching_rows_and_flags_have_no_errors(self):
+        self.assertEqual(self.run_check(self.ROWS), [])
+
+    def test_a_flag_without_a_row_is_reported(self):
+        errs = self.run_check(self.ROWS.replace("| `sat_sample_order__pricing.currency_code` | List `currency` | ISO 4217 | `WST` |\n", ""))
+        self.assertTrue(has(errs, "codelist", "has no row for it"))
+
+    def test_a_row_without_a_flag_is_reported(self):
+        text = page("| List | ISO 4217 code", "| — | ISO 4217 code")
+        errs = self.run_check(self.ROWS, text)
+        self.assertTrue(has(errs, "codelist", "not flagged"))
+
+    def test_a_closed_flag_needs_a_closed_row(self):
+        errs = self.run_check(self.ROWS.replace("Closed list, written in the Description", "List `status`"))
+        self.assertTrue(has(errs, "codelist", "is flagged Closed"))
+
+    def test_without_a_code_list_page_nothing_is_checked(self):
+        self.assertEqual(vp.check_code_list_rows(vp.parse_page(page()), page(), None), [])

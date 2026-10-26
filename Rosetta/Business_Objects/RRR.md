@@ -67,200 +67,200 @@ Ownership is not a special case. The ownership Links that each asset page used t
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_rrr
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `rrr_bk` | ● | `string` | No | No | — | The identifier of the bond in the registry or the deed system of record, or one assigned by the platform when there is none |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `rrr_key_type`: e.g. `registry_entry_id`, `deed_reference`, `decision_reference`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `rrr_bk` | ● | `string` | No | No | — | — | The identifier of the bond in the registry or the deed system of record, or one assigned by the platform when there is none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `rrr_key_type`: e.g. `registry_entry_id`, `deed_reference`, `decision_reference`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_party__rrr
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `party_hk` | ◇ | `string` | No | No | — | Hash key of the party that takes part, a Natural Person or a Legal Entity, which includes a public body |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right, restriction or responsibility |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `party_hk` | ◇ | `string` | No | No | — | — | Hash key of the party that takes part, a Natural Person or a Legal Entity, which includes a public body |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right, restriction or responsibility |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_asset__rrr
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the asset the bond binds |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right, restriction or responsibility |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the asset the bond binds |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right, restriction or responsibility |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_parcel__rrr
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel the bond binds |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right, restriction or responsibility |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel the bond binds |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right, restriction or responsibility |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_built_structure__rrr
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure the bond binds |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right, restriction or responsibility |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `built_structure_hk` | ◇ | `string` | No | No | — | — | Hash key of the structure the bond binds |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right, restriction or responsibility |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_rrr__swappable_component
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right, restriction or responsibility |
-| `swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the part the bond binds |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right, restriction or responsibility |
+| `swappable_component_hk` | ◇ | `string` | No | No | — | — | Hash key of the part the bond binds |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_rrr__rrr_hierarchy
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `source_rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right that the other is derived from |
-| `derived_rrr_hk` | ◇ | `string` | No | No | — | Hash key of the right that is derived |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `source_rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right that the other is derived from |
+| `derived_rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the right that is derived |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_rrr__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `rrr_class_code` |  | `string` | No | No | — | Which of the three it is. One of `right` (a party may do or hold something over the thing), `restriction` (the thing or its use is limited), `responsibility` (a party must do something about the thing) |
-| `rrr_type_code` |  | `string` | No | No | — | The legal nature of the bond, a value of the list `rrr_type`; the list says which class each value belongs to and which values are ownership: e.g. `freehold`, `leasehold`, `customary_title`, `state_title`, `mortgage`, `access_easement`, `embargo`, `river_cleanup` |
-| `imposed_by_code` |  | `string` | Yes | No | null | Who granted or imposed the bond when it is an authority, a value of the list `issuer`; empty when it comes from an agreement between parties: e.g. `land_registry`, `maritime_authority`, `court` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `rrr_class_code` |  | `string` | No | No | — | Closed | Which of the three it is. One of `right` (a party may do or hold something over the thing), `restriction` (the thing or its use is limited), `responsibility` (a party must do something about the thing) |
+| `rrr_type_code` |  | `string` | No | No | — | List | The legal nature of the bond, a value of the list `rrr_type`; the list says which class each value belongs to and which values are ownership: e.g. `freehold`, `leasehold`, `customary_title`, `state_title`, `mortgage`, `access_easement`, `embargo`, `river_cleanup` |
+| `imposed_by_code` |  | `string` | Yes | No | null | List | Who granted or imposed the bond when it is an authority, a value of the list `issuer`; empty when it comes from an agreement between parties: e.g. `land_registry`, `maritime_authority`, `court` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_rrr__validity
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `valid_from_date` |  | `date` | No | No | `1900-01-01` | First day the bond runs; `1900-01-01` when unknown |
-| `valid_to_date` |  | `date` | No | No | `9999-12-31` | Last day the bond runs; `9999-12-31` while it has no end, as in an ownership. When an extension starts a new row for the same key, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `valid_from_date` |  | `date` | No | No | `1900-01-01` | — | First day the bond runs; `1900-01-01` when unknown |
+| `valid_to_date` |  | `date` | No | No | `9999-12-31` | — | Last day the bond runs; `9999-12-31` while it has no end, as in an ownership. When an extension starts a new row for the same key, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_rrr__status
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `status_code` |  | `string` | No | No | `registered` | Where the bond stands. One of `proposed` (asked for, not yet in force), `registered` (in force and on record), `disputed` (in force but challenged), `discharged` (ended as agreed, such as a mortgage that is paid), `cancelled` (ended by a decision) |
-| `status_date` |  | `date` | No | No | — | The day the status took effect |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the entry in the register or the decision; only the pointer is stored: e.g. `artifact://register/e-5510`, `artifact://decision/d-2026-12`, `artifact://discharge/d-71`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `status_code` |  | `string` | No | No | `registered` | Closed | Where the bond stands. One of `proposed` (asked for, not yet in force), `registered` (in force and on record), `disputed` (in force but challenged), `discharged` (ended as agreed, such as a mortgage that is paid), `cancelled` (ended by a decision) |
+| `status_date` |  | `date` | No | No | — | — | The day the status took effect |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the entry in the register or the decision; only the pointer is stored: e.g. `artifact://register/e-5510`, `artifact://decision/d-2026-12`, `artifact://discharge/d-71`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_rrr__registration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `rrr_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` |  | `string` | No | No | — | Why the bond was registered, a value of the list `rrr_registration_basis`: e.g. `title_deed`, `lease_agreement`, `court_order`, `customary_testimony` |
-| `registration_date` |  | `date` | No | No | — | When the bond was registered on this basis |
-| `identification_type_code` |  | `string` | Yes | No | null | Which identifier this evidence supports, a value of the list `rrr_identification_type`; empty when the evidence supports the registration as a whole: e.g. `deed_number`, `lease_number`, `case_number` |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a title deed, a lease, a court order or a signed testimony; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://testimony/t-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `registration_basis_code` |  | `string` | No | No | — | List | Why the bond was registered, a value of the list `rrr_registration_basis`: e.g. `title_deed`, `lease_agreement`, `court_order`, `customary_testimony` |
+| `registration_date` |  | `date` | No | No | — | — | When the bond was registered on this basis |
+| `identification_type_code` |  | `string` | Yes | No | null | List | Which identifier this evidence supports, a value of the list `rrr_identification_type`; empty when the evidence supports the registration as a whole: e.g. `deed_number`, `lease_number`, `case_number` |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a title deed, a lease, a court order or a signed testimony; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://lease/l-55`, `artifact://testimony/t-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_party__rrr__participation
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_party__rrr_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `participation_role_code` |  | `string` | No | Yes | — | How the party takes part. One of `holder` (has the right, is protected by the restriction or must meet the responsibility), `counterparty` (the other side, such as the lessor, the borrower or the one who benefits from the responsibility), `authority` (the public body that imposes or grants it) |
-| `ownership_share_percent` |  | `decimal(7,4)` | Yes | Yes | null | The share of the thing this participation represents, from 0 to 100; empty when the bond is not divided: e.g. `100.0000`, `50.0000`, `33.3333` |
-| `effective_date` |  | `date` | No | Yes | `1900-01-01` | First day the party takes part in this role; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | Yes | `9999-12-31` | Last day the party takes part in this role; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the deed, the agreement or the transfer; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://agreement/a-410`, `artifact://transfer/t-90`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_party__rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `participation_role_code` |  | `string` | No | Yes | — | Closed | How the party takes part. One of `holder` (has the right, is protected by the restriction or must meet the responsibility), `counterparty` (the other side, such as the lessor, the borrower or the one who benefits from the responsibility), `authority` (the public body that imposes or grants it) |
+| `ownership_share_percent` |  | `decimal(7,4)` | Yes | Yes | null | — | The share of the thing this participation represents, from 0 to 100; empty when the bond is not divided: e.g. `100.0000`, `50.0000`, `33.3333` |
+| `effective_date` |  | `date` | No | Yes | `1900-01-01` | — | First day the party takes part in this role; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day the party takes part in this role; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the deed, the agreement or the transfer; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://agreement/a-410`, `artifact://transfer/t-90`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__rrr__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_asset__rrr_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the bond stopped binding the asset, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the bond binds the asset; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the bond binds the asset; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_asset__rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the bond stopped binding the asset, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the bond binds the asset; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the bond binds the asset; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__rrr__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_parcel__rrr_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the bond stopped binding the parcel, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the bond binds the parcel; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the bond binds the parcel; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_parcel__rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the bond stopped binding the parcel, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the bond binds the parcel; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the bond binds the parcel; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_built_structure__rrr__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_built_structure__rrr_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the bond stopped binding the structure, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the bond binds the structure; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the bond binds the structure; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_built_structure__rrr_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the bond stopped binding the structure, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the bond binds the structure; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the bond binds the structure; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_rrr__swappable_component__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_rrr__swappable_component_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the bond stopped binding the part, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the bond binds the part; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the bond binds the part; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_rrr__swappable_component_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the bond stopped binding the part, a value of the list `end_reason`; empty while it binds: e.g. `discharged`, `sold`, `released` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the bond binds the part; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the bond binds the part; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the deed, the order or the release; only the pointer is stored: e.g. `artifact://deed/d-3301`, `artifact://order/o-17`, `artifact://release/r-8`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_rrr__rrr_hierarchy__derivation
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_rrr__rrr_hierarchy_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `derivation_type_code` |  | `string` | No | No | — | Which kind of derivation this is, a value of the list `rrr_derivation_type`: e.g. `lease`, `sublease`, `easement_grant`, `customary_allocation` |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the derived right stopped depending on its source, a value of the list `end_reason`; empty while it does: e.g. `expired`, `surrendered`, `merged` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the right is derived from its source; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the right is derived from its source; `9999-12-31` while it still does. When a new row starts for the same key and derivation type, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the lease or the grant; only the pointer is stored: e.g. `artifact://lease/l-55`, `artifact://grant/g-3`, `artifact://deed/d-3301`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_rrr__rrr_hierarchy_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `derivation_type_code` |  | `string` | No | No | — | List | Which kind of derivation this is, a value of the list `rrr_derivation_type`: e.g. `lease`, `sublease`, `easement_grant`, `customary_allocation` |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the derived right stopped depending on its source, a value of the list `end_reason`; empty while it does: e.g. `expired`, `surrendered`, `merged` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the right is derived from its source; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the right is derived from its source; `9999-12-31` while it still does. When a new row starts for the same key and derivation type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the lease or the grant; only the pointer is stored: e.g. `artifact://lease/l-55`, `artifact://grant/g-3`, `artifact://deed/d-3301`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

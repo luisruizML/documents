@@ -52,77 +52,77 @@ A credential has no Link to a Party of its own. Who holds it is who holds the en
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_credential
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `credential_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `credential_bk` | ● | `string` | No | No | — | The number printed on the card or the serial of the certificate, or one assigned by the platform when there is none |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `credential_key_type`: e.g. `card_number`, `certificate_serial`, `document_number`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `credential_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `credential_bk` | ● | `string` | No | No | — | — | The number printed on the card or the serial of the certificate, or one assigned by the platform when there is none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `credential_key_type`: e.g. `card_number`, `certificate_serial`, `document_number`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_credential__entitlement
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `credential_hk` | ◇ | `string` | No | No | — | Hash key of the credential |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the entitlement the credential proves |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `credential_hk` | ◇ | `string` | No | No | — | — | Hash key of the credential |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the entitlement the credential proves |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_credential__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `credential_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `credential_type_code` |  | `string` | No | No | — | What kind of credential this is, a value of the list `credential_type`: e.g. `licence_card`, `certificate`, `smart_card`, `visa_label`, `permit_letter` |
-| `form_code` |  | `string` | No | No | — | Whether the credential is an object or a digital document. One of `physical` (a card, a paper certificate or a sticker), `digital` (a file, a verifiable credential or a record in a wallet) |
-| `issuing_authority_code` |  | `string` | No | No | — | The authority that issued the credential, a value of the list `issuer` that the platform configuration keeps: e.g. `transport_authority`, `fisheries_authority`, `immigration_authority` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `credential_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `credential_type_code` |  | `string` | No | No | — | List | What kind of credential this is, a value of the list `credential_type`: e.g. `licence_card`, `certificate`, `smart_card`, `visa_label`, `permit_letter` |
+| `form_code` |  | `string` | No | No | — | Closed | Whether the credential is an object or a digital document. One of `physical` (a card, a paper certificate or a sticker), `digital` (a file, a verifiable credential or a record in a wallet) |
+| `issuing_authority_code` |  | `string` | No | No | — | List | The authority that issued the credential, a value of the list `issuer` that the platform configuration keeps: e.g. `transport_authority`, `fisheries_authority`, `immigration_authority` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_credential__issuance
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `credential_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `issue_date` |  | `date` | No | Yes | — | The day the credential was issued |
-| `valid_to_date` |  | `date` | No | Yes | `9999-12-31` | Last day the credential is valid; `9999-12-31` while it does not expire. When a renewal starts a new row for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the credential itself or its image; only the pointer is stored: e.g. `artifact://credential/c-31207`, `artifact://card/k-90`, `artifact://certificate/c-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `credential_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `issue_date` |  | `date` | No | Yes | — | — | The day the credential was issued |
+| `valid_to_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day the credential is valid; `9999-12-31` while it does not expire. When a renewal starts a new row for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the credential itself or its image; only the pointer is stored: e.g. `artifact://credential/c-31207`, `artifact://card/k-90`, `artifact://certificate/c-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_credential__status
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `credential_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `status_code` |  | `string` | No | No | `active` | Where the credential stands as an object. One of `active` (in use), `lost` (the holder cannot find it), `destroyed` (no longer exists), `stolen` (taken from the holder), `surrendered` (given back), `replaced` (a newer credential took its place), `withheld` (kept by an authority for a time), `revoked` (declared void) |
-| `reason_code` |  | `string` | Yes | Yes | null | Why the status changed, a value of the list `credential_status_reason`; empty for the issue itself: e.g. `hurricane`, `theft`, `renewal`, `damaged` |
-| `status_date` |  | `date` | No | No | — | The day the status took effect |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the report or the notice; only the pointer is stored: e.g. `artifact://report/r-4410`, `artifact://notice/n-77`, `artifact://declaration/d-9`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `credential_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `status_code` |  | `string` | No | No | `active` | Closed | Where the credential stands as an object. One of `active` (in use), `lost` (the holder cannot find it), `destroyed` (no longer exists), `stolen` (taken from the holder), `surrendered` (given back), `replaced` (a newer credential took its place), `withheld` (kept by an authority for a time), `revoked` (declared void) |
+| `reason_code` |  | `string` | Yes | Yes | null | List | Why the status changed, a value of the list `credential_status_reason`; empty for the issue itself: e.g. `hurricane`, `theft`, `renewal`, `damaged` |
+| `status_date` |  | `date` | No | No | — | — | The day the status took effect |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the report or the notice; only the pointer is stored: e.g. `artifact://report/r-4410`, `artifact://notice/n-77`, `artifact://declaration/d-9`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_credential__entitlement__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_credential__entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the credential stopped standing for the entitlement, a value of the list `end_reason`; empty while it does: e.g. `replaced`, `expired`, `surrendered` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the credential stands for the entitlement; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the credential stands for the entitlement; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the request for a replacement or the notice; only the pointer is stored: e.g. `artifact://request/r-2201`, `artifact://notice/n-77`, `artifact://form/f-5`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_credential__entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the credential stopped standing for the entitlement, a value of the list `end_reason`; empty while it does: e.g. `replaced`, `expired`, `surrendered` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the credential stands for the entitlement; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the credential stands for the entitlement; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the request for a replacement or the notice; only the pointer is stored: e.g. `artifact://request/r-2201`, `artifact://notice/n-77`, `artifact://form/f-5`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

@@ -58,139 +58,139 @@ If the hull and the parts were one table, a swapped engine would rewrite the his
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_base_asset
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `base_asset_bk` | ● | `string` | No | No | — | Identifier of the asset: the number stamped on it or issued by the registry of record, or one assigned by the platform when there is none |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `base_asset_key_type`: e.g. `imo_number`, `vehicle_identification_number`, `tail_number`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `base_asset_bk` | ● | `string` | No | No | — | — | Identifier of the asset: the number stamped on it or issued by the registry of record, or one assigned by the platform when there is none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `base_asset_key_type`: e.g. `imo_number`, `vehicle_identification_number`, `tail_number`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_asset__model_catalog
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the asset |
-| `model_catalog_hk` | ◇ | `string` | No | No | — | Hash key of the model the asset is |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the asset |
+| `model_catalog_hk` | ◇ | `string` | No | No | — | — | Hash key of the model the asset is |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_asset__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the asset |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the asset |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_base_asset__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `asset_kind_code` |  | `string` | No | No | — | What kind of mobile asset it is, a value of the list `asset_kind`: e.g. `vessel`, `aircraft`, `special_vehicle`, `canoe` |
-| `asset_class_code` |  | `string` | Yes | No | null | The class within the kind, a value of the list `asset_class` that the jurisdiction sets; empty when none applies: e.g. `fishing_vessel`, `helicopter`, `crane_truck` |
-| `build_date` |  | `date` | Yes | No | null | The day the asset was built or first put in service; empty when unknown |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `asset_kind_code` |  | `string` | No | No | — | List | What kind of mobile asset it is, a value of the list `asset_kind`: e.g. `vessel`, `aircraft`, `special_vehicle`, `canoe` |
+| `asset_class_code` |  | `string` | Yes | No | null | List | The class within the kind, a value of the list `asset_class` that the jurisdiction sets; empty when none applies: e.g. `fishing_vessel`, `helicopter`, `crane_truck` |
+| `build_date` |  | `date` | Yes | No | null | — | The day the asset was built or first put in service; empty when unknown |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__characteristic
 
 The characteristics of an asset are an open list, such as its length, its tonnage, the number of seats or engines, and whatever a jurisdiction adds. Each is a row and not a column (Principles, "Traits as rows"). A new characteristic is a new value of the Code List `asset_characteristic` and changes no table. The Code List says, for each one, which value column is used (`value_data_type_code`), and the load checks the value against it. A characteristic that is not personal data has no in-place twin: history is kept.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `trait_code` |  | `string` | No | No | — | Which characteristic this row holds, a value of the list `asset_characteristic`: e.g. `length_overall`, `gross_tonnage`, `seat_count`, `engine_count`, `hull_material` |
-| `value_text` |  | `string` | Yes | No | null | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
-| `value_number` |  | `decimal(18,6)` | Yes | No | null | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
-| `measure_unit_code` |  | `string` | Yes | No | null | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `tonne`, `count` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `trait_code` |  | `string` | No | No | — | List | Which characteristic this row holds, a value of the list `asset_characteristic`: e.g. `length_overall`, `gross_tonnage`, `seat_count`, `engine_count`, `hull_material` |
+| `value_text` |  | `string` | Yes | No | null | — | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
+| `value_number` |  | `decimal(18,6)` | Yes | No | null | — | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `tonne`, `count` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__valuation
 
 Same shape and same rules as `sat_base_parcel__valuation`. An asset is valued on its own, and the value of a component fitted to it is not included. The definitive value is the Gold view `cur_base_asset__valuation_definitive`.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `valuation_ref` |  | `string` | No | No | — | Identifier of the valuation in the source of record, part of the grain so that several valuations of one asset can be open at once: e.g. `V-2026-0412`, `REVAL-2025-77`, `OBJ-12` |
-| `valuation_method_code` |  | `string` | No | No | — | The method by which the value was worked out, a value of the list `valuation_method` that the jurisdiction sets: e.g. `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
-| `value_amount` |  | `decimal(18,2)` | No | No | — | The value, in the currency of `currency_code`: e.g. `185000.00`, `1250000.00`, `42500.00` |
-| `currency_code` |  | `string` | No | No | — | Currency of the value, ISO 4217: e.g. `WST`, `PGK`, `NZD` |
-| `valuation_date` |  | `date` | No | No | — | The day the value refers to, which is not the day it was entered |
-| `valuation_status_code` |  | `string` | No | No | `draft` | Where the valuation stands in the process of the jurisdiction. One of `draft` (being prepared, no effect), `submitted` (sent for decision), `accepted` (approved, and may be used as the definitive value), `rejected` (refused, never used), `withdrawn` (taken back before a decision) |
-| `decision_date` |  | `date` | Yes | No | null | The day the status became `accepted`, `rejected` or `withdrawn`; empty while the valuation is a draft or submitted |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the valuation report or the decision; only the pointer is stored: e.g. `artifact://valuation/v-0412`, `artifact://decision/d-2026-88`, `artifact://report/r-31`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `valuation_ref` |  | `string` | No | No | — | — | Identifier of the valuation in the source of record, part of the grain so that several valuations of one asset can be open at once: e.g. `V-2026-0412`, `REVAL-2025-77`, `OBJ-12` |
+| `valuation_method_code` |  | `string` | No | No | — | List | The method by which the value was worked out, a value of the list `valuation_method` that the jurisdiction sets: e.g. `market_comparison`, `cost_approach`, `income_approach`, `mass_appraisal` |
+| `value_amount` |  | `decimal(18,2)` | No | No | — | — | The value, in the currency of `currency_code`: e.g. `185000.00`, `1250000.00`, `42500.00` |
+| `currency_code` |  | `string` | No | No | — | List | Currency of the value, ISO 4217: e.g. `WST`, `PGK`, `NZD` |
+| `valuation_date` |  | `date` | No | No | — | — | The day the value refers to, which is not the day it was entered |
+| `valuation_status_code` |  | `string` | No | No | `draft` | Closed | Where the valuation stands in the process of the jurisdiction. One of `draft` (being prepared, no effect), `submitted` (sent for decision), `accepted` (approved, and may be used as the definitive value), `rejected` (refused, never used), `withdrawn` (taken back before a decision) |
+| `decision_date` |  | `date` | Yes | No | null | — | The day the status became `accepted`, `rejected` or `withdrawn`; empty while the valuation is a draft or submitted |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the valuation report or the decision; only the pointer is stored: e.g. `artifact://valuation/v-0412`, `artifact://decision/d-2026-88`, `artifact://report/r-31`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__identification
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `identification_type_code` |  | `string` | No | No | — | Kind of document or number, a value of the list `base_asset_identification_type`: e.g. `hull_number`, `call_sign`, `maritime_mobile_service_identity`, `local_registration_number` |
-| `identification_id` |  | `string` | No | No | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `9876543`, `ABC-1234`, `LOC-0042` |
-| `issuing_jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `WSM`, `VUT`, `MHL` |
-| `issued_by_code` |  | `string` | Yes | No | null | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `maritime_authority`, `civil_aviation_authority`, `transport_registry` |
-| `issue_date` |  | `date` | Yes | No | null | When the document was issued; empty when unknown |
-| `expiry_date` |  | `date` | Yes | No | null | When the document stops being valid; empty if it does not expire |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `identification_type_code` |  | `string` | No | No | — | List | Kind of document or number, a value of the list `base_asset_identification_type`: e.g. `hull_number`, `call_sign`, `maritime_mobile_service_identity`, `local_registration_number` |
+| `identification_id` |  | `string` | No | No | — | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `9876543`, `ABC-1234`, `LOC-0042` |
+| `issuing_jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `WSM`, `VUT`, `MHL` |
+| `issued_by_code` |  | `string` | Yes | No | null | List | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `maritime_authority`, `civil_aviation_authority`, `transport_registry` |
+| `issue_date` |  | `date` | Yes | No | null | — | When the document was issued; empty when unknown |
+| `expiry_date` |  | `date` | Yes | No | null | — | When the document stops being valid; empty if it does not expire |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__registration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` |  | `string` | No | No | — | Why the asset was registered, a value of the list `asset_registration_basis`: e.g. `builder_certificate`, `bill_of_sale`, `inspection`, `owner_declaration` |
-| `registration_date` |  | `date` | No | No | — | When the asset was registered on this basis |
-| `identification_type_code` |  | `string` | Yes | No | null | Which identifier this evidence supports, a value of the list `base_asset_identification_type`; empty when the evidence supports the registration as a whole: e.g. `hull_number`, `engine_serial_number`, `call_sign` |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a builder's certificate, a bill of sale or an inspection report; only the pointer is stored: e.g. `artifact://certificate/c-4410`, `artifact://sale/s-0881`, `artifact://inspection/i-72`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `registration_basis_code` |  | `string` | No | No | — | List | Why the asset was registered, a value of the list `asset_registration_basis`: e.g. `builder_certificate`, `bill_of_sale`, `inspection`, `owner_declaration` |
+| `registration_date` |  | `date` | No | No | — | — | When the asset was registered on this basis |
+| `identification_type_code` |  | `string` | Yes | No | null | List | Which identifier this evidence supports, a value of the list `base_asset_identification_type`; empty when the evidence supports the registration as a whole: e.g. `hull_number`, `engine_serial_number`, `call_sign` |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a builder's certificate, a bill of sale or an inspection report; only the pointer is stored: e.g. `artifact://certificate/c-4410`, `artifact://sale/s-0881`, `artifact://inspection/i-72`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__flag
 
 The flag is the nationality of the asset. It can change, as when an owner moves to an open registry, so each flag is a row with its period and the earlier ones stay. It is not the owner's country.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `flag_state_code` |  | `string` | No | No | — | The country whose nationality the asset carries, ISO 3166-1 alpha-3: e.g. `MHL`, `VUT`, `WSM` |
-| `registry_type_code` |  | `string` | Yes | No | null | The kind of registry that granted the flag, a value of the list `flag_registry_type`; empty when it is not recorded: e.g. `national_registry`, `open_registry`, `bareboat_charter_registry` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the asset carries this flag; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the asset carries this flag; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a certificate of registry; only the pointer is stored: e.g. `artifact://registry/r-0881`, `artifact://certificate/c-4410`, `artifact://deletion/d-72`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `flag_state_code` |  | `string` | No | No | — | List | The country whose nationality the asset carries, ISO 3166-1 alpha-3: e.g. `MHL`, `VUT`, `WSM` |
+| `registry_type_code` |  | `string` | Yes | No | null | List | The kind of registry that granted the flag, a value of the list `flag_registry_type`; empty when it is not recorded: e.g. `national_registry`, `open_registry`, `bareboat_charter_registry` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the asset carries this flag; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the asset carries this flag; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a certificate of registry; only the pointer is stored: e.g. `artifact://registry/r-0881`, `artifact://certificate/c-4410`, `artifact://deletion/d-72`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__location__usage
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_asset__location_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` |  | `string` | No | No | — | How the asset is placed, a value of the list `movable_asset_location_role`: e.g. `port_of_registry`, `home_port`, `base_location` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the place applies to the asset; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the place applies to the asset; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as a port certificate or a base agreement; only the pointer is stored: e.g. `artifact://certificate/c-2210`, `artifact://agreement/a-18`, `artifact://document/d-7`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_asset__location_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `role_code` |  | `string` | No | No | — | List | How the asset is placed, a value of the list `movable_asset_location_role`: e.g. `port_of_registry`, `home_port`, `base_location` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the place applies to the asset; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the place applies to the asset; `9999-12-31` while it still does. When a new row starts for the same key and role, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a port certificate or a base agreement; only the pointer is stored: e.g. `artifact://certificate/c-2210`, `artifact://agreement/a-18`, `artifact://document/d-7`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

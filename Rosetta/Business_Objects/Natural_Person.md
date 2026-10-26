@@ -51,191 +51,191 @@ The hash key `natural_person_hk` is computed from `jurisdiction_code`, `key_type
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_natural_person
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `natural_person_bk` | ● | `string` | No | No | — | Internal person identifier of the source of record; unique for the life of the platform, never reused, never an identity document |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `PNG`, `WSM`, `NZL` |
-| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is: e.g. `registry_person_id`, `civil_registry_number`, `census_id` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `natural_person_bk` | ● | `string` | No | No | — | — | Internal person identifier of the source of record; unique for the life of the platform, never reused, never an identity document |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `PNG`, `WSM`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is: e.g. `registry_person_id`, `civil_registry_number`, `census_id` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_natural_person__party
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the natural person |
-| `party_hk` | ◇ | `string` | No | No | — | Hash key of the party |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the natural person |
+| `party_hk` | ◇ | `string` | No | No | — | — | Hash key of the party |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_natural_person__name
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `name_type_code` | | `string` | No | Yes | — | Which kind of name this is: e.g. `legal_name`, `alias`, `tribal_title`, `community_alias` |
-| `name_text` | | `string` | No | Yes | — | The name as written; a single name is valid: e.g. `Kila`, `Maria Tui`, `Aroha` |
-| `script_code` | | `string` | No | Yes | — | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `name_type_code` |  | `string` | No | Yes | — | List | Which kind of name this is: e.g. `legal_name`, `alias`, `tribal_title`, `community_alias` |
+| `name_text` |  | `string` | No | Yes | — | — | The name as written; a single name is valid: e.g. `Kila`, `Maria Tui`, `Aroha` |
+| `script_code` |  | `string` | No | Yes | — | List | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__identification
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `identification_type_code` | | `string` | No | Yes | — | Kind of document: e.g. `passport`, `residence_permit`, `national_identity_number`, `community_card` |
-| `identification_id` | | `string` | No | Yes | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `X1234567`, `RP-889`, `N-555` |
-| `issuing_jurisdiction_code` | | `string` | No | Yes | — | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `NZL`, `WSM`, `PNG` |
-| `issued_by_code` | | `string` | Yes | Yes | null | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `civil_registry`, `immigration_office`, `road_transport_authority` |
-| `issue_date` | | `date` | Yes | Yes | null | When the document was issued; empty when unknown |
-| `expiry_date` | | `date` | Yes | Yes | null | When the document stops being valid; empty if it does not expire |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `identification_type_code` |  | `string` | No | Yes | — | List | Kind of document: e.g. `passport`, `residence_permit`, `national_identity_number`, `community_card` |
+| `identification_id` |  | `string` | No | Yes | — | — | The identifier as issued, always text, checked against the pattern of its type and jurisdiction in the Code List: e.g. `X1234567`, `RP-889`, `N-555` |
+| `issuing_jurisdiction_code` |  | `string` | No | Yes | — | List | Jurisdiction (country or territory) that issued the document, ISO 3166-1 alpha-3: e.g. `NZL`, `WSM`, `PNG` |
+| `issued_by_code` |  | `string` | Yes | Yes | null | List | Authority that issued the document, a value of the list `issuer`; empty when it is not recorded: e.g. `civil_registry`, `immigration_office`, `road_transport_authority` |
+| `issue_date` |  | `date` | Yes | Yes | null | — | When the document was issued; empty when unknown |
+| `expiry_date` |  | `date` | Yes | Yes | null | — | When the document stops being valid; empty if it does not expire |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__registration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` | | `string` | No | No | — | Why the person was registered, a value of the list `registration_basis`: e.g. `document`, `biometric`, `testimony`, `census` |
-| `registration_date` | | `date` | No | No | — | When the person was registered on this basis |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a biometric template or a signed testimony; each upload is its own object with its own pointer; only the pointer is stored: e.g. `artifact://biometric/9f3a`, `artifact://testimony/p7-2026`, `artifact://census/c-1204`; empty when the basis has no artifact |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `registration_basis_code` |  | `string` | No | No | — | List | Why the person was registered, a value of the list `registration_basis`: e.g. `document`, `biometric`, `testimony`, `census` |
+| `registration_date` |  | `date` | No | No | — | — | When the person was registered on this basis |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a biometric template or a signed testimony; each upload is its own object with its own pointer; only the pointer is stored: e.g. `artifact://biometric/9f3a`, `artifact://testimony/p7-2026`, `artifact://census/c-1204`; empty when the basis has no artifact |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__lifecycle
 
 One row for each event in the life of a person. A new kind of event is a new value of the Code List `person_event` and changes no table (Principles, "Events as rows"). Whether a person is active is not stored: the Gold view `cur_natural_person__status` works it out from the events in date order and the effect each event has on the status (see Modeling considerations).
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `event_code` | | `string` | No | No | — | Which event this is, a value of the list `person_event`: e.g. `birth`, `immigration`, `emigration`, `declared_missing`, `found`, `death`, `repatriation`, `burial` |
-| `event_date` | | `date` | Yes | No | null | Date of the event; empty when unknown, as with an unregistered birth |
-| `event_place_jurisdiction_code` | | `string` | Yes | No | null | Jurisdiction (country or territory) where the event happened, ISO 3166-1 alpha-3: e.g. `PNG`, `CUW`, `NZL`; empty when unknown |
-| `event_status_code` | | `string` | No | No | `recorded` | One of `recorded`, `voided`. An event recorded by mistake is voided by a later row, never deleted |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the evidence held in Digital Artifact, such as a death certificate; only the pointer is stored: e.g. `artifact://death/d-8841`, `artifact://court/c-120`, `artifact://birth/b-77`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `event_code` |  | `string` | No | No | — | List | Which event this is, a value of the list `person_event`: e.g. `birth`, `immigration`, `emigration`, `declared_missing`, `found`, `death`, `repatriation`, `burial` |
+| `event_date` |  | `date` | Yes | No | null | — | Date of the event; empty when unknown, as with an unregistered birth |
+| `event_place_jurisdiction_code` |  | `string` | Yes | No | null | List | Jurisdiction (country or territory) where the event happened, ISO 3166-1 alpha-3: e.g. `PNG`, `CUW`, `NZL`; empty when unknown |
+| `event_status_code` |  | `string` | No | No | `recorded` | Closed | One of `recorded`, `voided`. An event recorded by mistake is voided by a later row, never deleted |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to the evidence held in Digital Artifact, such as a death certificate; only the pointer is stored: e.g. `artifact://death/d-8841`, `artifact://court/c-120`, `artifact://birth/b-77`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__demographics
 
 The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. The only row of a parent key is the current one: `row_version` counts the writes and is never used to choose between rows. A previous value is gone only after snapshots are expired and files are rewritten (Principles). It serves the same purpose as `sat_natural_person__demographics_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `gender_code` | | `string` | No | Yes | — | Gender as the jurisdiction defines it; the allowed list is set per jurisdiction: e.g. `male`, `female`, `non_binary`, `unspecified` |
-| `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `gender_code` |  | `string` | No | Yes | — | List | Gender as the jurisdiction defines it; the allowed list is set per jurisdiction: e.g. `male`, `female`, `non_binary`, `unspecified` |
+| `row_version` |  | `int` | No | No | `1` | — | How many times the row has been written: e.g. `1`, `2`, `3` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus last wrote the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the last write came from |
 
 ### sat_natural_person__demographics_history
 
 The default: keeps its history, and every change adds a row (SCD Type 2). The current row is the one with the latest `load_dts` for each parent key. The allowed `gender_code` values depend on the jurisdiction and can change over time; an old row keeps the code it was recorded with. It carries the same attributes as `sat_natural_person__demographics`.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `gender_code` | | `string` | No | Yes | — | Gender as the jurisdiction defines it; the allowed list is set per jurisdiction: e.g. `male`, `female`, `non_binary`, `unspecified` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `gender_code` |  | `string` | No | Yes | — | List | Gender as the jurisdiction defines it; the allowed list is set per jurisdiction: e.g. `male`, `female`, `non_binary`, `unspecified` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__physical_traits
 
 The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. The only row of a parent key and trait is the current one. A previous value is gone only after snapshots are expired and files are rewritten (Principles). It serves the same purpose as `sat_natural_person__physical_traits_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads. One row holds one trait (Principles, "Traits as rows").
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `trait_code` | | `string` | No | Yes | — | Which trait this row holds, a value of the list `physical_trait`: e.g. `height`, `weight`, `blood_type` |
-| `value_text` | | `string` | Yes | Yes | null | The value of a trait whose type is `string`, `date` or `boolean`, written as text: e.g. `O+`, `brown`, `2026-01-15`; empty for a numeric trait |
-| `value_number` | | `decimal(18,6)` | Yes | Yes | null | The value of a trait whose type is `integer` or `decimal`: e.g. `172.5`, `68.0`, `45.0`; empty for a text trait |
-| `measure_unit_code` | | `string` | Yes | No | null | Unit of `value_number`, a value of the list `measure_unit`: e.g. `cm`, `kg`, `lb`; empty when the value has no unit |
-| `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `trait_code` |  | `string` | No | Yes | — | List | Which trait this row holds, a value of the list `physical_trait`: e.g. `height`, `weight`, `blood_type` |
+| `value_text` |  | `string` | Yes | Yes | null | — | The value of a trait whose type is `string`, `date` or `boolean`, written as text: e.g. `O+`, `brown`, `2026-01-15`; empty for a numeric trait |
+| `value_number` |  | `decimal(18,6)` | Yes | Yes | null | — | The value of a trait whose type is `integer` or `decimal`: e.g. `172.5`, `68.0`, `45.0`; empty for a text trait |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Unit of `value_number`, a value of the list `measure_unit`: e.g. `cm`, `kg`, `lb`; empty when the value has no unit |
+| `row_version` |  | `int` | No | No | `1` | — | How many times the row has been written: e.g. `1`, `2`, `3` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus last wrote the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the last write came from |
 
 ### sat_natural_person__physical_traits_history
 
 The default: keeps its history, and every change adds a row (SCD Type 2). The data type of each trait is declared in the Code List (`sat_code_value__validation`), and the load checks the value against it. It carries the same attributes as `sat_natural_person__physical_traits`.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `trait_code` | | `string` | No | Yes | — | Which trait this row holds, a value of the list `physical_trait`: e.g. `height`, `weight`, `blood_type` |
-| `value_text` | | `string` | Yes | Yes | null | The value of a trait whose type is `string`, `date` or `boolean`, written as text: e.g. `O+`, `brown`, `2026-01-15`; empty for a numeric trait |
-| `value_number` | | `decimal(18,6)` | Yes | Yes | null | The value of a trait whose type is `integer` or `decimal`: e.g. `172.5`, `68.0`, `45.0`; empty for a text trait |
-| `measure_unit_code` | | `string` | Yes | No | null | Unit of `value_number`, a value of the list `measure_unit`: e.g. `cm`, `kg`, `lb`; empty when the value has no unit |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `trait_code` |  | `string` | No | Yes | — | List | Which trait this row holds, a value of the list `physical_trait`: e.g. `height`, `weight`, `blood_type` |
+| `value_text` |  | `string` | Yes | Yes | null | — | The value of a trait whose type is `string`, `date` or `boolean`, written as text: e.g. `O+`, `brown`, `2026-01-15`; empty for a numeric trait |
+| `value_number` |  | `decimal(18,6)` | Yes | Yes | null | — | The value of a trait whose type is `integer` or `decimal`: e.g. `172.5`, `68.0`, `45.0`; empty for a text trait |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Unit of `value_number`, a value of the list `measure_unit`: e.g. `cm`, `kg`, `lb`; empty when the value has no unit |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_natural_person__community_affiliation
 
 The exception: the row is updated in place (row versioning), and it is loaded only for a jurisdiction that forbids keeping previous values. `row_version` starts at 1 and goes up by one with each update. The only row of a parent key and affiliation type is the current one. A previous value is gone only after snapshots are expired and files are rewritten (Principles). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. It serves the same purpose as `sat_natural_person__community_affiliation_history`, the default; the [Load Configuration](Load_Configuration.md) says which one a jurisdiction loads. One row holds one affiliation (Principles, "Traits as rows").
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `affiliation_type_code` | | `string` | No | Yes | — | Which kind of affiliation, a value of the list `affiliation_type`: e.g. `ethnicity`, `tribe`, `religion` |
-| `affiliation_value_code` | | `string` | No | Yes | — | The affiliation, a value of the list named by the type, as the jurisdiction records it: e.g. `melanesian`, `huli`, `christian` |
-| `row_version` | | `int` | No | No | `1` | How many times the row has been written: e.g. `1`, `2`, `3` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus last wrote the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the last write came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `affiliation_type_code` |  | `string` | No | Yes | — | List | Which kind of affiliation, a value of the list `affiliation_type`: e.g. `ethnicity`, `tribe`, `religion` |
+| `affiliation_value_code` |  | `string` | No | Yes | — | List | The affiliation, a value of the list named by the type, as the jurisdiction records it: e.g. `melanesian`, `huli`, `christian` |
+| `row_version` |  | `int` | No | No | `1` | — | How many times the row has been written: e.g. `1`, `2`, `3` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus last wrote the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the last write came from |
 
 ### sat_natural_person__community_affiliation_history
 
 The default: keeps its history, and every change adds a row (SCD Type 2). Special-category personal data, collected only where the jurisdiction allows it and only for roles that may see it. Where a jurisdiction does not collect it, no row exists. A new kind of affiliation is a new value of the list `affiliation_type`. It carries the same attributes as `sat_natural_person__community_affiliation`.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `affiliation_type_code` | | `string` | No | Yes | — | Which kind of affiliation, a value of the list `affiliation_type`: e.g. `ethnicity`, `tribe`, `religion` |
-| `affiliation_value_code` | | `string` | No | Yes | — | The affiliation, a value of the list named by the type, as the jurisdiction records it: e.g. `melanesian`, `huli`, `christian` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `affiliation_type_code` |  | `string` | No | Yes | — | List | Which kind of affiliation, a value of the list `affiliation_type`: e.g. `ethnicity`, `tribe`, `religion` |
+| `affiliation_value_code` |  | `string` | No | Yes | — | List | The affiliation, a value of the list named by the type, as the jurisdiction records it: e.g. `melanesian`, `huli`, `christian` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### lnk_natural_person__natural_person_relation
 
 A relationship between two people. The **subject** is the person the relationship type describes, and the **related** person is the other side: for the type `parent`, the subject is the parent and the related person is the child. A relationship that is the same from both sides, such as a marriage, is stored once, with the lower hash key as the subject.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `subject_natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the person the relationship type describes |
-| `related_natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the other person |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `subject_natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the person the relationship type describes |
+| `related_natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the other person |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_natural_person__natural_person_relation__relationship
 
 The kind of relationship, its state and the reason it started or ended are dimensions of one fact, so they share a Satellite. Each relationship type is its own row: two people can be spouses and, at the same time, one can be the legal guardian of the other.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_natural_person__natural_person_relation_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `relationship_type_code` | | `string` | No | Yes | — | What the subject is to the related person: e.g. `spouse`, `parent`, `legal_guardian` |
-| `relationship_status_code` | | `string` | No | Yes | — | One of `active`, `ended` |
-| `end_reason_code` | | `string` | Yes | Yes | null | Why the relationship ended; empty while it is active: e.g. `divorce`, `majority`, `death` |
-| `responsibility_basis_code` | | `string` | Yes | Yes | null | Why the subject is responsible for the related person; empty when the type carries no responsibility, such as a marriage: e.g. `minority`, `disability`, `court_appointment` |
-| `effective_date` | | `date` | No | Yes | — | First day this state applies; it cannot be before the birth of either person |
-| `end_date` | | `date` | No | Yes | `9999-12-31` | Last day this state applies; `9999-12-31` while it still applies. When a new row starts for the same type, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a marriage certificate or a court order; only the pointer is stored: e.g. `artifact://marriage/m-2201`, `artifact://court/c-889`, `artifact://birth/b-1204`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_natural_person__natural_person_relation_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `relationship_type_code` |  | `string` | No | Yes | — | List | What the subject is to the related person: e.g. `spouse`, `parent`, `legal_guardian` |
+| `relationship_status_code` |  | `string` | No | Yes | — | Closed | One of `active`, `ended` |
+| `end_reason_code` |  | `string` | Yes | Yes | null | List | Why the relationship ended; empty while it is active: e.g. `divorce`, `majority`, `death` |
+| `responsibility_basis_code` |  | `string` | Yes | Yes | null | List | Why the subject is responsible for the related person; empty when the type carries no responsibility, such as a marriage: e.g. `minority`, `disability`, `court_appointment` |
+| `effective_date` |  | `date` | No | Yes | — | — | First day this state applies; it cannot be before the birth of either person |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day this state applies; `9999-12-31` while it still applies. When a new row starts for the same type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a marriage certificate or a court order; only the pointer is stored: e.g. `artifact://marriage/m-2201`, `artifact://court/c-889`, `artifact://birth/b-1204`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

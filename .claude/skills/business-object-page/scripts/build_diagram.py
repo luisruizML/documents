@@ -277,8 +277,8 @@ def _cell_font(name: str, header: bool) -> tuple[str, int]:
 
 
 def column_widths(rows: list[dict[str, str]]) -> list[int]:
-    """Widths of the seven Fields columns: Description is fixed, Role, Null and PII share the smallest width that
-    fits the widest of them, and Column, Type and Default fit their longest text."""
+    """Widths of the eight Fields columns: Description is fixed, Role, Null and PII share the smallest width that
+    fits the widest of them, and Column, Type, Default and Code List fit their longest text."""
     def fit(name: str) -> int:
         texts = [(name, True)] + [(r.get(name, ""), False) for r in rows]
         return math.ceil(max(measure(t, *_cell_font(name, h)) for t, h in texts)) + CELL_PAD

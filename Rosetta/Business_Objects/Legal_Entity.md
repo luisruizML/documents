@@ -59,168 +59,168 @@ The hash key `legal_entity_hk` is computed from `jurisdiction_code`, `key_type_c
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_legal_entity
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `legal_entity_bk` | ● | `string` | No | No | — | Identifier of the entity in the source of record; unique for the life of the platform, never reused |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `holding_registry_code` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `legal_entity_bk` | ● | `string` | No | No | — | — | Identifier of the entity in the source of record; unique for the life of the platform, never reused |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `holding_registry_code` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_legal_entity__party
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity |
-| `party_hk` | ◇ | `string` | No | No | — | Hash key of the party |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity |
+| `party_hk` | ◇ | `string` | No | No | — | — | Hash key of the party |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_legal_entity__natural_person
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the natural person who acts for the entity |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the natural person who acts for the entity |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_legal_entity__name
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `name_type_code` | | `string` | No | No | — | Which kind of name this is: e.g. `legal_name`, `trading_name`, `community_name`, `alias` |
-| `name_text` | | `string` | No | Yes | — | The name as written: e.g. `Pacific Fisheries Limited`, `Council of Elders`, `Kunai Growers Collective` |
-| `script_code` | | `string` | No | No | — | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `name_type_code` |  | `string` | No | No | — | List | Which kind of name this is: e.g. `legal_name`, `trading_name`, `community_name`, `alias` |
+| `name_text` |  | `string` | No | Yes | — | — | The name as written: e.g. `Pacific Fisheries Limited`, `Council of Elders`, `Kunai Growers Collective` |
+| `script_code` |  | `string` | No | No | — | List | Writing system of the name, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__identification
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `identification_type_code` | | `string` | No | No | — | Kind of identifier: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `customary_land_registry_code` |
-| `identification_id` | | `string` | No | Yes | — | The identifier as issued, always text: e.g. `TIN-884210`, `C-2291`, `HLD-017` |
-| `issuing_jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that issued the identifier, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `community_code` | | `string` | Yes | Yes | null | Community the identifier is tied to, for an informal entity, a value of the list `community`: e.g. `tari`, `kunai`, `mendi`; empty for a formal one |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `identification_type_code` |  | `string` | No | No | — | List | Kind of identifier: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code`, `customary_land_registry_code` |
+| `identification_id` |  | `string` | No | Yes | — | — | The identifier as issued, always text: e.g. `TIN-884210`, `C-2291`, `HLD-017` |
+| `issuing_jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that issued the identifier, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `community_code` |  | `string` | Yes | Yes | null | List | Community the identifier is tied to, for an informal entity, a value of the list `community`: e.g. `tari`, `kunai`, `mendi`; empty for a formal one |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__registration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `registration_basis_code` | | `string` | No | No | — | Why the entity was registered, or which kind of evidence confirms the identifier, a value of the list `legal_entity_registration_basis`: e.g. `certificate_of_incorporation`, `tax_registration`, `community_recognition` |
-| `registration_date` | | `date` | No | No | — | When the entity was registered, or the identifier confirmed, on this basis |
-| `identification_type_code` | | `string` | Yes | No | null | Which identifier the evidence supports, a value of the list `identification_type`; empty when the evidence supports the entity as a whole: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code` |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a certificate of incorporation or a recognition letter; each upload is its own object with its own pointer; only the pointer is stored: e.g. `artifact://certificate/c-2291`, `artifact://tax/t-884`, `artifact://recognition/r-17`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `registration_basis_code` |  | `string` | No | No | — | List | Why the entity was registered, or which kind of evidence confirms the identifier, a value of the list `legal_entity_registration_basis`: e.g. `certificate_of_incorporation`, `tax_registration`, `community_recognition` |
+| `registration_date` |  | `date` | No | No | — | — | When the entity was registered, or the identifier confirmed, on this basis |
+| `identification_type_code` |  | `string` | Yes | No | null | List | Which identifier the evidence supports, a value of the list `identification_type`; empty when the evidence supports the entity as a whole: e.g. `tax_identification_number`, `company_registration_number`, `community_registry_code` |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a certificate of incorporation or a recognition letter; each upload is its own object with its own pointer; only the pointer is stored: e.g. `artifact://certificate/c-2291`, `artifact://tax/t-884`, `artifact://recognition/r-17`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__classification
 
 A legal entity can be classified by several criteria at once, and each criterion is its own row: the entity is `corporate` by formality and a `limited_liability_company` by legal form, and a jurisdiction can add `economic_activity` or `size` with no change of table. A new criterion is a new value of the list `classification_criterion`, and the classes of each criterion are the values of a list of their own (Principles, "Traits as rows").
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `criterion_code` | | `string` | No | No | — | The criterion this row classifies by, a value of the list `classification_criterion`: e.g. `formality`, `legal_form`, `sector`, `economic_activity` |
-| `classification_code` | | `string` | No | No | — | The class of the entity under that criterion, a value of the list named by the criterion: e.g. `corporate`, `public`, `limited_liability_company`, `holding` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `criterion_code` |  | `string` | No | No | — | List | The criterion this row classifies by, a value of the list `classification_criterion`: e.g. `formality`, `legal_form`, `sector`, `economic_activity` |
+| `classification_code` |  | `string` | No | No | — | List | The class of the entity under that criterion, a value of the list named by the criterion: e.g. `corporate`, `public`, `limited_liability_company`, `holding` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__lifecycle
 
 One row for each event in the life of a legal entity, built as `sat_natural_person__lifecycle` is (Principles, "Events as rows"). A new kind of event is a new value of the Code List `legal_entity_event`. Whether an entity is active is not stored: the Gold view `cur_legal_entity__status` works it out from the events in date order.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `event_code` | | `string` | No | No | — | Which event this is, a value of the list `legal_entity_event`: e.g. `incorporation`, `formal_recognition`, `dissolution`, `bankruptcy`, `merger`, `restoration` |
-| `event_date` | | `date` | Yes | No | null | Date of the event; empty when unknown, as with a customary body recognized long ago |
-| `event_place_jurisdiction_code` | | `string` | Yes | No | null | Jurisdiction (country or territory) where the event was registered, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL`; empty when unknown |
-| `event_status_code` | | `string` | No | No | `recorded` | One of `recorded`, `voided`. An event recorded by mistake is voided by a later row, never deleted |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to the evidence held in Digital Artifact, such as a certificate of incorporation; only the pointer is stored: e.g. `artifact://incorporation/i-2291`, `artifact://court/c-310`, `artifact://merger/m-18`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `event_code` |  | `string` | No | No | — | List | Which event this is, a value of the list `legal_entity_event`: e.g. `incorporation`, `formal_recognition`, `dissolution`, `bankruptcy`, `merger`, `restoration` |
+| `event_date` |  | `date` | Yes | No | null | — | Date of the event; empty when unknown, as with a customary body recognized long ago |
+| `event_place_jurisdiction_code` |  | `string` | Yes | No | null | List | Jurisdiction (country or territory) where the event was registered, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL`; empty when unknown |
+| `event_status_code` |  | `string` | No | No | `recorded` | Closed | One of `recorded`, `voided`. An event recorded by mistake is voided by a later row, never deleted |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to the evidence held in Digital Artifact, such as a certificate of incorporation; only the pointer is stored: e.g. `artifact://incorporation/i-2291`, `artifact://court/c-310`, `artifact://merger/m-18`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__natural_person__representation
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_legal_entity__natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | Yes | — | How the person acts for the entity: e.g. `director`, `representative`, `tribal_chief`, `trustee` |
-| `appointed_date` | | `date` | No | Yes | `1900-01-01` | When the person took the role; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | Yes | `9999-12-31` | When the person left the role; `9999-12-31` while the role continues. When a new row starts for the same role, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_legal_entity__natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `role_code` |  | `string` | No | Yes | — | List | How the person acts for the entity: e.g. `director`, `representative`, `tribal_chief`, `trustee` |
+| `appointed_date` |  | `date` | No | Yes | `1900-01-01` | — | When the person took the role; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | When the person left the role; `9999-12-31` while the role continues. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### lnk_legal_entity__party_owner
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity that is owned |
-| `owner_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity that is owned |
+| `owner_party_hk` | ◇ | `string` | No | No | — | — | Hash key of the party that owns it, a Natural Person or a Legal Entity |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_legal_entity__party_owner__ownership
 
 One Satellite holds the three dimensions of an ownership, so a change in any of them is one new row. Each holding type is its own row: an owner can hold the bare ownership of one share and the usufruct of another over the same entity.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_legal_entity__party_owner_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `holding_type_code` | | `string` | No | Yes | — | The legal nature of the title. One of `full_ownership` (complete title with all economic yields), `bare_ownership` (title to the capital without current yields), `usufruct` (right to the dividends without title to the capital), `beneficial_ownership` (economic entitlement held through an intermediary, nominee or trust), `legal_nominee` (registered titleholder acting for a third party, with no economic benefit), `synthetic_economic` (contractual rights indexed to the shares, such as phantom stock, without holding equity) |
-| `ownership_share_percent` | | `decimal(7,4)` | No | Yes | — | The share of the entity this holding represents, from 0 to 100: e.g. `60.0000`, `33.3333`, `100.0000` |
-| `liquidity_status_code` | | `string` | No | Yes | `unrestricted` | Restrictions on distributions and disposal. One of `unrestricted` (free disposal), `attached_sequestered` (judicial freeze, embargo or court deposit, so the funds are blocked), `pledged_retained` (pledged to a creditor, owner keeps the distributions), `pledged_cash_sweep` (pledged, and every distribution goes to the creditor), `escrow_locked` (held by a third party until a condition is met) |
-| `vesting_status_code` | | `string` | No | Yes | `fully_vested` | How mature the award is. One of `fully_vested` (unconditional, cannot be forfeited), `unvested_subject_to_clawback` (contingent on time or performance, with a risk of forfeiture or repurchase) |
-| `effective_date` | | `date` | No | Yes | — | First day this combination applies |
-| `end_date` | | `date` | No | Yes | `9999-12-31` | Last day this combination applies; `9999-12-31` while it still applies. When a new row starts for the same holding type, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_legal_entity__party_owner_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `holding_type_code` |  | `string` | No | Yes | — | Closed | The legal nature of the title. One of `full_ownership` (complete title with all economic yields), `bare_ownership` (title to the capital without current yields), `usufruct` (right to the dividends without title to the capital), `beneficial_ownership` (economic entitlement held through an intermediary, nominee or trust), `legal_nominee` (registered titleholder acting for a third party, with no economic benefit), `synthetic_economic` (contractual rights indexed to the shares, such as phantom stock, without holding equity) |
+| `ownership_share_percent` |  | `decimal(7,4)` | No | Yes | — | — | The share of the entity this holding represents, from 0 to 100: e.g. `60.0000`, `33.3333`, `100.0000` |
+| `liquidity_status_code` |  | `string` | No | Yes | `unrestricted` | Closed | Restrictions on distributions and disposal. One of `unrestricted` (free disposal), `attached_sequestered` (judicial freeze, embargo or court deposit, so the funds are blocked), `pledged_retained` (pledged to a creditor, owner keeps the distributions), `pledged_cash_sweep` (pledged, and every distribution goes to the creditor), `escrow_locked` (held by a third party until a condition is met) |
+| `vesting_status_code` |  | `string` | No | Yes | `fully_vested` | Closed | How mature the award is. One of `fully_vested` (unconditional, cannot be forfeited), `unvested_subject_to_clawback` (contingent on time or performance, with a risk of forfeiture or repurchase) |
+| `effective_date` |  | `date` | No | Yes | — | — | First day this combination applies |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day this combination applies; `9999-12-31` while it still applies. When a new row starts for the same holding type, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### lnk_legal_entity__legal_entity_hierarchy
 
 A grouping between two Legal Entities. The **parent** is the entity that groups, such as a holding, and the **member** is the entity that belongs to it. Both are rows of `hub_legal_entity`. A member can itself be a parent, so a group can sit inside another group.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `parent_legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity that groups, such as a holding |
-| `member_legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity that belongs to the group |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `parent_legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity that groups, such as a holding |
+| `member_legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity that belongs to the group |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_legal_entity__legal_entity_hierarchy__membership
 
 The kind of grouping, its period and the reason it ended are one fact, so they share a Satellite. The kind of grouping is part of the grain: a member can belong to a holding group and, at the same time, be a branch in another hierarchy. Within one kind, a member has at most one open row (see Modeling considerations).
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_legal_entity__legal_entity_hierarchy_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `hierarchy_type_code` | | `string` | No | No | — | Which kind of grouping this is, a value of the list `legal_entity_hierarchy_type`: e.g. `holding_group`, `branch`, `division`, `government_department` |
-| `end_reason_code` | | `string` | Yes | No | null | Why the member left the group, a value of the list `end_reason`; empty while it belongs: e.g. `left_group`, `dissolved`, `merged` |
-| `effective_date` | | `date` | No | No | — | First day the member belongs to the group |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day the member belongs to the group; `9999-12-31` while it still belongs. When a new row starts for the same member and type, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the decision that created the group; only the pointer is stored: e.g. `artifact://decision/d-310`, `artifact://registry/r-77`, `artifact://deed/g-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_legal_entity__legal_entity_hierarchy_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `hierarchy_type_code` |  | `string` | No | No | — | List | Which kind of grouping this is, a value of the list `legal_entity_hierarchy_type`: e.g. `holding_group`, `branch`, `division`, `government_department` |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the member left the group, a value of the list `end_reason`; empty while it belongs: e.g. `left_group`, `dissolved`, `merged` |
+| `effective_date` |  | `date` | No | No | — | — | First day the member belongs to the group |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the member belongs to the group; `9999-12-31` while it still belongs. When a new row starts for the same member and type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the decision that created the group; only the pointer is stored: e.g. `artifact://decision/d-310`, `artifact://registry/r-77`, `artifact://deed/g-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

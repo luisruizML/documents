@@ -45,47 +45,47 @@ The Links to the model are defined on the pages of the assets and the parts: `ln
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_model_catalog
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `model_catalog_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `model_catalog_bk` | ● | `string` | No | No | — | Identifier of the model: the number stamped on it or issued by the registry of record, or one assigned by the platform when there is none |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `model_catalog_key_type`: e.g. `icao_type_designator`, `maker_model_code`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `model_catalog_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `model_catalog_bk` | ● | `string` | No | No | — | — | Identifier of the model: the number stamped on it or issued by the registry of record, or one assigned by the platform when there is none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `model_catalog_key_type`: e.g. `icao_type_designator`, `maker_model_code`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 
 ### sat_model_catalog__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `model_catalog_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `model_kind_code` |  | `string` | No | No | — | Which kind of thing the model describes, a value of the list `model_kind`: e.g. `vessel_hull`, `aircraft_airframe`, `engine`, `vehicle_chassis` |
-| `manufacturer_name` |  | `string` | No | No | — | The maker of the model, as the maker writes it: e.g. `Rolls-Royce`, `Boeing`, `Yamaha` |
-| `model_name` |  | `string` | No | No | — | The name or designation of the model, as the maker writes it: e.g. `737-800`, `Trent 700`, `F250` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `model_catalog_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `model_kind_code` |  | `string` | No | No | — | List | Which kind of thing the model describes, a value of the list `model_kind`: e.g. `vessel_hull`, `aircraft_airframe`, `engine`, `vehicle_chassis` |
+| `manufacturer_name` |  | `string` | No | No | — | — | The maker of the model, as the maker writes it: e.g. `Rolls-Royce`, `Boeing`, `Yamaha` |
+| `model_name` |  | `string` | No | No | — | — | The name or designation of the model, as the maker writes it: e.g. `737-800`, `Trent 700`, `F250` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 
 ### sat_model_catalog__characteristic
 
 The characteristics of a model are an open list, such as its seats, its maximum weight, its rated power, and whatever a jurisdiction adds. Each is a row and not a column (Principles, "Traits as rows"). A new characteristic is a new value of the Code List `model_characteristic` and changes no table. The Code List says, for each one, which value column is used (`value_data_type_code`), and the load checks the value against it. A characteristic that is not personal data has no in-place twin: history is kept.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `model_catalog_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `trait_code` |  | `string` | No | No | — | Which characteristic this row holds, a value of the list `model_characteristic`: e.g. `seat_count`, `maximum_takeoff_weight`, `rated_power`, `fuel_type` |
-| `value_text` |  | `string` | Yes | No | null | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
-| `value_number` |  | `decimal(18,6)` | Yes | No | null | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
-| `measure_unit_code` |  | `string` | Yes | No | null | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `tonne`, `count` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `model_catalog_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `trait_code` |  | `string` | No | No | — | List | Which characteristic this row holds, a value of the list `model_characteristic`: e.g. `seat_count`, `maximum_takeoff_weight`, `rated_power`, `fuel_type` |
+| `value_text` |  | `string` | Yes | No | null | — | The value of a characteristic whose type is `string`, `date` or `boolean`, written as text; empty for a numeric characteristic |
+| `value_number` |  | `decimal(18,6)` | Yes | No | null | — | The value of a characteristic whose type is `integer` or `decimal`; empty for a text characteristic |
+| `measure_unit_code` |  | `string` | Yes | No | null | List | Unit of `value_number`, a value of the list `measure_unit`; empty for a text characteristic or a plain count: e.g. `metre`, `tonne`, `count` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

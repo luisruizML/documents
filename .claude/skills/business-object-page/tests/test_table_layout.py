@@ -46,16 +46,17 @@ class VaultWidthTests(unittest.TestCase):
 
 class FieldsWidthTests(unittest.TestCase):
     def test_the_widths_cover_the_page_and_the_four_small_columns_are_equal(self):
-        body = [["`a_hk`", "◇", "`string`", "No", "No", "—", "Hash key"],
-                ["`some_long_column_name_code`", "", "`decimal(18,6)`", "Yes", "Yes", "`9999-12-31`", "x"]]
+        body = [["`a_hk`", "◇", "`string`", "No", "No", "—", "—", "Hash key"],
+                ["`some_long_column_name_code`", "", "`decimal(18,6)`", "Yes", "Yes", "`9999-12-31`", "List", "x"]]
         w = tl.fields_widths([body])
         self.assertEqual(sum(w), tl.PAGE_WIDTH)
         self.assertEqual(len({w[1], w[3], w[4], w[5]}), 1)
-        self.assertEqual(max(w), w[6])
+        self.assertEqual(max(w), w[7])
+        self.assertGreaterEqual(w[6], tl.fit("Code List", ["List", "Closed"]))
 
     def test_every_fields_table_of_a_page_has_the_same_widths(self):
         xml = ms.convert(page_text("Natural_Person"))
-        groups = {tuple(re.findall(r"width: ([0-9]+)px", m)) for m in re.findall(r"<colgroup>.*?</colgroup>", xml) if m.count("<col ") == 7}
+        groups = {tuple(re.findall(r"width: ([0-9]+)px", m)) for m in re.findall(r"<colgroup>.*?</colgroup>", xml) if m.count("<col ") == 8}
         self.assertEqual(len(groups), 1)
 
 
@@ -108,7 +109,7 @@ class TableIntegrityTests(unittest.TestCase):
             self.assertEqual(sum(widths["fields"]), tl.PAGE_WIDTH, name)
             self.assertEqual(widths["vault"][2], widths["vault"][4], name)
             self.assertGreaterEqual(widths["vault"][2], widths["vault"][3], name)
-            self.assertGreater(widths["fields"][6], max(widths["fields"][:6]), name)
+            self.assertGreater(widths["fields"][7], max(widths["fields"][:7]), name)
 
 
 class AppearanceTests(unittest.TestCase):

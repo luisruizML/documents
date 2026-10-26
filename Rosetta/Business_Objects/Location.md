@@ -59,188 +59,188 @@ The hash key `location_hk` is computed from the normalized `location_bk`. `admin
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `location_hk` | ◆ | `string` | No | No | — | Hash key |
-| `location_bk` | ● | `string` | No | No | — | Identifier of the place, assigned by the platform when the place is first registered; never changed and never reused |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `location_hk` | ◆ | `string` | No | No | — | — | Hash key |
+| `location_bk` | ● | `string` | No | No | — | — | Identifier of the place, assigned by the platform when the place is first registered; never changed and never reused |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### hub_administrative_zone
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `administrative_zone_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, zone scheme and business key |
-| `administrative_zone_bk` | ● | `string` | No | No | — | The standard zone code, as the jurisdiction publishes it: e.g. `WSM-AA`, `PNG-NCD`, `NZL-AUK` |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that owns the zone, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `zone_scheme_code` | | `string` | No | No | — | Which standard the zone code follows, a value of the list `zone_scheme`: e.g. `iso_3166_2`, `national_census`, `electoral` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `administrative_zone_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, zone scheme and business key |
+| `administrative_zone_bk` | ● | `string` | No | No | — | — | The standard zone code, as the jurisdiction publishes it: e.g. `WSM-AA`, `PNG-NCD`, `NZL-AUK` |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the zone, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `zone_scheme_code` |  | `string` | No | No | — | List | Which standard the zone code follows, a value of the list `zone_scheme`: e.g. `iso_3166_2`, `national_census`, `electoral` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### hub_address
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `address_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `address_bk` | ● | `string` | No | No | — | Identifier of the address in the source of record, or one assigned by the platform when the source has none |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` | | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `address_key_type`: e.g. `registry_address_id`, `postal_address_id`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `address_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `address_bk` | ● | `string` | No | No | — | — | Identifier of the address in the source of record, or one assigned by the platform when the source has none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `address_key_type`: e.g. `registry_address_id`, `postal_address_id`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### hub_geometry
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `geometry_hk` | ◆ | `string` | No | No | — | Hash key |
-| `geometry_bk` | ● | `string` | No | No | — | Identifier of the shape, assigned by the platform when the shape is first registered; never changed and never reused, so a corrected survey keeps it |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `geometry_hk` | ◆ | `string` | No | No | — | — | Hash key |
+| `geometry_bk` | ● | `string` | No | No | — | — | Identifier of the shape, assigned by the platform when the shape is first registered; never changed and never reused, so a corrected survey keeps it |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_administrative_zone__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `administrative_zone_hk` | ◇ | `string` | No | No | — | Hash key of the administrative zone |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `administrative_zone_hk` | ◇ | `string` | No | No | — | — | Hash key of the administrative zone |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_address__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `address_hk` | ◇ | `string` | No | No | — | Hash key of the address |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `address_hk` | ◇ | `string` | No | No | — | — | Hash key of the address |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_geometry__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `geometry_hk` | ◇ | `string` | No | No | — | Hash key of the geometry |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `geometry_hk` | ◇ | `string` | No | No | — | — | Hash key of the geometry |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_administrative_zone__administrative_zone_hierarchy
 
 A division between two zones. The **parent** is the zone that contains, such as a district, and the **member** is the zone inside it, such as a ward. Both are rows of `hub_administrative_zone`. A member can itself be a parent, so the levels of the State's division are not built into the tables.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `parent_administrative_zone_hk` | ◇ | `string` | No | No | — | Hash key of the zone that contains |
-| `member_administrative_zone_hk` | ◇ | `string` | No | No | — | Hash key of the zone that lies inside it |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `parent_administrative_zone_hk` | ◇ | `string` | No | No | — | — | Hash key of the zone that contains |
+| `member_administrative_zone_hk` | ◇ | `string` | No | No | — | — | Hash key of the zone that lies inside it |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_legal_entity__location
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `legal_entity_hk` | ◇ | `string` | No | No | — | Hash key of the legal entity |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `legal_entity_hk` | ◇ | `string` | No | No | — | — | Hash key of the legal entity |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_location__natural_person
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `location_hk` | ◇ | `string` | No | No | — | Hash key of the location |
-| `natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the natural person |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the natural person |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_administrative_zone__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `administrative_zone_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `zone_name_text` | | `string` | No | No | — | The name of the zone as the jurisdiction writes it: e.g. `Apia`, `National Capital District`, `Auckland` |
-| `zone_level_code` | | `string` | No | No | — | Level of the zone in the State's division, a value of the list `zone_level`: e.g. `province`, `district`, `ward` |
-| `valid_from_date` | | `date` | No | No | `1900-01-01` | First day the zone exists; `1900-01-01` when unknown |
-| `valid_to_date` | | `date` | No | No | `9999-12-31` | Last day the zone exists; `9999-12-31` while it still exists. When a new row starts for the same zone, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `administrative_zone_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `zone_name_text` |  | `string` | No | No | — | — | The name of the zone as the jurisdiction writes it: e.g. `Apia`, `National Capital District`, `Auckland` |
+| `zone_level_code` |  | `string` | No | No | — | List | Level of the zone in the State's division, a value of the list `zone_level`: e.g. `province`, `district`, `ward` |
+| `valid_from_date` |  | `date` | No | No | `1900-01-01` | — | First day the zone exists; `1900-01-01` when unknown |
+| `valid_to_date` |  | `date` | No | No | `9999-12-31` | — | Last day the zone exists; `9999-12-31` while it still exists. When a new row starts for the same zone, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_address__description
 
 This Satellite is personal data. It is its own Satellite so that its access rules and its erasure apply to the address alone.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `address_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `street_text` | | `string` | Yes | Yes | null | Street and number as written; empty where there are no street names |
-| `building_text` | | `string` | Yes | Yes | null | Building, unit or house name as written; empty when there is none |
-| `postal_code` | | `string` | Yes | Yes | null | Postal code as issued, always text: e.g. `WS1234`, `111`, `1010`; empty where the jurisdiction has none |
-| `description_text` | | `string` | Yes | Yes | null | Free description of how to find the place, for where there are no street names: e.g. `third house after the church`; empty when the other columns are enough |
-| `script_code` | | `string` | No | No | — | Writing system of the address, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `address_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `street_text` |  | `string` | Yes | Yes | null | — | Street and number as written; empty where there are no street names |
+| `building_text` |  | `string` | Yes | Yes | null | — | Building, unit or house name as written; empty when there is none |
+| `postal_code` |  | `string` | Yes | Yes | null | — | Postal code as issued, always text: e.g. `WS1234`, `111`, `1010`; empty where the jurisdiction has none |
+| `description_text` |  | `string` | Yes | Yes | null | — | Free description of how to find the place, for where there are no street names: e.g. `third house after the church`; empty when the other columns are enough |
+| `script_code` |  | `string` | No | No | — | List | Writing system of the address, ISO 15924: e.g. `Latn`, `Cyrl`, `Arab` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_geometry__shape
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `geometry_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `geometry_type_code` | | `string` | No | No | — | Kind of shape, a value of the list `geometry_type`: e.g. `point`, `line`, `polygon` |
-| `shape` | | `geometry` | No | No | — | The shape itself, an Iceberg `geometry` value in the spatial reference system named in `srs_code` |
-| `srs_code` | | `string` | No | No | — | Spatial reference system of the shape, a value of the list `spatial_reference_system`: e.g. `EPSG:4326`, `EPSG:3832`, `EPSG:2193` |
-| `accuracy_number` | | `decimal(9,2)` | Yes | No | null | How accurate the shape is, in the unit of `accuracy_unit_code`; empty when unknown |
-| `accuracy_unit_code` | | `string` | Yes | No | null | Unit of the accuracy, a value of the list `measure_unit`: e.g. `metre`, `kilometre`, `foot`; empty when `accuracy_number` is empty |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `geometry_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `geometry_type_code` |  | `string` | No | No | — | List | Kind of shape, a value of the list `geometry_type`: e.g. `point`, `line`, `polygon` |
+| `shape` |  | `geometry` | No | No | — | — | The shape itself, an Iceberg `geometry` value in the spatial reference system named in `srs_code` |
+| `srs_code` |  | `string` | No | No | — | List | Spatial reference system of the shape, a value of the list `spatial_reference_system`: e.g. `EPSG:4326`, `EPSG:3832`, `EPSG:2193` |
+| `accuracy_number` |  | `decimal(9,2)` | Yes | No | null | — | How accurate the shape is, in the unit of `accuracy_unit_code`; empty when unknown |
+| `accuracy_unit_code` |  | `string` | Yes | No | null | List | Unit of the accuracy, a value of the list `measure_unit`: e.g. `metre`, `kilometre`, `foot`; empty when `accuracy_number` is empty |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_administrative_zone__administrative_zone_hierarchy__period
 
 The kind of division, its period and the reason it ended are one fact, so they share a Satellite. The kind of division is part of the grain: a ward can lie in a district of the electoral division and in another district of the census division. Within one kind, a zone has at most one open row.
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_administrative_zone__administrative_zone_hierarchy_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `hierarchy_type_code` | | `string` | No | No | — | Which division this is, a value of the list `zone_hierarchy_type`: e.g. `administrative`, `electoral`, `census` |
-| `end_reason_code` | | `string` | Yes | No | null | Why the zone left its parent, a value of the list `end_reason`; empty while it lies inside: e.g. `border_redrawn`, `merged`, `abolished` |
-| `effective_date` | | `date` | No | No | `1900-01-01` | First day the zone lies inside the parent; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day the zone lies inside the parent; `9999-12-31` while it still does. When a new row starts for the same zone and type, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the decree that redrew the border; only the pointer is stored: e.g. `artifact://decree/d-2021-14`, `artifact://gazette/g-77`, `artifact://map/m-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_administrative_zone__administrative_zone_hierarchy_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `hierarchy_type_code` |  | `string` | No | No | — | List | Which division this is, a value of the list `zone_hierarchy_type`: e.g. `administrative`, `electoral`, `census` |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the zone left its parent, a value of the list `end_reason`; empty while it lies inside: e.g. `border_redrawn`, `merged`, `abolished` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the zone lies inside the parent; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the zone lies inside the parent; `9999-12-31` while it still does. When a new row starts for the same zone and type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the decree that redrew the border; only the pointer is stored: e.g. `artifact://decree/d-2021-14`, `artifact://gazette/g-77`, `artifact://map/m-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_legal_entity__location__usage
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_legal_entity__location_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | No | — | How the entity uses the place, a value of the list `location_role` allowed for legal entities (`party_type_code` in the Code List): e.g. `registered_office`, `branch_office`, `mailing_address` |
-| `effective_date` | | `date` | No | No | `1900-01-01` | First day the entity uses the place; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | No | `9999-12-31` | Last day the entity uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_legal_entity__location_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `role_code` |  | `string` | No | No | — | List | How the entity uses the place, a value of the list `location_role` allowed for legal entities (`party_type_code` in the Code List): e.g. `registered_office`, `branch_office`, `mailing_address` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the entity uses the place; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the entity uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_location__natural_person__usage
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_location__natural_person_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `role_code` | | `string` | No | Yes | — | How the person uses the place, a value of the list `location_role` allowed for natural persons (`party_type_code` in the Code List): e.g. `residence`, `mailing_address`, `place_of_birth` |
-| `effective_date` | | `date` | No | Yes | `1900-01-01` | First day the person uses the place; `1900-01-01` when unknown |
-| `end_date` | | `date` | No | Yes | `9999-12-31` | Last day the person uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
-| `artifact_uri` | | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_location__natural_person_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `role_code` |  | `string` | No | Yes | — | List | How the person uses the place, a value of the list `location_role` allowed for natural persons (`party_type_code` in the Code List): e.g. `residence`, `mailing_address`, `place_of_birth` |
+| `effective_date` |  | `date` | No | Yes | `1900-01-01` | — | First day the person uses the place; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day the person uses the place; `9999-12-31` while it still does. When a new row starts for the same role, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as a proof of residence; only the pointer is stored: e.g. `artifact://residence/r-2291`, `artifact://registry/r-77`, `artifact://utility/u-18`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 
 ## Sources and mapping

@@ -37,30 +37,30 @@ The hash key `load_configuration_hk` is computed from the normalized business ke
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_load_configuration
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `load_configuration_hk` | ◆ | `string` | No | No | — | Hash key, from the business key |
-| `load_configuration_bk` | ● | `string` | No | No | — | Jurisdiction and attribute group joined by a colon: e.g. `WSM:natural_person__demographics`, `PNG:natural_person__physical_traits`, `any:natural_person__community_affiliation` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `load_configuration_hk` | ◆ | `string` | No | No | — | — | Hash key, from the business key |
+| `load_configuration_bk` | ● | `string` | No | No | — | — | Jurisdiction and attribute group joined by a colon: e.g. `WSM:natural_person__demographics`, `PNG:natural_person__physical_traits`, `any:natural_person__community_affiliation` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_load_configuration__mechanism
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `load_configuration_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `jurisdiction_code` | | `string` | No | No | — | Jurisdiction the setting applies to, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `WSM`, `PNG`, `any` |
-| `attribute_group_name` | | `string` | No | No | — | The pair of Satellites, written without `sat_` and without `_history`: e.g. `natural_person__demographics`, `natural_person__physical_traits`, `natural_person__community_affiliation` |
-| `mechanism_code` | | `string` | No | No | — | One of `row_versioning`, `history` |
-| `loaded_object_name` | | `string` | No | No | — | The Satellite the loader writes for this setting: e.g. `sat_natural_person__demographics`, `sat_natural_person__demographics_history`, `sat_natural_person__physical_traits` |
-| `effective_date` | | `date` | No | No | — | First day the setting applies |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `load_configuration_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction the setting applies to, ISO 3166-1 alpha-3, or `any` for every jurisdiction: e.g. `WSM`, `PNG`, `any` |
+| `attribute_group_name` |  | `string` | No | No | — | — | The pair of Satellites, written without `sat_` and without `_history`: e.g. `natural_person__demographics`, `natural_person__physical_traits`, `natural_person__community_affiliation` |
+| `mechanism_code` |  | `string` | No | No | — | Closed | One of `row_versioning`, `history` |
+| `loaded_object_name` |  | `string` | No | No | — | — | The Satellite the loader writes for this setting: e.g. `sat_natural_person__demographics`, `sat_natural_person__demographics_history`, `sat_natural_person__physical_traits` |
+| `effective_date` |  | `date` | No | No | — | — | First day the setting applies |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 

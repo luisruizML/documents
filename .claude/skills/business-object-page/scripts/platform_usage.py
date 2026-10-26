@@ -1,6 +1,6 @@
 """Which vault objects use the Code List and the Load Configuration, read from the Fields tables of the pages.
 
-A column takes its values from a Code List when the Code List page lists it ("Which code columns are values of a Code
+A column takes its values from a Code List when the Code List page has a row for it (`table.column`) ("Which code columns are values of a Code
 List"); a closed list is not one, because logic branches on it. A Satellite is loaded as set by the Load Configuration when it is one of a twin pair (a `_history` Satellite and
 its in-place twin). Nothing here is typed by hand, so a new page cannot drift from the diagrams."""
 from __future__ import annotations
@@ -18,20 +18,12 @@ CODE_LIST_PAGE = REPO / "Rosetta" / "Business_Objects" / "Code_List.md"
 
 
 def listed_code_columns(page: Path = CODE_LIST_PAGE) -> set[str]:
-    """The columns the Code List page names as values of a list: the rows of its table "Which code columns are values of
-    a Code List", the closed lists left out. The page is the one source, so a column is added there and nowhere else."""
-    columns: set[str] = set()
-    inside = False
-    for line in page.read_text(encoding="utf-8").splitlines():
-        if line.startswith("- **Which code columns are values of a Code List"):
-            inside = True
-        elif inside and line.startswith("- **"):
-            break
-        elif inside and line.startswith("| `"):
-            cells = [c.strip() for c in line.strip().strip("|").split("|")]
-            if not cells[1].startswith("Closed lists"):
-                columns.update(re.findall(r"`([a-z_]+)`", cells[0]))
-    return columns
+    """`table.column` of every column the Code List page names as values of a list: the rows of its table "Which code
+    columns are values of a Code List", the closed lists left out. The page is the one source, so a column is added
+    there and nowhere else."""
+    import validate_page as vp
+    rows = vp.code_list_table(page.read_text(encoding="utf-8"))
+    return {key for key, cells in rows.items() if not cells[1].startswith("Closed list")}
 
 
 def code_list_users(nodes: dict, listed: set[str] | None = None) -> dict[str, list[str]]:
@@ -41,7 +33,7 @@ def code_list_users(nodes: dict, listed: set[str] | None = None) -> dict[str, li
     for name, node in nodes.items():
         if CODE_LIST_OWN.match(name) or node.external or not node.rows:
             continue
-        columns = [r["Column"] for r in node.rows if r["Column"] in listed]
+        columns = [r["Column"] for r in node.rows if f"{name}.{r['Column']}" in listed]
         if columns:
             out[name] = columns
     return out

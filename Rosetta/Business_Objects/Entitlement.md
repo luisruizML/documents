@@ -61,158 +61,158 @@ An Entitlement governs an activity, not the ownership of a thing. Ownership, lea
 
 ## Fields
 
-*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3.*
+*Indicators in Role: ◆ own hash key · ◇ hash key of another object · ● business key · ▪ load metadata · Δ hashdiff. Default: — means no default, so the loader must supply the value; a literal is a default in the sense of Iceberg format version 3. Code List: `List` — the values are a list of the Code List object and the column has a row in the table of the Code List page; `Closed` — a closed list, written in the Description as One of; `—` — the column is not a code.*
 
 ### hub_entitlement
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◆ | `string` | No | No | — | Hash key, from jurisdiction, key type and business key |
-| `entitlement_bk` | ● | `string` | No | No | — | The number the issuing authority gives the entitlement, or one assigned by the platform when there is none |
-| `jurisdiction_code` |  | `string` | No | No | — | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
-| `key_type_code` |  | `string` | No | No | — | Which kind of identifier the business key is, a value of the list `entitlement_key_type`: e.g. `licence_number`, `permit_reference`, `quota_certificate_number`, `platform_assigned` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◆ | `string` | No | No | — | — | Hash key, from jurisdiction, key type and business key |
+| `entitlement_bk` | ● | `string` | No | No | — | — | The number the issuing authority gives the entitlement, or one assigned by the platform when there is none |
+| `jurisdiction_code` |  | `string` | No | No | — | List | Jurisdiction (country or territory) that owns the key, ISO 3166-1 alpha-3: e.g. `WSM`, `PNG`, `NZL` |
+| `key_type_code` |  | `string` | No | No | — | List | Which kind of identifier the business key is, a value of the list `entitlement_key_type`: e.g. `licence_number`, `permit_reference`, `quota_certificate_number`, `platform_assigned` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_entitlement__party_holder
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the entitlement that is held |
-| `holder_party_hk` | ◇ | `string` | No | No | — | Hash key of the party that holds it, a Natural Person or a Legal Entity, which includes a public body |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the entitlement that is held |
+| `holder_party_hk` | ◇ | `string` | No | No | — | — | Hash key of the party that holds it, a Natural Person or a Legal Entity, which includes a public body |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_asset__entitlement
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_asset_hk` | ◇ | `string` | No | No | — | Hash key of the asset the entitlement applies to |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the entitlement |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_asset_hk` | ◇ | `string` | No | No | — | — | Hash key of the asset the entitlement applies to |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the entitlement |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_base_parcel__entitlement
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `base_parcel_hk` | ◇ | `string` | No | No | — | Hash key of the parcel the entitlement applies to |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the entitlement |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel the entitlement applies to |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the entitlement |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### lnk_built_structure__entitlement
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `built_structure_hk` | ◇ | `string` | No | No | — | Hash key of the structure the entitlement applies to |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the entitlement |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `built_structure_hk` | ◇ | `string` | No | No | — | — | Hash key of the structure the entitlement applies to |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the entitlement |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
 ### sat_entitlement__description
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `entitlement_type_code` |  | `string` | No | No | — | What kind of entitlement this is, a value of the list `entitlement_type`: e.g. `driving_privilege`, `fishing_quota`, `change_of_use_permit`, `tourism_operation`, `residence_right`, `tax_holiday` |
-| `activity_code` |  | `string` | Yes | No | null | The activity the entitlement allows, a value of the list `entitlement_activity`; empty when the type says it all: e.g. `heavy_goods_driving`, `commercial_fishing`, `passenger_transport`, `residential_use` |
-| `issuing_authority_code` |  | `string` | No | No | — | The authority that grants the entitlement, a value of the list `issuer` that the platform configuration keeps: e.g. `transport_authority`, `fisheries_authority`, `planning_authority` |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `entitlement_type_code` |  | `string` | No | No | — | List | What kind of entitlement this is, a value of the list `entitlement_type`: e.g. `driving_privilege`, `fishing_quota`, `change_of_use_permit`, `tourism_operation`, `residence_right`, `tax_holiday` |
+| `activity_code` |  | `string` | Yes | No | null | List | The activity the entitlement allows, a value of the list `entitlement_activity`; empty when the type says it all: e.g. `heavy_goods_driving`, `commercial_fishing`, `passenger_transport`, `residential_use` |
+| `issuing_authority_code` |  | `string` | No | No | — | List | The authority that grants the entitlement, a value of the list `issuer` that the platform configuration keeps: e.g. `transport_authority`, `fisheries_authority`, `planning_authority` |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_entitlement__quota
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `quota_type_code` |  | `string` | No | No | — | What the limit counts, a value of the list `quota_type`: e.g. `catch_weight`, `fishing_days`, `passenger_count`, `vehicle_weight` |
-| `quota_amount` |  | `decimal(18,4)` | No | No | — | The limit, in the unit of `measure_unit_code`: e.g. `10.0000`, `120.0000`, `12.0000` |
-| `measure_unit_code` |  | `string` | No | No | — | Unit of the limit, a value of the list `measure_unit`: e.g. `tonne`, `day`, `person` |
-| `period_code` |  | `string` | Yes | No | null | The period the limit counts over, a value of the list `quota_period`; empty when it counts over the whole life of the entitlement: e.g. `per_year`, `per_voyage`, `per_season` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the limit applies; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the limit applies; `9999-12-31` while it still does. When a new row starts for the same key and quota type, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `quota_type_code` |  | `string` | No | No | — | List | What the limit counts, a value of the list `quota_type`: e.g. `catch_weight`, `fishing_days`, `passenger_count`, `vehicle_weight` |
+| `quota_amount` |  | `decimal(18,4)` | No | No | — | — | The limit, in the unit of `measure_unit_code`: e.g. `10.0000`, `120.0000`, `12.0000` |
+| `measure_unit_code` |  | `string` | No | No | — | List | Unit of the limit, a value of the list `measure_unit`: e.g. `tonne`, `day`, `person` |
+| `period_code` |  | `string` | Yes | No | null | List | The period the limit counts over, a value of the list `quota_period`; empty when it counts over the whole life of the entitlement: e.g. `per_year`, `per_voyage`, `per_season` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the limit applies; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the limit applies; `9999-12-31` while it still does. When a new row starts for the same key and quota type, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_entitlement__validity
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `granted_date` |  | `date` | Yes | No | null | The day the authority granted the entitlement; empty when unknown |
-| `valid_from_date` |  | `date` | No | No | `1900-01-01` | First day the entitlement can be used; `1900-01-01` when unknown |
-| `valid_to_date` |  | `date` | No | No | `9999-12-31` | Last day the entitlement can be used; `9999-12-31` while it does not end. When a renewal starts a new row for the same key, the loader sets this to the day before it starts |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `granted_date` |  | `date` | Yes | No | null | — | The day the authority granted the entitlement; empty when unknown |
+| `valid_from_date` |  | `date` | No | No | `1900-01-01` | — | First day the entitlement can be used; `1900-01-01` when unknown |
+| `valid_to_date` |  | `date` | No | No | `9999-12-31` | — | Last day the entitlement can be used; `9999-12-31` while it does not end. When a renewal starts a new row for the same key, the loader sets this to the day before it starts |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_entitlement__status
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the parent |
-| `status_code` |  | `string` | No | No | `active` | Where the entitlement stands. One of `active` (can be used), `suspended` (held back for a time, still granted), `revoked` (taken away), `surrendered` (given back by the holder) |
-| `reason_code` |  | `string` | Yes | Yes | null | Why the status changed, a value of the list `entitlement_status_reason`; empty for the grant itself: e.g. `court_order`, `unpaid_fee`, `holder_request`, `safety_breach` |
-| `status_date` |  | `date` | No | No | — | The day the status took effect |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the decision or the notice; only the pointer is stored: e.g. `artifact://decision/d-2026-31`, `artifact://notice/n-882`, `artifact://order/o-17`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the parent |
+| `status_code` |  | `string` | No | No | `active` | Closed | Where the entitlement stands. One of `active` (can be used), `suspended` (held back for a time, still granted), `revoked` (taken away), `surrendered` (given back by the holder) |
+| `reason_code` |  | `string` | Yes | Yes | null | List | Why the status changed, a value of the list `entitlement_status_reason`; empty for the grant itself: e.g. `court_order`, `unpaid_fee`, `holder_request`, `safety_breach` |
+| `status_date` |  | `date` | No | No | — | — | The day the status took effect |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the decision or the notice; only the pointer is stored: e.g. `artifact://decision/d-2026-31`, `artifact://notice/n-882`, `artifact://order/o-17`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_entitlement__party_holder__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_entitlement__party_holder_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | Yes | null | Why the holding ended, a value of the list `end_reason`; empty while it holds: e.g. `transferred`, `expired`, `deceased`, `surrendered` |
-| `effective_date` |  | `date` | No | Yes | `1900-01-01` | First day the party holds the entitlement; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | Yes | `9999-12-31` | Last day the party holds the entitlement; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | Yes | null | Pointer to one stored object in Digital Artifact, such as the application or the transfer deed; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://transfer/t-90`, `artifact://certificate/c-12`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_entitlement__party_holder_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | Yes | null | List | Why the holding ended, a value of the list `end_reason`; empty while it holds: e.g. `transferred`, `expired`, `deceased`, `surrendered` |
+| `effective_date` |  | `date` | No | Yes | `1900-01-01` | — | First day the party holds the entitlement; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | Yes | `9999-12-31` | — | Last day the party holds the entitlement; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | Yes | null | — | Pointer to one stored object in Digital Artifact, such as the application or the transfer deed; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://transfer/t-90`, `artifact://certificate/c-12`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_asset__entitlement__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_asset__entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the entitlement stopped applying to the asset, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the entitlement applies to the asset; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the entitlement applies to the asset; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_asset__entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the entitlement stopped applying to the asset, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the entitlement applies to the asset; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the entitlement applies to the asset; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_base_parcel__entitlement__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_base_parcel__entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the entitlement stopped applying to the parcel, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the entitlement applies to the parcel; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the entitlement applies to the parcel; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_parcel__entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the entitlement stopped applying to the parcel, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the entitlement applies to the parcel; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the entitlement applies to the parcel; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ### sat_built_structure__entitlement__period
 
-| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Description** |
-| --- | --- | --- | --- | --- | --- | --- |
-| `lnk_built_structure__entitlement_hk` | ◇ | `string` | No | No | — | Hash key of the link |
-| `end_reason_code` |  | `string` | Yes | No | null | Why the entitlement stopped applying to the structure, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
-| `effective_date` |  | `date` | No | No | `1900-01-01` | First day the entitlement applies to the structure; `1900-01-01` when unknown |
-| `end_date` |  | `date` | No | No | `9999-12-31` | Last day the entitlement applies to the structure; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
-| `artifact_uri` |  | `string` | Yes | No | null | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
-| `load_dts` | ▪ | `timestamptz` | No | No | — | When Nexus first loaded the row |
-| `record_source` | ▪ | `string` | No | No | — | Which system and endpoint the row came from |
-| `hashdiff` | Δ | `string` | No | No | — | Hash of the descriptive values |
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_built_structure__entitlement_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the entitlement stopped applying to the structure, a value of the list `end_reason`; empty while it applies: e.g. `replaced`, `sold`, `expired` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the entitlement applies to the structure; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the entitlement applies to the structure; `9999-12-31` while it still does. When a new row starts for the same key, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as the application or the permit; only the pointer is stored: e.g. `artifact://application/a-5521`, `artifact://permit/p-0881`, `artifact://licence/l-77`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
 ## Sources and mapping
 
