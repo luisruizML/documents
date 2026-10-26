@@ -28,6 +28,7 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 sys.path.insert(0, str(Path(__file__).parent))
+import keywords  # noqa: E402
 import validate_page as vp  # noqa: E402
 
 FIELD_COLUMNS = vp.FIELD_COLUMNS
@@ -188,7 +189,7 @@ def load_model(text: str, context: list[str] | tuple[str, ...] = ()) -> Model:
     for row in page.tables("Vault objects")[0]:
         name = _clean(row["Name"])
         rows = [{k: _clean(v) for k, v in r.items()} for r in fields.get(name, [])]
-        model.nodes.append(Node(name, row["Type"], _clean(row["Grain"]), rows, definition=_clean(row.get("Definition", ""))))
+        model.nodes.append(Node(name, row["Type"], _clean(row["Grain"]), rows, definition=keywords.strip_bold(_clean(row.get("Definition", "")))))
     for name in context:
         if not model.has(name):
             model.nodes.append(Node(name, _kind_from_name(name), external=True))

@@ -15,7 +15,7 @@
 
 ## Definition
 
-A sample order is a request, made by a customer, to buy goods at an agreed price.
+A **sample order** is a **request**, made by a **customer**, to buy goods at an **agreed price**.
 
 ## Why it is its own object
 
@@ -25,10 +25,10 @@ An order is created and closed on its own schedule, is identified by its own num
 
 | **Type** | **Name** | **Definition** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
-| Hub | `hub_sample_order` | The table that records the sample orders of the platform. | one row per business key | `sample_order_bk`: the order number assigned by the source |
-| Link | `lnk_customer__sample_order` | The table that records the sample orders of the platform. | one row per distinct combination of customer and sample order | `hub_customer`, `hub_sample_order` |
-| Satellite | `sat_sample_order__pricing` | The table that records the sample orders of the platform. | one row per parent key, for each time its values change | — |
-| Non-historized Link | `lnk_sample_order__shipment_event` | The table that records the sample orders of the platform. | one row per occurrence of a shipment event for a sample order | `hub_sample_order`, `hub_shipment_event` |
+| Hub | `hub_sample_order` | The table that records the **sample orders** of the **platform**. | one row per business key | `sample_order_bk`: the order number assigned by the source |
+| Link | `lnk_customer__sample_order` | The table that records the **sample orders** of the **platform**. | one row per distinct combination of customer and sample order | `hub_customer`, `hub_sample_order` |
+| Satellite | `sat_sample_order__pricing` | The table that records the **sample orders** of the **platform**. | one row per parent key, for each time its values change | — |
+| Non-historized Link | `lnk_sample_order__shipment_event` | The table that records the **sample orders** of the **platform**. | one row per occurrence of a shipment event for a sample order | `hub_sample_order`, `hub_shipment_event` |
 
 ## Fields
 

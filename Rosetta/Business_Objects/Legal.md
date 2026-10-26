@@ -15,7 +15,7 @@
 
 ## Definition
 
-Legal is the family of objects that record the legal bond between a Party and the State, or between a Party and a thing. It holds what the government permits, what a person or a company holds over a parcel, a building, a ship or a part, what is forbidden, and what must be done. It groups, without mixing them, three objects that older systems keep in one table (for example a Licences table): the [Entitlement](Entitlement.md), which is the right to do something; the [Credential](Credential.md), which is the card or document that proves it; and the [RRR](RRR.md), which is the Right, Restriction or Responsibility that binds a Party to a thing.
+**Legal** is the **family of objects** that record the legal bond between a Party and the State, or between a Party and a thing. It holds what the government permits, what a person or a company holds over a parcel, a building, a ship or a part, what is forbidden, and what must be done. It groups, without mixing them, **three objects** that older systems keep in **one table** (for example a Licences table): the [Entitlement](Entitlement.md), which is the right to do something; the [Credential](Credential.md), which is the card or document that proves it; and the [RRR](RRR.md), which is the Right, Restriction or Responsibility that binds a Party to a thing.
 
 Legal is a family, not a place to store attributes. The three objects have different lifecycles, keys and owners, and putting them in one table is the mistake this family avoids. This page holds what the three share: the reason they are kept apart, the rules they follow, the decisions that are open for all of them, and the one picture of the family.
 

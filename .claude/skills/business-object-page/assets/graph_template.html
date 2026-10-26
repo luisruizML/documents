@@ -132,7 +132,7 @@
     return e;
   }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-  function rich(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>"); }
+  function rich(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>"); }
 
   // ---- the picture: lines behind the shapes, names on top
   var gUse = el("g", { id: "gUse", style: "display:none" }, svg), gEdge = el("g", {}, svg), gNode = el("g", {}, svg), gLabel = el("g", {}, svg);

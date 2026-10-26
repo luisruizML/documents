@@ -33,9 +33,9 @@
 
 | **Type** | **Name** | **Definition** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
-| Hub | `hub_<<object>>` | The table that holds the identifier by which <<the source>> knows each <<object>>. It carries no description of the <<object>>. | one row per business key | `<<object>>_bk`: <<how the key is chosen>> |
-| Link | `lnk_<<a>>__<<b>>` | The table that records that <<a>> is related to <<b>> and what the relation means. | one row per distinct combination of <<a and b>> | `hub_<<a>>`, `hub_<<b>>` |
-| Satellite | `sat_<<parent>>__<<descriptor>>` | The table that records <<what>> about <<the parent>> over time. | one row per parent key, for each time its values change | — |
+| Hub | `hub_<<object>>` | The table that holds the **identifier** by which <<the source>> knows each <<object>>. It **carries no description** of the <<object>>. | one row per business key | `<<object>>_bk`: <<how the key is chosen>> |
+| Link | `lnk_<<a>>__<<b>>` | The table that records that <<a>> is **related to** <<b>> and **what the relation means**. | one row per distinct combination of <<a and b>> | `hub_<<a>>`, `hub_<<b>>` |
+| Satellite | `sat_<<parent>>__<<descriptor>>` | The table that records **<<what>>** about <<the parent>> **over time**. | one row per parent key, for each time its values change | — |
 
 ## Fields
 

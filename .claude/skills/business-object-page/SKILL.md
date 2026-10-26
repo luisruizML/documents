@@ -27,6 +27,15 @@ Do these in order.
 12. **Link across pages.** A Link may join a Hub defined on another page; the Hub is drawn as defined elsewhere and has no Fields table here. A Satellite on a Link is named `sat_<link name without lnk_>__<descriptor>`. A relationship you cannot name yet, such as a Link between two roles of the same object, is not invented: it goes in Open decisions.
 13. **Write** the page from `assets/template.md`, then **validate**, then **draw**, then **update the index**.
 
+## Bold words
+
+Bold marks the concept, not emphasis: a reader who skims only the bold words can rebuild what the object is for. `scripts/keywords.py` holds the rules and `scripts/bold_terms.py` the phrases of each Vault object; the validator checks the form (`bold` errors), a human reviews the choice.
+
+1. **Count.** 2 to 4 bold phrases in each Definition of the Vault objects table; 3 to 6 in the page's Definition section. Each phrase is 1 to 4 words.
+2. **What to bold, in this order.** The subject the table is about (**names**, **documents and numbers**, **events in the life**, **gender**), then a behaviour (**earlier values stay**, **replaced when it changes**, **carries no description**, **not stored**, **only the current**), then a qualifier that tells two tables apart (**over time**, **the default**, **the exception**, **not the identity table**). In the page Definition section: the object's name on first use, what it identifies, its identity rule.
+3. **Never bold** the opening "The table that", a name in backticks, an example after "such as", a link, or a word that appears on every page, such as jurisdiction (except where it is the subject).
+4. **A new Vault object** gets its row in `bold_terms.py` (phrases written word for word as they appear in the Definition); `keywords.propose` raises when a phrase is not in the text. The page text is the source: write the Definition with the markers (`**x**`). Diagrams (drawio, Lucid) receive the Definition without the markers; the Confluence page and the interactive graph show them bold.
+
 ## Writing a Definition
 
 Every row of the Vault objects table has a Definition. The validator (`definition` errors) checks the form; the meaning is a human review.
@@ -88,6 +97,7 @@ python -m unittest discover -s .claude/skills/business-object-page/tests
 | `format` | Make every table header bold (`**Header**`). |
 | `name` | Rename to the pattern; for a Link, put the parts in alphabetical order; for a Satellite, make sure its parent is on the page. A `ref_` name is not a type: use the Code List object. |
 | `grain` | Start the grain with the "one row per" of its type. |
+| `bold` | Give each Vault Definition 2 to 4 bold phrases and the Definition section 3 to 6, each of 1 to 4 words, none in backticks, none the opening "The table that"; see "Bold words". |
 | `definition` | Add the Definition column and give every row a sentence that starts with "The table that", ends with a full stop, has at most 400 characters and uses no technical word. |
 | `fields` | Give the table the eight columns; an `end_date` or `valid_to_date` is Null No with Default `9999-12-31` and a `valid_from_date` has Default `1900-01-01`; Null and PII are Yes or No; Default is never empty; Role matches the column; `_code` columns show three or more `e.g.` values or `One of`. |
 | `codelist` | Set the Code List column of the row: `List` for a `_code` column with `e.g.` values, `Closed` when the Description says `One of`, `—` for any other column. Then give the column a row in the table of the Code List page (`<vault table>.<column>`, where its values live, why, examples) or take it out: the flags of a page and the rows of that table must agree in both directions. |

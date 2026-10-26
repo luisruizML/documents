@@ -56,7 +56,7 @@ class CoreTests(unittest.TestCase):
         self.assertEqual([e for e in errs if e.startswith("header:")], [])
 
 
-DEFAULT_DEFINITION = "The table that records the sample orders of the platform."
+DEFAULT_DEFINITION = "The table that records the **sample orders** of the **platform**."
 
 
 def with_definition(definition: str) -> str:

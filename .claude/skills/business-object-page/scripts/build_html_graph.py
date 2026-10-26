@@ -42,7 +42,8 @@ def vault_rows(pages_dir: Path = PAGES_DIR) -> dict[str, dict]:
         tables = page.tables("Vault objects")
         for row in tables[0] if tables else []:
             name = bd._clean(row.get("Name", ""))
-            out.setdefault(name, {"page": page_title(stem), "business_key": bd._clean(row.get("Business key", ""))})
+            out.setdefault(name, {"page": page_title(stem), "business_key": bd._clean(row.get("Business key", "")),
+                                  "definition": bd._clean(row.get("Definition", ""))})
     return out
 
 
@@ -87,7 +88,7 @@ def build_data(nodes=None, edges=None) -> dict:
             "x": round(p.x, 1), "y": round(p.y, 1), "w": round(p.w, 1), "h": round(p.h, 1),
             "lx": round(p.lx, 1), "ly": round(p.ly, 1), "lw": round(p.lw, 1), "lh": round(p.lh, 1), "align": p.align,
             "page": meta.get(name, {}).get("page", ""),
-            "definition": node.definition, "grain": node.grain,
+            "definition": meta.get(name, {}).get("definition") or node.definition, "grain": node.grain,
             "businessKey": meta.get(name, {}).get("business_key", ""),
             "fields": fields,
         })

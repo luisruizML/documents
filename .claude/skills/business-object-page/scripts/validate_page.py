@@ -9,6 +9,8 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import keywords
+
 SECTIONS = [
     "Header",
     "Definition",
@@ -291,10 +293,11 @@ def _check_definition(name: str, row: dict[str, str]) -> list[str]:
     """The Definition says in business words what the table is for."""
     if "Definition" not in row:
         return [f"definition: '{name}' needs a Definition; the Vault objects table needs the column"] if REQUIRE_DEFINITION else []
-    text = _strip(row["Definition"])
+    raw = _strip(row["Definition"])
+    text = keywords.strip_bold(raw)
     if not text:
         return [f"definition: '{name}' has an empty Definition"]
-    errs = []
+    errs = keywords.check_bold(name, raw, *keywords.VAULT_RANGE)
     if not text.startswith(DEFINITION_START):
         errs.append(f"definition: '{name}' Definition must start with '{DEFINITION_START}'")
     if not text.endswith("."):
@@ -493,7 +496,16 @@ def validate(text: str, base_dir: Path | None = None, approved: frozenset[str] =
     errs += check_diagram(page, base_dir)
     errs += check_decisions(page)
     errs += check_code_list_rows(page, text, base_dir)
+    errs += check_definition_section(page)
     return errs
+
+
+def check_definition_section(page: Page) -> list[str]:
+    """The Definition section carries 3 to 6 bold phrases: the keyword strategy of `keywords.py`."""
+    lines = page.sections.get("Definition", [])
+    if _body_is_blank(lines):
+        return []  # reported by check_sections
+    return keywords.check_bold("Definition section", " ".join(_prose(lines)), *keywords.SECTION_RANGE)
 
 SOURCES_EMPTY = "No endpoints declared yet"
 JURISDICTIONS_EMPTY = "No jurisdiction differences known"

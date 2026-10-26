@@ -15,7 +15,7 @@
 
 ## Definition
 
-A Movable Asset is a high-value mobile item that the State identifies, registers, taxes or regulates: mainly vessels and aircraft, and special vehicles. It groups, without mixing them, the three things that do not share a life: the [Base Asset](Base_Asset.md), which is the hull, the fuselage or the frame and keeps the identity of the asset; the [Swappable Component](Swappable_Component.md), which is a part such as an engine that is taken off one asset and fitted to another; and the [Model Catalog](Model_Catalog.md), which holds the make and the specification once for every unit of a model.
+A **Movable Asset** is a **high-value mobile item** that the State identifies, registers, taxes or regulates: mainly **vessels and aircraft**, and special vehicles. It groups, without mixing them, the **three things** that do not share a life: the [Base Asset](Base_Asset.md), which is the hull, the fuselage or the frame and keeps the identity of the asset; the [Swappable Component](Swappable_Component.md), which is a part such as an engine that is taken off one asset and fitted to another; and the [Model Catalog](Model_Catalog.md), which holds the make and the specification once for every unit of a model.
 
 Movable Assets is a family, not a place to store attributes. All identification, description, holders and values live in the three specific objects. This page holds what the three share: the rules they follow, the decisions that are open for all, and the one picture of the family. The rules that movable and immovable assets have in common are written once, on the page [Immovable Assets](Immovable_Assets.md).
 

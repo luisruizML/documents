@@ -15,9 +15,9 @@
 
 ## Definition
 
-An Immovable Asset is a bounded portion of land, water or airspace, together with the permanent structures on it, over which someone holds a right, a restriction or a responsibility. The State needs to identify it, register who holds it, value it for tax and place it on the map. It groups, without mixing them, the two parts that do not share a life: the [Base Parcel](Base_Parcel.md), which is the bounded portion itself, and the [Built Structure](Built_Structure.md), which is what is built on it and stays.
+An **Immovable Asset** is a **bounded portion** of land, water or airspace, together with the **permanent structures** on it, over which someone holds a right, a restriction or a responsibility. The State needs to identify it, register who holds it, value it for tax and place it on the map. It groups, without mixing them, the two parts that do not share a life: the [Base Parcel](Base_Parcel.md), which is the bounded portion itself, and the [Built Structure](Built_Structure.md), which is what is built on it and stays.
 
-Immovable Assets is a family, not a place to store attributes. All identification, description, holders and values live in the two specific objects. This page holds what the two share: the rules they follow, the decisions that are open for both, and the one picture of the family.
+Immovable Assets is **a family**, not a place to store attributes. All identification, description, holders and values live in the two specific objects. This page holds what the two share: the rules they follow, the decisions that are open for both, and the one picture of the family.
 
 ## Why it is its own object
 

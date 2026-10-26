@@ -15,9 +15,9 @@
 
 ## Definition
 
-A Load Configuration says, for one jurisdiction and one attribute group, which Satellite of a twin pair the loader writes: the one that keeps history, which is the default, or the one updated in place (row versioning), which is the exception.
+A **Load Configuration** says, for one jurisdiction and one attribute group, which Satellite of a **twin pair** the loader writes: the one that keeps history, which is **the default**, or the one updated in place (row versioning), which is **the exception**.
 
-An attribute group that may need history is delivered as a pair of Satellites with the same attributes, such as `sat_natural_person__demographics` and `sat_natural_person__demographics_history`. The pair serves one purpose with two mechanisms. This object holds the choice, so the choice is data and not code.
+An attribute group that may need history is delivered as a pair of Satellites with the same attributes, such as `sat_natural_person__demographics` and `sat_natural_person__demographics_history`. The pair serves one purpose with two mechanisms. This object holds the choice, so the choice is **data and not code**.
 
 ## Why it is its own object
 
@@ -30,8 +30,8 @@ An attribute group that may need history is delivered as a pair of Satellites wi
 
 | **Type** | **Name** | **Definition** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
-| Hub | `hub_load_configuration` | The table that holds each setting of how an attribute group is loaded for a jurisdiction, identified by the jurisdiction and the attribute group, with "any" for the default of every jurisdiction. It carries no choice itself; the choice is in `sat_load_configuration__mechanism`. | one row per business key | `load_configuration_bk`: the jurisdiction and the attribute group joined by a colon, such as `WSM:natural_person__demographics`. The jurisdiction is `any` for the default of every jurisdiction |
-| Satellite | `sat_load_configuration__mechanism` | The table that records, for each jurisdiction and attribute group, whether the loader keeps history, which is the default, or updates the value in place, which is the exception, which table it writes and from what date. A change is a new entry, and the earlier one stays. | one row per parent key, for each time its values change | — |
+| Hub | `hub_load_configuration` | The table that holds **each setting** of how an attribute group is loaded for a **jurisdiction**, identified by the jurisdiction and the attribute group, with "any" for the default of every jurisdiction. It **carries no choice** itself; the choice is in `sat_load_configuration__mechanism`. | one row per business key | `load_configuration_bk`: the jurisdiction and the attribute group joined by a colon, such as `WSM:natural_person__demographics`. The jurisdiction is `any` for the default of every jurisdiction |
+| Satellite | `sat_load_configuration__mechanism` | The table that records, for each jurisdiction and attribute group, whether the loader **keeps history**, which is **the default**, or updates the value **in place**, which is **the exception**, which table it writes and from what date. A change is a new entry, and the earlier one stays. | one row per parent key, for each time its values change | — |
 
 The hash key `load_configuration_hk` is computed from the normalized business key, as for every Hub.
 

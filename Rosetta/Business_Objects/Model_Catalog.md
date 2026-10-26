@@ -15,7 +15,7 @@
 
 ## Definition
 
-A Model Catalog entry is a make and model, such as a type of ship, an airframe or an engine, whose specification is the same for every asset or part of that model. It is held once, so that the thousand aircraft of one type do not each repeat the same seats, weight and engines. One list holds the models of assets and of parts, and says which kind each is.
+A **Model Catalog** entry is a **make and model**, such as a type of ship, an airframe or an engine, whose specification is the same for every asset or part of that model. It is **held once**, so that the thousand aircraft of one type do not each repeat the same seats, weight and engines. **One list** holds the models of assets and of parts, and says which kind each is.
 
 The assets of a model are on the page [Base Asset](Base_Asset.md) and the parts on the page [Swappable Component](Swappable_Component.md); each joins its model by a Link defined on its own page.
 
@@ -29,9 +29,9 @@ The assets of a model are on the page [Base Asset](Base_Asset.md) and the parts 
 
 | **Type** | **Name** | **Definition** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
-| Hub | `hub_model_catalog` | The table that holds the identifier of each make and model, such as a type of ship, an airframe or an engine, so that the specification is held once for every asset or part of that model. It carries no description of the model. | one row per business key | `model_catalog_bk`: the maker's or the standard designation of the model, or one assigned by the platform when there is none, with the jurisdiction and the key type |
-| Satellite | `sat_model_catalog__description` | The table that records what a model is: the kind of thing it describes, its maker and its name, as the maker writes them. | one row per parent key, for each time its values change | — |
-| Satellite | `sat_model_catalog__characteristic` | The table that records the specification of a model, such as its seats, its maximum weight or its rated power, one row for each characteristic, so the list can grow without changing the table. | one row per parent key and characteristic, for each time its values change | — |
+| Hub | `hub_model_catalog` | The table that holds the **identifier** of each make and model, such as a type of ship, an airframe or an engine, so that the specification is held once for every asset or part of that model. It **carries no description** of the model. | one row per business key | `model_catalog_bk`: the maker's or the standard designation of the model, or one assigned by the platform when there is none, with the jurisdiction and the key type |
+| Satellite | `sat_model_catalog__description` | The table that records **what a model is**: the kind of thing it describes, its **maker** and its name, as the maker writes them. | one row per parent key, for each time its values change | — |
+| Satellite | `sat_model_catalog__characteristic` | The table that records the **specification** of a model, such as its seats, its maximum weight or its rated power, one row for each characteristic, so the **list can grow** without changing the table. | one row per parent key and characteristic, for each time its values change | — |
 
 `model_catalog_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `model_catalog_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 

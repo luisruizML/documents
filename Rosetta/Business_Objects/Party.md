@@ -15,9 +15,9 @@
 
 ## Definition
 
-A Party is any actor that interacts with the State through the system, is subject to governance, or holds legal rights and obligations. It groups, without mixing them, the two kinds of actor that use the system to pay taxes or ask for a benefit: Natural Persons and Legal Entities.
+A **Party** is **any actor** that interacts with the State through the system, is subject to governance, or holds legal rights and obligations. It groups, without mixing them, the two kinds of actor that use the system to pay taxes or ask for a benefit: **Natural Persons** and **Legal Entities**.
 
-A Party is a family, not a place to store attributes. All identification and description live in the two specific objects, [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md). The one fact a Party holds is how sensitive it is: some parties, such as those with a very high income or a public office, may be worked on only by staff with the right clearance.
+A Party is a family, not a place to store attributes. All identification and description live in the two specific objects, [Natural Person](Natural_Person.md) and [Legal Entity](Legal_Entity.md). The one fact a Party holds is **how sensitive** it is: some parties, such as those with a very high income or a public office, may be worked on only by staff with the right clearance.
 
 ## Why it is its own object
 
@@ -29,8 +29,8 @@ A thin Hub gives them one thing to point to. It is thin on purpose: a Natural Pe
 
 | **Type** | **Name** | **Definition** | **Grain** | **Business key** |
 | --- | --- | --- | --- | --- |
-| Hub | `hub_party` | The table that holds the identifier Nexus assigns to every party, whether it is a natural person or a legal entity. It is the one thing other objects point to when they mean "whoever owes or asks"; it carries no description of the party. | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
-| Satellite | `sat_party__sensitivity` | The table that records how sensitive a party is, why, from which day and until which day, and where the decision is kept, so that only staff with the right clearance work with the data of a more sensitive party. It is decided inside Nexus and not loaded from a source, and a change is a new entry, so the earlier ones stay. | one row per parent key, for each time its values change | — |
+| Hub | `hub_party` | The table that holds the **identifier** Nexus assigns to every party, whether it is a natural person or a legal entity. It is the one thing other objects point to when they mean "whoever owes or asks"; it **carries no description** of the party. | one row per business key | `party_bk`: a party identifier assigned by Nexus when a Natural Person or Legal Entity first becomes a party |
+| Satellite | `sat_party__sensitivity` | The table that records **how sensitive** a party is, why, from which day and until which day, and where the decision is kept, so that only staff with the right clearance work with the data of a more sensitive party. It is **decided inside Nexus** and not loaded from a source, and a change is a new entry, so the **earlier ones stay**. | one row per parent key, for each time its values change | — |
 
 The links from the two specific objects to `hub_party` are defined on their own pages: `lnk_natural_person__party` on Natural Person and `lnk_legal_entity__party` on Legal Entity.
 
