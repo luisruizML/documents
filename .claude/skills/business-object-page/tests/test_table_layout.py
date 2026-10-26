@@ -60,6 +60,26 @@ class FieldsWidthTests(unittest.TestCase):
         self.assertEqual(len(groups), 1)
 
 
+class CodeListWidthTests(unittest.TestCase):
+    BODY = [["`sat_legal_entity__natural_person__representation.role_code`", "a", "b", "c"], ["`hub_x.y_code`", "a", "b", "c"]]
+
+    def test_the_first_column_holds_its_longest_name_on_one_line(self):
+        w = tl.code_list_widths(self.BODY)
+        self.assertEqual(sum(w), tl.PAGE_WIDTH)
+        self.assertGreaterEqual(w[0], tl.text_width(self.BODY[0][0]) + tl.CELL_PADDING)
+
+    def test_the_other_three_share_the_rest_two_four_four(self):
+        w = tl.code_list_widths(self.BODY)
+        self.assertLess(w[1], w[2])
+        self.assertAlmostEqual(w[2], w[3], delta=2)
+
+    def test_the_real_code_list_table_is_laid_out_and_wide_enough_for_every_name(self):
+        text = page_text("Code_List")
+        widths = tl.document_widths(text)["codelist"]
+        longest = max(tl.text_width(r[0]) for h, b in tl.split_tables(text) if tl.kind(h) == "codelist" for r in b)
+        self.assertGreaterEqual(widths[0], longest + tl.CELL_PADDING)
+
+
 class ParagraphTests(unittest.TestCase):
     def test_a_description_is_split_before_its_examples_and_at_sentences(self):
         self.assertEqual(tl.paragraphs("Kind of name: e.g. `a`, `b`; empty when unknown. Second sentence."),

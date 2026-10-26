@@ -55,6 +55,23 @@ class CodeListRowsOfTheRealPages(unittest.TestCase):
             else:
                 self.assertIn("`", cells[1], key)
 
+    def test_rows_are_grouped_by_page_then_each_hub_with_its_satellites_then_each_link_with_its_satellites(self):
+        pos = {key: i for i, key in enumerate(self.rows)}
+        for path in pages():
+            tabs = list(fields_of(path))
+            parents = [t for t in tabs if t.startswith("hub_")] + [t for t in tabs if t.startswith("lnk_")]
+            expected = []
+            for parent in parents:
+                name = parent.split("_", 1)[1]
+                expected += [parent] + [t for t in tabs if t.startswith("sat_") and t[4:].rsplit("__", 1)[0] == name]
+            expected += [t for t in tabs if t.startswith("sat_") and t not in expected]
+            seen = []
+            for key in sorted((k for k in pos if k.split(".")[0] in tabs), key=pos.get):
+                t = key.split(".")[0]
+                if not seen or seen[-1] != t:
+                    seen.append(t)
+            self.assertEqual(seen, [t for t in expected if t in seen], path.stem)
+
     def test_no_key_appears_twice(self):
         text = (PAGES / "Code_List.md").read_text(encoding="utf-8")
         keys = [l.split("|")[1].strip() for l in text.splitlines() if l.startswith("| `") and "." in l.split("|")[1] and "`" in l.split("|")[1]]

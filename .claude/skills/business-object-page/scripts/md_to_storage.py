@@ -84,7 +84,7 @@ def table_xml(head: list[str], body: list[list[str]], heading_text: str, header_
         cells = "".join(f"<th{VALIGN}><p>{inline(c)}</p></th>" for c in head)
     if k == "header":
         opening = f'<table data-layout="default" data-table-width="{layout.HEADER_WIDTH}">' + layout.colgroup(widths["header"])
-    elif k in ("vault", "fields"):
+    elif k in ("vault", "fields", "codelist"):
         opening = f'<table data-layout="full-width" data-table-width="{layout.PAGE_WIDTH}">' + layout.colgroup(widths[k])
     else:
         opening = "<table>"

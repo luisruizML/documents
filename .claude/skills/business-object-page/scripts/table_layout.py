@@ -28,6 +28,7 @@ HEADER = ["Field", "Value"]
 VAULT = ["Type", "Name", "Definition", "Grain", "Business key"]
 FIELDS = ["Column", "Role", "Type", "Null", "PII", "Default", "Code List", "Description"]
 SHARED = ("Role", "Null", "PII", "Default")  # the four Fields columns that share one width
+CODE_LIST = ["Column", "Where its values live", "Why", "Examples"]
 PARAGRAPH_COLUMNS = ("Definition", "Description")
 
 
@@ -50,7 +51,7 @@ def fit(head: str, cells: list[str]) -> int:
 
 def kind(head: list[str]) -> str | None:
     names = [plain(h).strip() for h in head]
-    return {tuple(HEADER): "header", tuple(VAULT): "vault", tuple(FIELDS): "fields"}.get(tuple(names))
+    return {tuple(HEADER): "header", tuple(VAULT): "vault", tuple(FIELDS): "fields", tuple(CODE_LIST): "codelist"}.get(tuple(names))
 
 
 def split_tables(markdown: str) -> list[tuple[list[str], list[list[str]]]]:
@@ -91,6 +92,18 @@ def fields_widths(bodies: list[list[list[str]]], total: int = PAGE_WIDTH) -> lis
     return [column_w, shared, type_w, shared, shared, shared, code_list_w, description]
 
 
+CODE_LIST_SHARES = (2, 4, 4)  # Where its values live, Why and Examples share what the first column leaves
+
+
+def code_list_widths(body: list[list[str]], total: int = PAGE_WIDTH) -> list[int]:
+    """The first column fits its longest text on one line, so a `table.column` name is never wrapped; the other three
+    share the rest in the ratio of CODE_LIST_SHARES, rounding going to Examples."""
+    first = fit("Column", [r[0] for r in body])
+    rest = total - first
+    where, why = (rest * n // sum(CODE_LIST_SHARES) for n in CODE_LIST_SHARES[:2])
+    return [first, where, why, rest - where - why]
+
+
 def document_widths(markdown: str) -> dict[str, list[int]]:
     """The widths of the three tables for this page. The Fields widths come from every Fields table of the page."""
     tables = split_tables(markdown)
@@ -100,6 +113,8 @@ def document_widths(markdown: str) -> dict[str, list[int]]:
         out["fields"] = fields_widths(fields)
     for head, body in tables:
         k = kind(head)
+        if k == "codelist" and "codelist" not in out:
+            out["codelist"] = code_list_widths(body)
         if k == "vault" and "vault" not in out:
             out["vault"] = vault_widths(body)
         if k == "header" and "header" not in out:

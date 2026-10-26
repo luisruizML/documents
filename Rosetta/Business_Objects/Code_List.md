@@ -209,7 +209,7 @@ A value that is later given a new rule gets a new row, and the loader closes the
 - **Applicability is a scenario, not a copy.** The same value is one row; where and when it is allowed is in `sat_code_value__applicability`.
 - **A value can be limited to a kind of party.** `party_type_code` in `sat_code_value__applicability` says whether a value is for natural persons, legal entities or both. The load checks the value of a column against the kind of owner of the row: the table itself says it where each kind has its own Satellite or Link, as for the places of persons and entities, so no lookup is needed. A row that does not fit is parked with the reason, not rejected. The table itself accepts any combination.
 - **Access is enforced by Platform.** `sat_code_list__access` records the rule; the role-based access control of the platform applies it.
-- **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. Every such column has one row below, named `<vault table>.<column>` so that a repeated name such as `role_code` is never ambiguous, and is flagged `List` or `Closed` in the Code List column of its Fields table. The validator checks that the flag and the row agree in both directions, and the gray dashed lines of the diagrams are read from these rows. The examples are the values the page of the column already gives:
+- **Which code columns are values of a Code List.** A code is a list value when it can gain, lose or change a value without any rule changing. It is a closed list, written in the Description with `One of`, when a rule branches on its values. Every such column has one row below, named `<vault table>.<column>` so that a repeated name such as `role_code` is never ambiguous, and is flagged `List` or `Closed` in the Code List column of its Fields table. The validator checks that the flag and the row agree in both directions, and the gray dashed lines of the diagrams are read from these rows. The rows follow the order of the Index, one page after the other; inside a page each Hub comes with its Satellites, then each Link with its Satellites. The examples are the values the page of the column already gives:
 
 | **Column** | **Where its values live** | **Why** | **Examples** |
 | --- | --- | --- | --- |
@@ -262,9 +262,9 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `sat_legal_entity__legal_entity_hierarchy__membership.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `left_group`, `dissolved`, `merged` |
 | `hub_administrative_zone.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
 | `hub_administrative_zone.zone_scheme_code` | List `zone_scheme` | Each jurisdiction follows its own standards for zones, and a new one is a value | `iso_3166_2`, `national_census`, `electoral` |
+| `sat_administrative_zone__description.zone_level_code` | List `zone_level` | Each jurisdiction divides its territory into its own levels, and a new level is a value | `province`, `district`, `ward` |
 | `hub_address.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
 | `hub_address.key_type_code` | List `address_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_address_id`, `postal_address_id`, `platform_assigned` |
-| `sat_administrative_zone__description.zone_level_code` | List `zone_level` | Each jurisdiction divides its territory into its own levels, and a new level is a value | `province`, `district`, `ward` |
 | `sat_address__description.script_code` | List `script` (ISO 15924) | An external standard (ISO 15924), loaded as a list so every column reads the same way | `Latn` (Latin), `Cyrl` (Cyrillic), `Arab` (Arabic) |
 | `sat_geometry__shape.geometry_type_code` | List `geometry_type` | A new kind of shape is a value | `point`, `line`, `polygon` |
 | `sat_geometry__shape.srs_code` | List `spatial_reference_system` | A new reference system is a value | `EPSG:4326` (WGS 84), `EPSG:3832` (PDC Mercator), `EPSG:2193` (New Zealand Transverse Mercator 2000) |
@@ -385,6 +385,7 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `sat_rrr__swappable_component__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `discharged`, `sold`, `released` |
 | `sat_rrr__rrr_hierarchy__derivation.derivation_type_code` | List `rrr_derivation_type` | A new kind of derivation is a value | `lease`, `sublease`, `easement_grant`, `customary_allocation` |
 | `sat_rrr__rrr_hierarchy__derivation.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `expired`, `surrendered`, `merged` |
+| `sat_code_list__access.access_code` | Closed list, written in the Description | A rule branches on each value | `read`, `read_masked`, `none` |
 | `sat_code_value__label.language_code` | List `language` (BCP 47) | An external standard (BCP 47), loaded as a list so every column reads the same way | `en` (English), `fr` (French), `sm` (Samoan) |
 | `sat_code_value__label.status_code` | Closed list, written in the Description | A rule branches on each value | `draft`, `active`, `retired` |
 | `sat_code_value__validation.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `COL` (Colombia), `CUW` (Curaçao), `any` |
@@ -392,7 +393,6 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `sat_code_value__validation.measure_unit_code` | List `measure_unit` | A new unit is a new value, not a new column | `cm`, `kg`, `percent` |
 | `sat_code_value__applicability.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `PNG` (Papua New Guinea), `WSM` (Samoa), `any` |
 | `sat_code_value__applicability.party_type_code` | Closed list, written in the Description | A rule branches on each value | `natural_person`, `legal_entity`, `any`, `any` |
-| `sat_code_list__access.access_code` | Closed list, written in the Description | A rule branches on each value | `read`, `read_masked`, `none` |
 | `sat_load_configuration__mechanism.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3), or `any` for every jurisdiction | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `any` |
 | `sat_load_configuration__mechanism.mechanism_code` | Closed list, written in the Description | A rule branches on each value | `row_versioning`, `history` |
 
