@@ -68,10 +68,10 @@ class CodeListWidthTests(unittest.TestCase):
         self.assertEqual(sum(w), tl.PAGE_WIDTH)
         self.assertGreaterEqual(w[0], tl.text_width(self.BODY[0][0]) + tl.CELL_PADDING)
 
-    def test_the_other_three_share_the_rest_two_four_four(self):
+    def test_the_other_three_have_the_same_width(self):
         w = tl.code_list_widths(self.BODY)
-        self.assertLess(w[1], w[2])
-        self.assertAlmostEqual(w[2], w[3], delta=2)
+        self.assertEqual(w[1], w[2])
+        self.assertLessEqual(abs(w[3] - w[1]), 2)
 
     def test_the_real_code_list_table_is_laid_out_and_wide_enough_for_every_name(self):
         text = page_text("Code_List")

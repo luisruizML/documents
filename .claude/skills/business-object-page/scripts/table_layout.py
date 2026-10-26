@@ -92,16 +92,12 @@ def fields_widths(bodies: list[list[list[str]]], total: int = PAGE_WIDTH) -> lis
     return [column_w, shared, type_w, shared, shared, shared, code_list_w, description]
 
 
-CODE_LIST_SHARES = (2, 4, 4)  # Where its values live, Why and Examples share what the first column leaves
-
-
 def code_list_widths(body: list[list[str]], total: int = PAGE_WIDTH) -> list[int]:
     """The first column fits its longest text on one line, so a `table.column` name is never wrapped; the other three
-    share the rest in the ratio of CODE_LIST_SHARES, rounding going to Examples."""
+    have the same width, rounding going to Examples."""
     first = fit("Column", [r[0] for r in body])
-    rest = total - first
-    where, why = (rest * n // sum(CODE_LIST_SHARES) for n in CODE_LIST_SHARES[:2])
-    return [first, where, why, rest - where - why]
+    each = (total - first) // 3
+    return [first, each, each, total - first - 2 * each]
 
 
 def document_widths(markdown: str) -> dict[str, list[int]]:
