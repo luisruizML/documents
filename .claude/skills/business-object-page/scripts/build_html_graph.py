@@ -67,8 +67,10 @@ def code_lists_of(name: str, fields: list[dict], examples: dict[str, dict]) -> l
 
 def focus_of(name: str, kinds: dict[str, str], edges: list[tuple[str, str]]) -> dict:
     """What stays visible when `name` is selected: the objects directly related to it, and when one of those is a Link,
-    the Satellites of that Link. `edges` are the indexes of the lines drawn between the visible objects that belong to
-    the selection (the lines of the selected object, and the line of each such Link to its Satellites)."""
+    the Satellites of that Link. For a Hub, the Hubs on the other side of each of its Links are visible too, with the
+    line of the Link to them. `edges` are the indexes of the lines drawn between the visible objects that belong to
+    the selection (the lines of the selected object, the line of each such Link to its Satellites and, for a Hub, to
+    the other Hubs)."""
     near = {name}
     for child, parent in edges:
         if child == name:
@@ -76,14 +78,20 @@ def focus_of(name: str, kinds: dict[str, str], edges: list[tuple[str, str]]) -> 
         elif parent == name:
             near.add(child)
     visible = set(near)
-    for n in near:
-        if n != name and kinds[n] == "Link":
-            visible |= {c for c, p in edges if p == n and kinds[c] == "Satellite"}
+    links = {n for n in near if n != name and kinds[n] == "Link"}
+    for n in links:
+        visible |= {c for c, p in edges if p == n and kinds[c] == "Satellite"}
+    across = kinds[name] == "Hub"
+    if across:
+        for child, parent in edges:
+            if child in links and kinds[parent] == "Hub":
+                visible.add(parent)
     shown = []
     for i, (child, parent) in enumerate(edges):
         if child not in visible or parent not in visible:
             continue
-        if name in (child, parent) or (kinds[parent] == "Link" and kinds[child] == "Satellite" and parent in near):
+        if (name in (child, parent) or (kinds[parent] == "Link" and kinds[child] == "Satellite" and parent in near)
+                or (across and child in links and kinds[parent] == "Hub")):
             shown.append(i)
     return {"nodes": sorted(visible), "edges": shown}
 

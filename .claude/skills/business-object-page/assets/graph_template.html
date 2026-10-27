@@ -28,7 +28,11 @@
   .panel-head input { margin-top: 8px; width: 100%; padding: 7px 9px; border: 1px solid var(--gray); border-radius: 6px; font: inherit; }
   .panel-head input:focus { outline: 2px solid var(--indigo); outline-offset: 1px; }
   #items { overflow-y: auto; flex: 1; padding: 4px 0 20px; }
-  .group { padding: 12px 16px 4px; font-family: var(--title); font-weight: 700; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #555; }
+  .group { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; border: 0; border-bottom: 1px solid var(--line); background: none; cursor: pointer; padding: 10px 16px; font-family: var(--title); font-weight: 700; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; color: #555; }
+  .group:hover { background: var(--soft); }
+  .group:focus-visible { outline: 2px solid var(--magenta); outline-offset: -2px; }
+  .group .chev { flex: none; width: 10px; font-size: 10px; transition: transform .12s; }
+  .group[aria-expanded="true"] .chev { transform: rotate(90deg); }
   .item { display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; border: 0; background: none; padding: 5px 16px; cursor: pointer; font: 12px var(--code); color: var(--ink); }
   .item:hover { background: var(--soft); }
   .item[aria-current="true"] { background: var(--indigo); color: #fff; }
@@ -58,7 +62,12 @@
   .field .desc { font-size: 12.5px; line-height: 1.4; color: #222; }
   .rel { display: flex; flex-wrap: wrap; gap: 5px; }
   .rel button { font: 11.5px var(--code); border: 1px solid var(--gray); background: #fff; border-radius: 4px; padding: 2px 6px; cursor: pointer; }
-  .rel button:hover { background: var(--soft); }
+  .rel button:hover { filter: brightness(.94); }
+  .rel button.Hub { background: #8F63F4; border-color: #3A0CA3; color: #fff; }
+  .rel button.Link { background: #A2F1E6; border-color: #45E3CD; }
+  .rel button.Satellite { background: #FCB3D5; border-color: #F72586; }
+  .rel button.Satellite.inplace { background: #FEDBEB; border: 1px dashed #FCB3D5; }
+  .tally { margin: 0 0 7px; font-size: 12.5px; color: #333; }
   .close { float: right; border: 0; background: none; font-size: 22px; line-height: 1; cursor: pointer; color: #555; }
   .close:hover { color: var(--magenta); }
 
@@ -256,7 +265,7 @@
   window.addEventListener("resize", function () { vb = fitted(vb); apply(); });
 
   // ---- the lists on the right
-  var listEl = document.getElementById("items"), itemEl = [];
+  var listEl = document.getElementById("items"), itemEl = [], opened = { Hub: false, Link: false, Satellite: false };
   function buildList(filter) {
     listEl.innerHTML = ""; itemEl = [];
     var f = (filter || "").toLowerCase().trim(), any = false;
@@ -264,7 +273,13 @@
       var rows = D.items.map(function (it, i) { return i; }).filter(function (i) { return D.items[i].kind === g[0] && D.items[i].name.toLowerCase().indexOf(f) >= 0; });
       if (!rows.length) return;
       any = true;
-      var h = document.createElement("div"); h.className = "group"; h.textContent = g[1] + " (" + rows.length + ")"; listEl.appendChild(h);
+      var show = opened[g[0]] || f !== "";          // a filter opens every group that has a match
+      var h = document.createElement("button"); h.type = "button"; h.className = "group";
+      h.setAttribute("aria-expanded", show ? "true" : "false");
+      h.innerHTML = '<span class="chev">&#9656;</span><span>' + g[1] + " (" + rows.length + ")</span>";
+      h.onclick = function () { opened[g[0]] = !opened[g[0]]; buildList(document.getElementById("q").value); };
+      listEl.appendChild(h);
+      if (!show) return;
       rows.forEach(function (i) {
         var it = D.items[i], b = document.createElement("button");
         b.type = "button"; b.className = "item"; b.setAttribute("data-i", i);
@@ -306,14 +321,23 @@
       if (f["Code List"] && f["Code List"] !== "—") meta.push('<span class="cl">Code List: ' + esc(f["Code List"]) + "</span>");
       h += '<div class="field"><div class="top"><span class="col">' + esc(f.Column) + '</span><span class="role" title="Role">' + esc(f.Role) + '</span></div><div class="meta">' + meta.join("") + '</div><div class="desc">' + rich(f.Description) + "</div></div>";
     });
-    h += "<h3>Directly related (" + near.length + ")</h3><div class=\"rel\">" + near.map(function (j) {
-      return '<button type="button" data-i="' + j + '">' + esc(D.items[j].name) + "</button>";
+    var order = { Hub: 0, Link: 1, Satellite: 2 }, count = { Hub: 0, Link: 0, Satellite: 0 };
+    near.sort(function (a, b) {
+      var x = D.items[a], y = D.items[b];
+      return order[x.kind] - order[y.kind] || (x.name < y.name ? -1 : x.name > y.name ? 1 : 0);
+    });
+    near.forEach(function (j) { count[D.items[j].kind]++; });
+    var tally = [["Hub", "Hubs"], ["Link", "Links"], ["Satellite", "Satellites"]].filter(function (k) { return count[k[0]]; })
+      .map(function (k) { return count[k[0]] + " " + (count[k[0]] === 1 ? k[0] : k[1]); }).join(", ");
+    h += "<h3>Directly related (" + near.length + ")</h3><p class=\"tally\">" + (tally || "None") + "</p><div class=\"rel\">" + near.map(function (j) {
+      var o = D.items[j];
+      return '<button type="button" class="' + o.kind + (o.inPlace ? " inplace" : "") + '" data-i="' + j + '">' + esc(o.name) + "</button>";
     }).join("") + "</div>";
     var uses = partners(i);
     if (uses.length) {
       h += "<h3>Dashed lines (" + uses.length + ")</h3><p>" + (it.kind === "Satellite" ? "This Satellite" : "This object") +
         " takes values from, or is loaded by, the platform objects below. Their lines are drawn in dark gray on the picture.</p><div class=\"rel\">" +
-        uses.map(function (p) { return '<button type="button" data-i="' + p.j + '">' + esc(D.items[p.j].name) + "</button>"; }).join("") +
+        uses.map(function (p) { return '<button type="button" class="' + D.items[p.j].kind + '" data-i="' + p.j + '">' + esc(D.items[p.j].name) + "</button>"; }).join("") +
         '</div><button type="button" class="show" id="showUses">Show them on the picture</button>';
     }
     if (it.codeLists && it.codeLists.length) {
@@ -357,6 +381,7 @@
     });
     useEl.forEach(function (u, j) { u.classList.toggle("dim", !!keep && !hotUse[j]); u.classList.toggle("hot", !!hotUse[j]); });
     if (i >= 0) {
+      if (!itemEl[i] && !opened[D.items[i].kind]) { opened[D.items[i].kind] = true; buildList(document.getElementById("q").value); }
       if (itemEl[i]) { itemEl[i].setAttribute("aria-current", "true"); itemEl[i].scrollIntoView({ block: "nearest" }); }
       showInfo(i);
       requestAnimationFrame(function () { go(fitted(boxOf(D.focus[D.items[i].name].nodes))); });

@@ -66,8 +66,21 @@ class HtmlGraphTests(unittest.TestCase):
         self.assertIn("sat_natural_person__name", names)
         self.assertIn("lnk_natural_person__party", names)
         self.assertIn("sat_natural_person__natural_person_relation__relationship", names)
-        self.assertNotIn("hub_legal_entity", names)       # the other Hub of a Link is not directly related
-        self.assertNotIn("hub_rrr", names)
+        self.assertIn("hub_party", names)                 # the Hub on the other side of a Link is kept too
+        self.assertIn("hub_legal_entity", names)          # across lnk_legal_entity__natural_person
+        self.assertNotIn("hub_rrr", names)                # but not the Hubs two Links away
+        self.assertNotIn("sat_party__sensitivity", names) # nor what hangs from the other Hub
+
+    def test_a_selected_hub_reaches_the_hubs_across_its_links_with_the_connector(self):
+        d = self.data
+        focus = d["focus"]["hub_natural_person"]
+        link = next(i for i, it in enumerate(self.items) if it["name"] == "lnk_natural_person__party")
+        party = next(i for i, it in enumerate(self.items) if it["name"] == "hub_party")
+        self.assertTrue(any(d["edges"][e] == [link, party] for e in focus["edges"]))
+
+    def test_selecting_a_link_or_a_satellite_does_not_reach_further_hubs(self):
+        names = {self.items[i]["name"] for i in self.data["focus"]["sat_natural_person__name"]["nodes"]}
+        self.assertEqual(names, {"sat_natural_person__name", "hub_natural_person"})
 
     def test_the_lines_kept_belong_to_the_selection(self):
         for name, focus in self.data["focus"].items():
