@@ -267,34 +267,35 @@ def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], 
 
 def _contact_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], x0: float, y0: float) -> tuple[float, float]:
     """The Contact Point cluster, inside the Registries band, in the free ground under the Legal Entity Satellites, west of the long
-    lines that run up to hub_location. The Link to the party is on the west edge, so its line goes up to hub_party along the corridor
-    east of the chain (it crosses the short lines of the ownership group, drawn with a jump). The Hub is east of it with its two
-    Satellites on its right; the two Satellites of the Link hang under it, side by side, far enough down for their lines to clear
-    the Hub. Returns the bottom edge and the right edge."""
+    lines that run up to hub_location. Three rows: the use and the verification above the Link, side by side; the Link on the west
+    edge with the Hub east of it and the two Satellites of the Hub on the Hub's right; the consent under the Link. The line of the
+    Link to the party goes up to hub_party along the corridor east of the chain (it crosses the short lines of the ownership
+    group, drawn with a jump). Returns the bottom edge and the right edge."""
     B = L.boxes
     H, K = "hub_contact_point", "lnk_contact_point__party"
-    usage, consent = "sat_contact_point__party__usage", "sat_contact_point__party__consent"
+    usage, consent, verify = "sat_contact_point__party__usage", "sat_contact_point__party__consent", "sat_contact_point__party__verification"
     hub_sats = sats_of(H, nodes, edges)
-    link, hub, us, cs = B[K], B[H], B[usage], B[consent]
-    link.x, link.y = x0, y0
+    link, hub, us, cs, vs = B[K], B[H], B[usage], B[consent], B[verify]
+    us.x, us.y = x0, y0
+    vs.x, vs.y = x0 + us.w + GAP_X, y0
+    link.x, link.y = x0, y0 + max(us.h, vs.h) + 110
     stack = sum(B[n].h for n in hub_sats) + GAP_ROW * (len(hub_sats) - 1)
     hub.h = max(hub.h, stack)
-    hub.x, hub.y = link.x + link.w + GAP_X, y0
+    hub.x, hub.y = link.x + link.w + GAP_X, link.y
     sx = hub.x + hub.w + GAP_X
     yy = hub.y + (hub.h - stack) / 2
     for i, n in enumerate(hub_sats):
         B[n].x, B[n].y = sx, yy
         yy += B[n].h + GAP_ROW
         _line(L, n, H, (0.0, 0.5), (1.0, (i + 0.5) / len(hub_sats)))
-    row2 = y0 + max(link.h, hub.h) + 330
-    us.x, us.y = x0, row2
-    cs.x, cs.y = us.x + us.w + GAP_X, row2
+    cs.x, cs.y = x0, link.y + max(link.h, hub.h) + 110
     _line(L, K, H, (1.0, 0.5), (0.0, _frac(hub, link.cy)))
     _line(L, K, "hub_party", (0.0, 0.5), (1.0, 0.93))
-    _line(L, usage, K, (0.5, 0.0), (0.25, 1.0))
-    _line(L, consent, K, (0.5, 0.0), (0.8, 1.0))
-    bottom = max(us.y + us.h, cs.y + cs.h, hub.y + hub.h)
-    right = max(cs.x + cs.w, sx + max(B[n].w for n in hub_sats))
+    _line(L, usage, K, (0.5, 1.0), (0.25, 0.0))
+    _line(L, verify, K, (0.5, 1.0), (0.75, 0.0))
+    _line(L, consent, K, (0.5, 0.0), (0.5, 1.0))
+    bottom = max(cs.y + cs.h, hub.y + hub.h)
+    right = max(vs.x + vs.w, sx + max(B[n].w for n in hub_sats))
     return bottom, right
 
 

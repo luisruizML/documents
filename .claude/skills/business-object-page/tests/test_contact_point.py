@@ -19,11 +19,11 @@ class ContactPointTests(unittest.TestCase):
     def test_the_page_validates(self):
         self.assertEqual(vp.validate(read("Contact_Point"), base_dir=PAGES), [])
 
-    def test_the_six_objects_and_the_one_link_to_party(self):
+    def test_the_seven_objects_and_the_one_link_to_party(self):
         rows = vp.parse_page(read("Contact_Point")).tables("Vault objects")[0]
         names = [r["Name"].strip("`") for r in rows]
         self.assertEqual(names, ["hub_contact_point", "lnk_contact_point__party", "sat_contact_point__description", "sat_contact_point__channel",
-                                 "sat_contact_point__party__usage", "sat_contact_point__party__consent"])
+                                 "sat_contact_point__party__usage", "sat_contact_point__party__consent", "sat_contact_point__party__verification"])
         link = next(r for r in rows if r["Name"].strip("`") == "lnk_contact_point__party")
         self.assertIn("`hub_party`", link["Business key"])
 
@@ -31,7 +31,7 @@ class ContactPointTests(unittest.TestCase):
         page = vp.parse_page(read("Contact_Point"))
         fields = vp._fields_tables(page)
         pii = [(t, r["Column"]) for t, rows in fields.items() for r in rows if r["PII"] == "Yes"]
-        self.assertEqual(pii, [("sat_contact_point__description", "`value_text`")])
+        self.assertEqual(pii, [("sat_contact_point__description", "`value_text`"), ("sat_contact_point__description", "`extension_text`")])
 
     def test_consent_status_is_a_closed_list_and_the_others_are_lists(self):
         fields = vp._fields_tables(vp.parse_page(read("Contact_Point")))
@@ -47,6 +47,31 @@ class ContactPointTests(unittest.TestCase):
             for r in table_rows:
                 if r["Code List"] in ("List", "Closed"):
                     self.assertIn(f"{table}.{r['Column'].strip('`')}", rows)
+
+
+class ContactPointDecisionsTests(unittest.TestCase):
+    def columns(self, table):
+        return [r["Column"].strip("`") for r in vp._fields_tables(vp.parse_page(read("Contact_Point")))[table]]
+
+    def test_verification_is_a_fact_about_a_party_and_a_channel_not_about_the_contact_point(self):
+        self.assertNotIn("verification_status_code", self.columns("sat_contact_point__channel"))
+        self.assertNotIn("verified_date", self.columns("sat_contact_point__channel"))
+        cols = self.columns("sat_contact_point__party__verification")
+        self.assertEqual(cols[:3], ["lnk_contact_point__party_hk", "channel_code", "verification_status_code"])
+
+    def test_a_number_has_an_extension_and_the_jurisdiction_of_its_numbering_plan(self):
+        cols = self.columns("sat_contact_point__description")
+        for c in ("contact_kind_code", "value_text", "extension_text", "jurisdiction_code", "service_code"):
+            self.assertIn(c, cols)
+
+    def test_a_mobile_number_and_a_fixed_line_are_kinds_of_value(self):
+        rows = vp._fields_tables(vp.parse_page(read("Contact_Point")))["sat_contact_point__description"]
+        kind = next(r for r in rows if r["Column"].strip("`") == "contact_kind_code")
+        self.assertIn("`mobile_number`", kind["Description"])
+        self.assertIn("`fixed_line`", kind["Description"])
+
+    def test_the_switchboard_has_its_role_in_the_code_list(self):
+        self.assertIn("`main_line`", read("Code_List"))
 
 
 class ParcelNestingTests(unittest.TestCase):

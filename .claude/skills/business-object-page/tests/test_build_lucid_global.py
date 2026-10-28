@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 144)
+        self.assertEqual(len(self.by_name), 145)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -209,7 +209,8 @@ class GlobalDiagramTests(unittest.TestCase):
         lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
         for pair in (("lnk_contact_point__party", "hub_party"), ("lnk_contact_point__party", "hub_contact_point"),
                      ("sat_contact_point__description", "hub_contact_point"), ("sat_contact_point__channel", "hub_contact_point"),
-                     ("sat_contact_point__party__usage", "lnk_contact_point__party"), ("sat_contact_point__party__consent", "lnk_contact_point__party")):
+                     ("sat_contact_point__party__usage", "lnk_contact_point__party"), ("sat_contact_point__party__consent", "lnk_contact_point__party"),
+                     ("sat_contact_point__party__verification", "lnk_contact_point__party")):
             self.assertIn(pair, lines)
 
     def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):

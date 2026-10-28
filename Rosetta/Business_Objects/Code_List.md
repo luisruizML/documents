@@ -273,15 +273,17 @@ A value that is later given a new rule gets a new row, and the loader closes the
 | `sat_administrative_zone__administrative_zone_hierarchy__period.end_reason_code` | List `end_reason` | The values differ by jurisdiction | `border_redrawn`, `merged`, `abolished` |
 | `sat_legal_entity__location__usage.role_code` | List `location_role` | A new way to use a place is a value; `party_type_code` in the Code List limits a value to natural persons or legal entities | `registered_office`, `branch_office`, `mailing_address` |
 | `sat_location__natural_person__usage.role_code` | List `location_role` | A new way to use a place is a value; `party_type_code` in the Code List limits a value to natural persons or legal entities | `residence`, `mailing_address`, `place_of_birth` |
-| `sat_contact_point__description.contact_kind_code` | List `contact_kind` | A new kind of contact is a value, not a new table | `phone_number`, `email_address`, `messaging_handle` |
+| `sat_contact_point__description.contact_kind_code` | List `contact_kind` | A new kind of contact is a value, not a new table | `mobile_number`, `fixed_line`, `email_address`, `messaging_handle` |
+| `sat_contact_point__description.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
 | `sat_contact_point__description.service_code` | List `messaging_service` | A new messaging service is a value | `telegram`, `whatsapp`, `signal` |
 | `sat_contact_point__channel.channel_code` | List `contact_channel` | A new way to reach a contact point is a value, not a column | `voice`, `sms`, `whatsapp`, `imessage`, `telegram`, `email` |
-| `sat_contact_point__channel.verification_status_code` | List `verification_status` | Each jurisdiction can confirm a channel in its own way | `unverified`, `verified`, `failed` |
-| `sat_contact_point__party__usage.role_code` | List `contact_role` | A new way for a party to use a contact point is a value | `personal`, `work`, `billing`, `emergency` |
+| `sat_contact_point__party__usage.role_code` | List `contact_role` | A new way for a party to use a contact point is a value | `personal`, `work`, `billing`, `main_line`, `emergency` |
 | `sat_contact_point__party__consent.channel_code` | List `contact_channel` | The same list as the channels that reach a contact point | `voice`, `sms`, `whatsapp`, `email` |
 | `sat_contact_point__party__consent.purpose_code` | List `contact_purpose` | Each jurisdiction has its own purposes a party may be contacted for | `service_notice`, `tax_notice`, `marketing` |
 | `sat_contact_point__party__consent.consent_status_code` | Closed list, written in the Description | A rule branches on each value | `granted`, `refused`, `withdrawn` |
 | `sat_contact_point__party__consent.basis_code` | List `consent_basis` | Each jurisdiction has its own legal bases for contacting a party | `explicit_consent`, `legal_obligation`, `public_task` |
+| `sat_contact_point__party__verification.channel_code` | List `contact_channel` | The same list as the channels that reach a contact point | `voice`, `sms`, `whatsapp`, `email` |
+| `sat_contact_point__party__verification.verification_status_code` | List `verification_status` | Each jurisdiction can confirm a channel in its own way | `unverified`, `verified`, `failed` |
 | `hub_base_parcel.jurisdiction_code` | List `jurisdiction` (ISO 3166-1 alpha-3) | One list for every column that names a country or territory | `WSM` (Samoa), `PNG` (Papua New Guinea), `NZL` (New Zealand) |
 | `hub_base_parcel.key_type_code` | List `base_parcel_key_type` | Each jurisdiction has its own kinds of identifier, and a new kind is a value | `registry_parcel_id`, `customary_tenure_id`, `platform_assigned` |
 | `sat_base_parcel__description.parcel_kind_code` | List `parcel_kind` | Each jurisdiction has its own land classification, and a new kind is a value | `land`, `water`, `airspace`, `subsurface` |
