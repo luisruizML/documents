@@ -30,6 +30,33 @@ MARKER = "/*DATA*/null"
 KIND_ORDER = {"Hub": 0, "Link": 1, "Satellite": 2}
 
 
+# The areas drawn behind the picture: name, fill colour, ink colour of its name, radius of the blob around each object, and the
+# pages whose Vault objects belong to it. "Assets" surrounds the two kinds of asset, so its blob is wider. The first areas are
+# drawn first, so they are at the back.
+AREAS = [
+    ("Assets", "#F2C94C", "#7A5F00", 470, ["Base Parcel", "Built Structure", "Base Asset", "Swappable Component", "Model Catalog"]),
+    ("Immovable Assets", "#F2994A", "#8A4A0F", 290, ["Base Parcel", "Built Structure"]),
+    ("Movable Assets", "#6FCF97", "#1F6B40", 290, ["Base Asset", "Swappable Component", "Model Catalog"]),
+    ("Parties", "#4F9DDE", "#1B4F80", 290, ["Party", "Natural Person", "Legal Entity"]),
+    ("Legal", "#EB5757", "#8F1F1F", 290, ["Entitlement", "Credential", "RRR"]),
+    ("Contact Point", "#A67C52", "#5E4126", 290, ["Contact Point"]),
+]
+
+
+def areas_of(items: list[dict], edges: list[list[int]]) -> list[dict]:
+    """`[{name, color, ink, radius, items, edges}]`: the objects of each area and the lines between them. The blob is drawn by the page
+    as a circle around each object and a thick line along each of these lines, so it follows the objects and does not cover the gaps."""
+    out = []
+    for name, color, ink, radius, pages in AREAS:
+        members = [i for i, it in enumerate(items) if it["page"] in pages]
+        if not members:
+            continue
+        inside = set(members)
+        out.append({"name": name, "color": color, "ink": ink, "radius": radius, "items": members,
+                    "edges": [k for k, (a, b) in enumerate(edges) if a in inside and b in inside]})
+    return out
+
+
 def page_title(stem: str) -> str:
     return stem.replace("_", " ")
 
@@ -121,13 +148,17 @@ def build_data(nodes=None, edges=None) -> dict:
             "codeLists": code_lists_of(name, fields, examples),
         })
     index = {n: i for i, n in enumerate(order)}
+    edge_list = [[index[c], index[p]] for c, p in L.edges]
+    areas = areas_of(items, edge_list)
+    reach = max([a["radius"] for a in areas] or [0]) - 60
     return {
         "items": items,
-        "edges": [[index[c], index[p]] for c, p in L.edges],
+        "edges": edge_list,
+        "areas": areas,
         "uses": [[index[a], index[b]] for a, b in uses],
         "focus": {n: {"nodes": [index[x] for x in f["nodes"]], "edges": f["edges"]}
                   for n in order for f in [focus_of(n, kinds, L.edges)]},
-        "box": [round(min(xs) - 60, 1), round(min(ys) - 60, 1), round(max(xs) + 60, 1), round(max(ys) + 60, 1)],
+        "box": [round(min(xs) - 60 - reach, 1), round(min(ys) - 60 - reach, 1), round(max(xs) + 60 + reach, 1), round(max(ys) + 60 + reach, 1)],
         "charWidth": {"Hub": 15.1, "Link": 9.6, "Satellite": 9.6},
     }
 

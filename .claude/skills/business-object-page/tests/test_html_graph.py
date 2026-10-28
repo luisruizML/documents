@@ -94,6 +94,31 @@ class HtmlGraphTests(unittest.TestCase):
         names = {self.items[i]["name"] for i in sat}
         self.assertIn("sat_party__sensitivity", names)
 
+    def test_the_areas_group_the_pages_and_the_assets_area_surrounds_the_two_kinds_of_asset(self):
+        areas = {a["name"]: a for a in self.data["areas"]}
+        self.assertEqual(list(areas), ["Assets", "Immovable Assets", "Movable Assets", "Parties", "Legal", "Contact Point"])
+        names = lambda a: {self.items[i]["name"] for i in areas[a]["items"]}  # noqa: E731
+        self.assertTrue(names("Immovable Assets") <= names("Assets") and names("Movable Assets") <= names("Assets"))
+        self.assertIn("hub_base_parcel", names("Immovable Assets"))
+        self.assertIn("hub_swappable_component", names("Movable Assets"))
+        self.assertTrue({"hub_party", "hub_natural_person", "hub_legal_entity"} <= names("Parties"))
+        self.assertTrue({"hub_rrr", "hub_entitlement", "hub_credential"} <= names("Legal"))
+        self.assertEqual(len(names("Contact Point")), 7)
+        self.assertGreater(areas["Assets"]["radius"], areas["Immovable Assets"]["radius"])
+
+    def test_an_area_line_joins_two_objects_of_the_area(self):
+        for a in self.data["areas"]:
+            members = set(a["items"])
+            for e in a["edges"]:
+                x, y = self.data["edges"][e]
+                self.assertTrue(x in members and y in members, a["name"])
+
+    def test_the_template_draws_the_areas_behind_and_lets_the_clicks_through(self):
+        html = hg.TEMPLATE.read_text(encoding="utf-8")
+        self.assertIn("gArea", html)
+        self.assertIn("#gArea { pointer-events: none; }", html)
+        self.assertLess(html.index('var gArea = el("g"'), html.index('var gUse = el("g"'))
+
     def test_the_file_is_self_contained_and_its_data_is_valid_json(self):
         html = hg.render(self.data)
         self.assertNotRegex(html, r'(src|href)="https?://')

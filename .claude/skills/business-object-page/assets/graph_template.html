@@ -83,6 +83,9 @@
   .node .shape { stroke-width: 1.6px; vector-effect: non-scaling-stroke; }
   .label { font-family: var(--code); cursor: pointer; transition: opacity .15s; }
   .edge { stroke: #3A414A; stroke-width: 1.2px; vector-effect: non-scaling-stroke; transition: opacity .15s; }
+  #gArea { pointer-events: none; }
+  #svg.areas-off #gArea { display: none; }
+  .area-name { font-family: var(--title); font-weight: 700; }
   .use { display: none; stroke: #B8B8B8; stroke-width: 1px; stroke-dasharray: 5 4; vector-effect: non-scaling-stroke; }
   #svg.uses-on .use, .use.hot { display: inline; }
   .use.hot { stroke: #6E6E6E; stroke-width: 2px; opacity: 1; }
@@ -117,6 +120,7 @@
       <button id="zin" type="button" aria-label="Zoom in">+</button>
       <button id="zout" type="button" aria-label="Zoom out">&minus;</button>
       <label><input type="checkbox" id="uses"> Code List and Load Configuration lines</label>
+      <label><input type="checkbox" id="areas" checked> Areas</label>
     </div>
     <div id="legend">
       <span><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="#8F63F4" stroke="#3A414A" stroke-width="1.5"/></svg>Hub</span>
@@ -154,6 +158,23 @@
   function rich(s) { return esc(s).replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>"); }
 
   // ---- the picture: lines behind the shapes, names on top
+  var gArea = el("g", { id: "gArea" }, svg);
+  (D.areas || []).forEach(function (a) {
+    // one group per area, so the blob is one colour at one opacity wherever its circles and lines overlap
+    var g = el("g", { opacity: 0.2 }, gArea), minY = 1e9, left = 0;
+    a.items.forEach(function (i) {
+      var it = D.items[i];
+      el("circle", { cx: it.x, cy: it.y, r: a.radius, fill: a.color }, g);
+      var y = it.y - a.radius; if (y < minY) { minY = y; left = it.x - a.radius; }
+    });
+    a.edges.forEach(function (e) {
+      var p = D.items[D.edges[e][0]], q = D.items[D.edges[e][1]];
+      el("line", { x1: p.x, y1: p.y, x2: q.x, y2: q.y, stroke: a.color, "stroke-width": a.radius * 1.4, "stroke-linecap": "round" }, g);
+    });
+    // the name sits above the blob; the wider area, which surrounds the others, puts its name higher
+    var big = a.name === "Assets", t = el("text", { "class": "area-name", x: left + 40, y: minY - (big ? 150 : 20), fill: a.ink, "font-size": big ? 300 : 230, opacity: 0.85 }, gArea);
+    t.textContent = a.name;
+  });
   var gUse = el("g", { id: "gUse" }, svg), gEdge = el("g", {}, svg), gNode = el("g", {}, svg), gLabel = el("g", {}, svg);
   D.uses.forEach(function (u, i) {
     var a = D.items[u[0]], b = D.items[u[1]];
@@ -261,6 +282,7 @@
   document.getElementById("fit").onclick = fitAll;
   document.getElementById("zin").onclick = function () { zoom(0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
   document.getElementById("zout").onclick = function () { zoom(1 / 0.7, vb.x + vb.w / 2, vb.y + vb.h / 2); };
+  document.getElementById("areas").onchange = function () { svg.classList.toggle("areas-off", !this.checked); };
   document.getElementById("uses").onchange = function () { svg.classList.toggle("uses-on", this.checked); };
   window.addEventListener("resize", function () { vb = fitted(vb); apply(); });
 
