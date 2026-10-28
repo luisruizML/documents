@@ -10,6 +10,7 @@ An object shared by several domains is one page, listed once with every domain i
 | Natural Person | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Natural Person](Natural_Person.md) |
 | Legal Entity | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Legal Entity](Legal_Entity.md) |
 | Location | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Location](Location.md) |
+| Contact Point | Registries | Taxation Contributions and Licences, Finance, Benefits, Compliance, AEOI | Global | Draft | [Contact Point](Contact_Point.md) |
 | Immovable Assets | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Immovable Assets](Immovable_Assets.md) |
 | Base Parcel | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Base Parcel](Base_Parcel.md) |
 | Built Structure | Registries | Taxation Contributions and Licences, Finance, Compliance | Shared | Draft | [Built Structure](Built_Structure.md) |

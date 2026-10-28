@@ -21,7 +21,7 @@ import build_diagram as bd  # noqa: E402
 import platform_usage as pu  # noqa: E402
 
 REPO = HERE.parents[3]
-PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Base_Parcel", "Built_Structure", "Base_Asset", "Swappable_Component",
+PAGES = ["Party", "Natural_Person", "Legal_Entity", "Location", "Contact_Point", "Base_Parcel", "Built_Structure", "Base_Asset", "Swappable_Component",
          "Model_Catalog", "Entitlement", "Credential", "RRR", "Code_List", "Load_Configuration"]
 
 # ---------------------------------------------------------------- style (from the Lucid proposal and the drawio files)
@@ -265,6 +265,39 @@ def _location_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], 
     return top, max(hs.y + hs.h, hub_loc.y + hub_loc.h), x5 + w5
 
 
+def _contact_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge], x0: float, y0: float) -> tuple[float, float]:
+    """The Contact Point cluster, inside the Registries band, in the free ground under the Legal Entity Satellites, west of the long
+    lines that run up to hub_location. The Link to the party is on the west edge, so its line goes up to hub_party along the corridor
+    east of the chain (it crosses the short lines of the ownership group, drawn with a jump). The Hub is east of it with its two
+    Satellites on its right; the two Satellites of the Link hang under it, side by side, far enough down for their lines to clear
+    the Hub. Returns the bottom edge and the right edge."""
+    B = L.boxes
+    H, K = "hub_contact_point", "lnk_contact_point__party"
+    usage, consent = "sat_contact_point__party__usage", "sat_contact_point__party__consent"
+    hub_sats = sats_of(H, nodes, edges)
+    link, hub, us, cs = B[K], B[H], B[usage], B[consent]
+    link.x, link.y = x0, y0
+    stack = sum(B[n].h for n in hub_sats) + GAP_ROW * (len(hub_sats) - 1)
+    hub.h = max(hub.h, stack)
+    hub.x, hub.y = link.x + link.w + GAP_X, y0
+    sx = hub.x + hub.w + GAP_X
+    yy = hub.y + (hub.h - stack) / 2
+    for i, n in enumerate(hub_sats):
+        B[n].x, B[n].y = sx, yy
+        yy += B[n].h + GAP_ROW
+        _line(L, n, H, (0.0, 0.5), (1.0, (i + 0.5) / len(hub_sats)))
+    row2 = y0 + max(link.h, hub.h) + 330
+    us.x, us.y = x0, row2
+    cs.x, cs.y = us.x + us.w + GAP_X, row2
+    _line(L, K, H, (1.0, 0.5), (0.0, _frac(hub, link.cy)))
+    _line(L, K, "hub_party", (0.0, 0.5), (1.0, 0.93))
+    _line(L, usage, K, (0.5, 0.0), (0.25, 1.0))
+    _line(L, consent, K, (0.5, 0.0), (0.8, 1.0))
+    bottom = max(us.y + us.h, cs.y + cs.h, hub.y + hub.h)
+    right = max(cs.x + cs.w, sx + max(B[n].w for n in hub_sats))
+    return bottom, right
+
+
 def _pair_x(a: Box, b: Box) -> tuple[float, float]:
     """The position, on `a` and on `b`, of a vertical line between two boxes that overlap in x."""
     lo, hi = max(a.x, b.x), min(a.x + a.w, b.x + b.w)
@@ -295,7 +328,8 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     chain_link, chain_sat = "lnk_base_parcel__built_structure", "sat_base_parcel__built_structure__period"
     hier, hier_sat = "lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership"
     sat_p, sat_s = sats_of(P, nodes, edges), sats_of(S, nodes, edges)
-    sat_p = [n for n in sat_p if n not in (chain_sat,)]
+    parcel_hier, parcel_hier_sat = "lnk_base_parcel__base_parcel_hierarchy", "sat_base_parcel__base_parcel_hierarchy__membership"
+    sat_p = [n for n in sat_p if n not in (chain_sat, parcel_hier_sat)]
     sat_s = [n for n in sat_s if n not in (hier_sat,)]
 
     # ---- the Legal cluster: names
@@ -386,13 +420,18 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
 
     # parcel
     hubp, hubs = B[P], B[S]
-    hp = max(stack_h(sat_p, GAP_ROW), right_h(("pl",)) + legal_h("P"))
+    hlp, hsp = B[parcel_hier], B[parcel_hier_sat]
+    left_p = stack_h(sat_p, GAP_ROW) + 110 + hlp.h + 110 + hsp.h
+    hp = max(left_p, right_h(("pl",)) + legal_h("P"))
     top_p = top_zone_bottom + 260
     hubp.h = hp
     hubp.x, hubp.y = xM + wM - hubp.w, top_p
-    yy = top_p + (hp - stack_h(sat_p, GAP_ROW)) / 2
+    yy = top_p + (hp - left_p) / 2
     for n in sat_p:
         yy = place(n, xL + wL - B[n].w, yy) + GAP_ROW
+    hlp_top = yy - GAP_ROW + 110
+    place(parcel_hier, xL + wL - hlp.w, hlp_top)
+    place(parcel_hier_sat, xL + wL - hsp.w, hlp_top + hlp.h + 110)
     right_rows(("pl",), top_p, hp, low=True)
     # the Link between the two Hubs, its Satellite on its left
     cl, cs_ = B[chain_link], B[chain_sat]
@@ -482,6 +521,9 @@ def _immovable_block(L: Layout, nodes: dict[str, bd.Node], edges: list[bd.Edge],
     _line(L, chain_sat, chain_link, (1.0, 0.5), (0.0, 0.5))
     _line(L, chain_link, P, (0.5, 0.0), (0.5, 1.0))
     _line(L, chain_link, S, (0.5, 1.0), (0.5, 0.0))
+    _line(L, parcel_hier_sat, parcel_hier, *(((_pair_x(hlp, hsp)[1], 0.0), (_pair_x(hlp, hsp)[0], 1.0))))
+    _line(L, parcel_hier, P, (1.0, 0.3), (0.0, _frac(hubp, hlp.y + 0.3 * hlp.h)))
+    _line(L, parcel_hier, P, (1.0, 0.7), (0.0, _frac(hubp, hlp.y + 0.7 * hlp.h)))
     _line(L, hier_sat, hier, *(((_pair_x(hl, hs_)[1], 0.0), (_pair_x(hl, hs_)[0], 1.0))))
     _line(L, hier, S, (1.0, 0.3), (0.0, _frac(hubs, hl.y + 0.3 * hl.h)))
     _line(L, hier, S, (1.0, 0.7), (0.0, _frac(hubs, hl.y + 0.7 * hl.h)))
@@ -571,6 +613,7 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
         return max(L.boxes[n].w for n in names)
 
     imm_left = (sats_of("hub_base_parcel", nodes, edges) + sats_of("hub_built_structure", nodes, edges)
+                + ["lnk_base_parcel__base_parcel_hierarchy", "sat_base_parcel__base_parcel_hierarchy__membership"]
                 + ["lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership",
                    "sat_base_parcel__built_structure__period"]
                 + sats_of("hub_base_asset", nodes, edges) + sats_of("hub_model_catalog", nodes, edges) + sats_of("hub_swappable_component", nodes, edges)
@@ -689,9 +732,10 @@ def build_layout(nodes: dict[str, bd.Node], edges: list[bd.Edge]) -> Layout:
     _line(L, "lnk_legal_entity__party", "hub_legal_entity", (0.5, 1.0), (0.5, 0.0))
 
     base_bottom = max(le_bottom, hub_le.y + hub_le.h, link_np.y + link_np.h, ol.y + ol.h, hs.y + hs.h, loc_bottom)
-    imm_bottom, imm_right = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, base_bottom + 260, loc_right + GAP_X)
+    contact_bottom, contact_right = _contact_block(L, nodes, edges, xR, base_bottom + 160)
+    imm_bottom, imm_right = _immovable_block(L, nodes, edges, {"xL": xL, "wL": wL, "xM": xM, "wM": wM, "xR": xR}, contact_bottom + 260, loc_right + GAP_X)
     reg_bottom = max(base_bottom, imm_bottom) + BAND_PAD
-    reg_w = max(reg_w, loc_right + BAND_PAD, imm_right + BAND_PAD)
+    reg_w = max(reg_w, loc_right + BAND_PAD, imm_right + BAND_PAD, contact_right + BAND_PAD)
     L.bands.append({"title": "Registries", "x": 0.0, "y": by, "w": reg_w, "h": reg_bottom - by})
 
     # ---- Platform band, to the right of the Registries band

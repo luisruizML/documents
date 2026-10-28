@@ -55,7 +55,7 @@ class FamilyPageTests(unittest.TestCase):
         merged = bd.load_model(bd.merge_family(self.text(), PAGES), ["hub_location", "hub_party"])
         names = [n.name for n in merged.nodes]
         self.assertEqual(len(names), len(set(names)))
-        self.assertEqual(len([n for n in merged.nodes if not n.external]), 21)
+        self.assertEqual(len([n for n in merged.nodes if not n.external]), 23)
 
     def test_an_ordinary_page_is_merged_unchanged(self):
         text = self.text("Party")

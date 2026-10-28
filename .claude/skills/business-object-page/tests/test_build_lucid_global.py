@@ -42,7 +42,7 @@ class GlobalDiagramTests(unittest.TestCase):
 
     def test_one_box_per_vault_object_of_the_pages(self):
         self.assertEqual(set(self.by_name), set(self.nodes))
-        self.assertEqual(len(self.by_name), 136)
+        self.assertEqual(len(self.by_name), 144)
         self.assertEqual(self.ghosts, set())
 
     def test_ids_are_short_enough_for_lucid(self):
@@ -107,14 +107,15 @@ class GlobalDiagramTests(unittest.TestCase):
                 self.assertTrue(apart, f"{a.name} overlaps {b.name}")
 
     def test_no_two_lines_cross_except_the_ones_that_reach_the_asset_clusters(self):
-        """The long lines from the Immovable and Movable Assets clusters up to hub_party and hub_location, and the lines of the Legal cluster
+        """The long lines from the Immovable and Movable Assets clusters up to hub_party and hub_location, the line of the Contact Point Link
+        up to hub_party, and the lines of the Legal cluster
         (each Link to a thing runs west to its Hub and east to the RRR or the entitlement) cross the short lines of the objects between
         them; those crossings are drawn with a line jump. Every other pair of lines is free of crossings."""
         segs = g.segments(self.layout)
         mine = lambda ln: ln["child"].startswith(("lnk_base_parcel__", "lnk_built_structure__", "sat_base_parcel__", "sat_built_structure__",  # noqa: E731
                                                   "lnk_base_asset__", "lnk_model_catalog__", "sat_base_asset__",
                                                   "lnk_rrr__", "lnk_party__rrr", "lnk_entitlement__", "lnk_credential__", "sat_rrr__", "sat_party__rrr",
-                                                  "sat_entitlement__", "sat_credential__"))
+                                                  "sat_entitlement__", "sat_credential__", "lnk_contact_point__party"))
         for i, (l1, a1, b1) in enumerate(segs):
             for l2, a2, b2 in segs[i + 1:]:
                 if mine(l1) or mine(l2):
@@ -185,6 +186,30 @@ class GlobalDiagramTests(unittest.TestCase):
                      ("lnk_party__rrr", "hub_rrr"), ("lnk_base_parcel__rrr", "hub_base_parcel"), ("lnk_base_parcel__rrr", "hub_rrr"),
                      ("lnk_built_structure__entitlement", "hub_entitlement"), ("lnk_credential__entitlement", "hub_credential"),
                      ("lnk_base_parcel__location", "hub_location"), ("lnk_built_structure__location", "hub_location")):
+            self.assertIn(pair, lines)
+
+    def test_the_parcel_hierarchy_is_placed_like_the_structure_one(self):
+        B = self.layout.boxes
+        lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
+        for link, sat, hub, other in (("lnk_base_parcel__base_parcel_hierarchy", "sat_base_parcel__base_parcel_hierarchy__membership", "hub_base_parcel",
+                                       ("lnk_built_structure__built_structure_hierarchy", "sat_built_structure__built_structure_hierarchy__membership", "hub_built_structure")),):
+            self.assertIn((link, hub), lines)
+            self.assertIn((sat, link), lines)
+            self.assertEqual(B[link].x + B[link].w, B[other[0]].x + B[other[0]].w)       # both are right-aligned in the west column
+            self.assertLess(B[link].x + B[link].w, B[hub].x)
+            self.assertLess(B[link].y + B[link].h, B[sat].y)
+            self.assertTrue(B[hub].y <= B[link].y and B[sat].y + B[sat].h <= B[hub].y + B[hub].h)    # inside the height of its Hub
+
+    def test_the_contact_point_cluster_is_inside_the_registries_band_and_joins_the_party(self):
+        reg = next(b for b in self.layout.bands if b["title"] == "Registries")
+        for name, box in self.layout.boxes.items():
+            if "contact_point" in name:
+                self.assertTrue(reg["x"] <= box.x and box.x + box.w <= reg["x"] + reg["w"], name)
+                self.assertTrue(reg["y"] <= box.y and box.y + box.h <= reg["y"] + reg["h"], name)
+        lines = {(ln["child"], ln["parent"]) for ln in self.layout.lines}
+        for pair in (("lnk_contact_point__party", "hub_party"), ("lnk_contact_point__party", "hub_contact_point"),
+                     ("sat_contact_point__description", "hub_contact_point"), ("sat_contact_point__channel", "hub_contact_point"),
+                     ("sat_contact_point__party__usage", "lnk_contact_point__party"), ("sat_contact_point__party__consent", "lnk_contact_point__party")):
             self.assertIn(pair, lines)
 
     def test_every_user_of_the_code_list_and_the_load_configuration_has_one_gray_dashed_line(self):

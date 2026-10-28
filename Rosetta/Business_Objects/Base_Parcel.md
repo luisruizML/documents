@@ -11,7 +11,7 @@
 | Scope | Shared |
 | Status | Draft |
 | Version | 0.1 |
-| Last updated | 2026-10-24 |
+| Last updated | 2026-10-28 |
 
 ## Definition
 
@@ -34,6 +34,7 @@ If the parcel and the structure were one table, a demolished house would end the
 | --- | --- | --- | --- | --- |
 | Hub | `hub_base_parcel` | The table that holds the **identifier** by which the registry of record knows each parcel of land, water or airspace. It **carries no description** of the parcel. | one row per business key | `base_parcel_bk`: the identifier in the registry of record, or one assigned by the platform when there is none, with the jurisdiction and the key type |
 | Link | `lnk_base_parcel__location` | The table that records that a **place belongs to** a parcel: its boundary, a point on it or its address. The role and the period are recorded in `sat_base_parcel__location__usage`. It is the way a place is **attached** to a parcel. | one row per distinct combination of parcel and location | `hub_base_parcel`, `hub_location` |
+| Link | `lnk_base_parcel__base_parcel_hierarchy` | The table that records that one parcel **lies inside another**, such as a lot inside a block or a family plot inside a customary area. It says which parcel **contains which**; the kind of containment and the period are recorded in `sat_base_parcel__base_parcel_hierarchy__membership`. | one row per distinct combination of parent parcel and member parcel | `hub_base_parcel` (parent), `hub_base_parcel` (member) |
 | Satellite | `sat_base_parcel__description` | The table that records **what a parcel covers** (land, water or airspace), how its use is classified, the kind of tenure over it and the **area recorded** for it, with how that area was obtained: measured from coordinates or written by someone. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__boundary` | The table that records how the **boundary of a parcel** is known when it is not a surveyed shape: in words, by a natural feature or by custom, with the day it was agreed and the evidence held for it. It is **personal data**. | one row per parent key, for each time its values change | — |
 | Satellite | `sat_base_parcel__characteristic` | The table that records the **characteristics** of a parcel, such as the type of soil, the access road or the flood zone, one row for each characteristic, so the **list can grow** without changing the table. | one row per parent key and characteristic, for each time its values change | — |
@@ -41,10 +42,13 @@ If the parcel and the structure were one table, a demolished house would end the
 | Satellite | `sat_base_parcel__identification` | The table that records the **numbers and documents** that identify a parcel, such as a cadastral number, a title deed number or a survey plan number, **who issued each** and when, and when it stops being valid. | one row per parent key and identification document (type and number), for each time its values change | — |
 | Satellite | `sat_base_parcel__registration` | The table that records why and when a parcel was **registered** (a survey, a title deed, a testimony or a court order) and points to the **evidence**. | one row per parent key, registration basis and identifier type, for each time its values change | — |
 | Satellite | `sat_base_parcel__location__usage` | The table that records how a **place is used** for a parcel, such as its boundary, a point on it or its address, from which day and until which day, and the **evidence** held for it. A parcel can have several places and a place can belong to several parcels. | one row per parent key and role, for each time its values change | — |
+| Satellite | `sat_base_parcel__base_parcel_hierarchy__membership` | The table that records the **kind of containment** between a parcel and the parcel inside it, such as a lot in a block or a plot in a customary area, the period in which it applies and why it ended. A change is a new entry, so the **earlier ones stay**. | one row per parent key and hierarchy type, for each time its values change | — |
 
 `base_parcel_hk` is computed from `jurisdiction_code`, `key_type_code` and the normalized `base_parcel_bk`, joined with a fixed separator. Normalization: trimmed, case-folded, Unicode-normalized. The hash algorithm is a platform decision and is not named here. Satellites carry only the parent's hash key.
 
 `lnk_base_parcel__location` says where the parcel **is**, with the shape of `lnk_location__natural_person`; the surveyed boundary of a parcel is a geometry of Location, not a column here. Who **holds** the parcel is not here: every right, restriction and responsibility over it, ownership included, is an RRR joined by `lnk_base_parcel__rrr`, and every permit that applies to it is an Entitlement joined by `lnk_base_parcel__entitlement`. Both Links are defined on the Legal pages and drawn here. The Link to Location has its own Satellite for the details.
+
+`lnk_base_parcel__base_parcel_hierarchy` joins the Hub to itself and says that a parcel **lies inside** another, as `lnk_built_structure__built_structure_hierarchy` does for structures. It is containment, not division: a parcel that is divided or merged is the open decision on the page [Immovable Assets](Immovable_Assets.md).
 
 **Related pages.** The details of every object below are on its own page; the diagrams on this page draw them with a note.
 
@@ -75,6 +79,17 @@ If the parcel and the structure were one table, a demolished house would end the
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel |
 | `location_hk` | ◇ | `string` | No | No | — | — | Hash key of the location |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+
+### lnk_base_parcel__base_parcel_hierarchy
+
+A containment between two parcels. The **parent** is the parcel that contains, such as a block or a customary area, and the **member** is the parcel inside it, such as a lot or a family plot. Both are rows of `hub_base_parcel`. A member can itself be a parent, so the levels are not built into the tables.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `parent_base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel that contains |
+| `member_base_parcel_hk` | ◇ | `string` | No | No | — | — | Hash key of the parcel inside it |
 | `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
 | `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 
@@ -183,6 +198,22 @@ One row for each valuation and each change of its status. The value, the method 
 | `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
 | `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
 
+### sat_base_parcel__base_parcel_hierarchy__membership
+
+The kind of containment, its period and the reason it ended are one fact, so they share a Satellite. The kind is part of the grain: a parcel can lie in a block of the plan and in a customary area. Within one kind, a member has at most one open row.
+
+| **Column** | **Role** | **Type** | **Null** | **PII** | **Default** | **Code List** | **Description** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `lnk_base_parcel__base_parcel_hierarchy_hk` | ◇ | `string` | No | No | — | — | Hash key of the link |
+| `hierarchy_type_code` |  | `string` | No | No | — | List | Which kind of containment this is, a value of the list `parcel_hierarchy_type`: e.g. `lot_in_block`, `common_property`, `customary_area`, `concession_plot` |
+| `end_reason_code` |  | `string` | Yes | No | null | List | Why the member left its parent, a value of the list `end_reason`; empty while it is inside: e.g. `merged`, `reorganized`, `abolished` |
+| `effective_date` |  | `date` | No | No | `1900-01-01` | — | First day the member is inside the parent; `1900-01-01` when unknown |
+| `end_date` |  | `date` | No | No | `9999-12-31` | — | Last day the member is inside the parent; `9999-12-31` while it still does. When a new row starts for the same key and hierarchy type, the loader sets this to the day before it starts |
+| `artifact_uri` |  | `string` | Yes | No | null | — | Pointer to one stored object in Digital Artifact, such as a survey plan or a title; only the pointer is stored: e.g. `artifact://survey/s-2210`, `artifact://plan/p-18`, `artifact://deed/d-3301`; empty when there is none |
+| `load_dts` | ▪ | `timestamptz` | No | No | — | — | When Nexus first loaded the row |
+| `record_source` | ▪ | `string` | No | No | — | — | Which system and endpoint the row came from |
+| `hashdiff` | Δ | `string` | No | No | — | — | Hash of the descriptive values |
+
 ## Sources and mapping
 
 No endpoints declared yet
@@ -193,6 +224,7 @@ No endpoints declared yet
 | --- | --- | --- | --- |
 | Land held by custom, with no survey and no title | Pacific jurisdictions such as Samoa, Papua New Guinea and Vanuatu | The parcel is known by words or natural features, registered on the testimony of the community, and its key is assigned by the platform when the registry has none (R7: a scenario of the same object) | `key_type_code` `platform_assigned` in `hub_base_parcel`; `sat_base_parcel__boundary` with `boundary_type_code` `customary`; a `customary_testimony` row in `sat_base_parcel__registration` |
 | A parcel that is surveyed | Jurisdictions with a cadastre | The boundary is a shape of Location, attached to the parcel with the role `boundary` | `lnk_base_parcel__location` and `sat_base_parcel__location__usage`, `lnk_geometry__location` |
+| A parcel inside another parcel, such as a lot in a block or a family plot in a customary area | Any jurisdiction | Each is its own parcel, with its own identifier, value and holder; the inner one is joined to the outer one. It is containment, not division: the outer parcel does not end | `lnk_base_parcel__base_parcel_hierarchy` with `hierarchy_type_code` such as `lot_in_block` or `customary_area` |
 | A parcel with several structures | Any jurisdiction | One row in the Link for each structure; each structure is its own Hub row | Rows of `lnk_base_parcel__built_structure` |
 | A structure that stands on more than one parcel | Any jurisdiction with large buildings or piers | The same structure is joined to each parcel | Rows of `lnk_base_parcel__built_structure` |
 | The building is held by someone other than the holder of the land | Jurisdictions with leasehold or ground rent | Each has its own bond, an RRR | `lnk_built_structure__rrr` and `lnk_base_parcel__rrr` with different parties, on [RRR](RRR.md) |
@@ -207,7 +239,7 @@ No endpoints declared yet
 
 ## Examples
 
-Illustrative data. The first example is a surveyed parcel in New Zealand; the second is a customary parcel in Papua New Guinea; the third is a valuation that goes through its status.
+Illustrative data. The first example is a surveyed parcel in New Zealand; the second is that parcel inside a block; the third is a customary parcel in Papua New Guinea; the fourth is a valuation that goes through its status.
 
 **A surveyed parcel (New Zealand).** The parcel `P-5501` holds the building `S-100`, which is described on the page [Built Structure](Built_Structure.md).
 
@@ -222,6 +254,15 @@ Illustrative data. The first example is a surveyed parcel in New Zealand; the se
 | **parcel_kind_code** | **land_use_code** | **tenure_type_code** | **registered_area_number** | **area_unit_code** |
 | --- | --- | --- | --- | --- |
 | land | residential | freehold | 1250.0000 | square_metre |
+
+**A parcel inside a block (New Zealand).** The surveyed parcel `P-5501` lies in the block `P-5500`, which stays a parcel of its own.
+
+`hub_base_parcel`, `sat_base_parcel__description` and `lnk_base_parcel__base_parcel_hierarchy`
+
+| **base_parcel_bk** | **parcel_kind_code** | **Parent** | **hierarchy_type_code** |
+| --- | --- | --- | --- |
+| P-5500 | land (a block) | (none) | — |
+| P-5501 | land | `P-5500` | lot_in_block |
 
 **A customary parcel (Papua New Guinea).** There is no survey and no title. The parcel has a platform-assigned key and is registered on the testimony of the village chief.
 
@@ -261,6 +302,8 @@ The definitive value in Gold is `435000.00` from `REVAL-2026-02`. The refused va
 - **Parcel and structure are two Hubs.** The parcel and the structure each have their own key, lifecycle and holders, so each is its own Hub, and the parcel has its own Links to Location and to Party. They are joined by `lnk_base_parcel__built_structure`, defined on the page [Built Structure](Built_Structure.md). Why there is no umbrella Hub is on the page [Immovable Assets](Immovable_Assets.md).
 - **A parcel can have several Locations.** The address, the shape and the zone of a parcel can each be its own Location, one row for each in `lnk_base_parcel__location` with its own role, when the sources deliver them separately; when one source delivers them together they hang off one Location. The Vault does not deduce one from another, because in some jurisdictions that is not possible; the enrichment layer described on the [Location](Location.md) page does it and contrasts the result with what the sources delivered.
 - **The shape of a parcel is a Location.** Whether a parcel is a polygon, a point or a three-dimensional volume is a geometry of Location, joined by `lnk_base_parcel__location`. The Satellite `sat_base_parcel__boundary` holds only what a shape cannot: the boundary in words, by a natural feature or by custom. A parcel can have both.
+- **Containment has no fixed depth.** `lnk_base_parcel__base_parcel_hierarchy` joins the Hub to itself, as the hierarchy of structures does. How many levels a kind of containment may have is `max_depth_count` of the hierarchy type in the Code List (`sat_code_value__validation`). The level of a parcel and its path to the outermost parcel are computed in Gold (R13).
+- **A parcel has at most one open parent for each kind of containment.** At most one row with `end_date` `9999-12-31` for each member and `hierarchy_type_code`. A parcel cannot be its own ancestor; a row that would close a loop is parked by the load.
 - **The characteristics are an open list.** The type of soil, the access road, the flood zone and the like are rows of `sat_base_parcel__characteristic`, not columns. The Code List says for each characteristic which value column it uses and in which unit, and the load checks the value (Principles, "Traits as rows"). A characteristic that is a fact about a parcel and not about a person is not personal data, so there is no in-place twin.
 - **Shared rules.** Valuation and its statuses, two accepted values, identification and registration, the roles of a place, validity ranges and codes follow the rules written on the page [Immovable Assets](Immovable_Assets.md). What is only the parcel's: the definitive value is the Gold view `cur_base_parcel__valuation_definitive`; `sat_base_parcel__registration` keeps the pointer to the evidence of the registration; holders, restrictions and permits are the Legal objects, joined by `lnk_base_parcel__rrr` and `lnk_base_parcel__entitlement` (when the State holds land and lends it to a tribe there are two RRRs over the same parcel, the State's and the tribe's); the roles of a place for a parcel are `boundary` and `address`.
 - **Area, distance and containment in space are not stored.** The area of a shape, the distance between two parcels and whether a structure lies inside a parcel are computed in Gold (R13). The area that someone wrote, in a title or a declaration, is a fact and is stored as such with `area_basis_code`; where the jurisdiction has coordinates, the area measured from them is a Gold value.
@@ -271,7 +314,7 @@ Two pictures of the same cluster. Read the simplified one first, then use the fu
 
 ### Simplified version
 
-The shape of the cluster: 1 Hub, 1 Link and 7 Satellites, with the Hub, the Link and the Satellite of the structure, and the Hubs, Links and Satellites of the RRR and the Entitlement, drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
+The shape of the cluster: 1 Hub, 2 Links and 8 Satellites, with the Hub, the Link and the Satellite of the structure, and the Hubs, Links and Satellites of the RRR and the Entitlement, drawn as defined on another page. Each has its name and definition. Use it to see how the objects relate. It has no columns.
 
 ![Base Parcel cluster, simplified](images/Diagrams_Base_Parcel_Simplified.png)
 
