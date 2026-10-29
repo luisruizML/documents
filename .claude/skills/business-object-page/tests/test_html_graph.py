@@ -96,7 +96,7 @@ class HtmlGraphTests(unittest.TestCase):
 
     def test_the_areas_group_the_pages_and_the_assets_area_surrounds_the_two_kinds_of_asset(self):
         areas = {a["name"]: a for a in self.data["areas"]}
-        self.assertEqual(list(areas), ["Assets", "Immovable Assets", "Movable Assets", "Parties", "Legal", "Contact Point"])
+        self.assertEqual(list(areas), ["Assets", "Immovable Assets", "Movable Assets", "Parties", "Natural Persons", "Legal Entities", "Legal", "Contact Point", "Location", "Platform"])
         names = lambda a: {self.items[i]["name"] for i in areas[a]["items"]}  # noqa: E731
         self.assertTrue(names("Immovable Assets") <= names("Assets") and names("Movable Assets") <= names("Assets"))
         self.assertIn("hub_base_parcel", names("Immovable Assets"))
@@ -104,6 +104,10 @@ class HtmlGraphTests(unittest.TestCase):
         self.assertTrue({"hub_party", "hub_natural_person", "hub_legal_entity"} <= names("Parties"))
         self.assertTrue({"hub_rrr", "hub_entitlement", "hub_credential"} <= names("Legal"))
         self.assertEqual(len(names("Contact Point")), 7)
+        self.assertTrue(names("Natural Persons") <= names("Parties") and names("Legal Entities") <= names("Parties"))
+        self.assertIn("hub_natural_person", names("Natural Persons"))
+        self.assertIn("hub_legal_entity", names("Legal Entities"))
+        self.assertGreater(areas["Parties"]["radius"], areas["Natural Persons"]["radius"])
         self.assertGreater(areas["Assets"]["radius"], areas["Immovable Assets"]["radius"])
 
     def test_an_area_line_joins_two_objects_of_the_area(self):
@@ -118,6 +122,23 @@ class HtmlGraphTests(unittest.TestCase):
         self.assertIn("gArea", html)
         self.assertIn("#gArea { pointer-events: none; }", html)
         self.assertLess(html.index('var gArea = el("g"'), html.index('var gUse = el("g"'))
+
+    def test_a_link_between_two_areas_and_its_satellites_belong_to_both(self):
+        areas = {a["name"]: {self.items[i]["name"] for i in a["items"]} for a in self.data["areas"]}
+        for name in ("lnk_entitlement__party_holder", "sat_entitlement__party_holder__period", "lnk_party__rrr", "sat_party__rrr__participation"):
+            self.assertIn(name, areas["Parties"], name)
+            self.assertIn(name, areas["Legal"], name)
+        self.assertNotIn("hub_party", areas["Legal"])      # the Hub itself stays in its own area
+
+    def test_an_object_can_belong_to_several_areas_and_the_right_panel_lists_the_areas(self):
+        count = {}
+        for a in self.data["areas"]:
+            for i in a["items"]:
+                count[i] = count.get(i, 0) + 1
+        self.assertTrue(any(n > 1 for n in count.values()))
+        html = hg.TEMPLATE.read_text(encoding="utf-8")
+        self.assertIn("function selectArea", html)
+        self.assertIn("Areas (", html)
 
     def test_the_file_is_self_contained_and_its_data_is_valid_json(self):
         html = hg.render(self.data)

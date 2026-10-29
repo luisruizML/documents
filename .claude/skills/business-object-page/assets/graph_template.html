@@ -42,6 +42,8 @@
   .mark.Link { background: var(--link); clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); border: 0; box-shadow: inset 0 0 0 2px #3A414A; }
   .mark.Satellite { background: var(--sat); border-color: var(--magenta); }
   .mark.Satellite.inplace { background: var(--sat-place); border-style: dashed; }
+  .swatch { flex: none; width: 12px; height: 12px; border-radius: 3px; opacity: .55; }
+  .item[aria-current="true"] .swatch { opacity: 1; }
   .item .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .empty { padding: 12px 16px; color: #666; }
 
@@ -287,10 +289,29 @@
   window.addEventListener("resize", function () { vb = fitted(vb); apply(); });
 
   // ---- the lists on the right
-  var listEl = document.getElementById("items"), itemEl = [], opened = { Hub: false, Link: false, Satellite: false };
+  var listEl = document.getElementById("items"), itemEl = [], opened = { Area: false, Hub: false, Link: false, Satellite: false }, selArea = -1, areaEl = [];
   function buildList(filter) {
     listEl.innerHTML = ""; itemEl = [];
     var f = (filter || "").toLowerCase().trim(), any = false;
+    areaEl = [];
+    var areas = (D.areas || []).map(function (a, k) { return k; }).filter(function (k) { return D.areas[k].name.toLowerCase().indexOf(f) >= 0; });
+    if (areas.length) {
+      any = true;
+      var ashow = opened.Area || f !== "";
+      var ah = document.createElement("button"); ah.type = "button"; ah.className = "group";
+      ah.setAttribute("aria-expanded", ashow ? "true" : "false");
+      ah.innerHTML = '<span class="chev">&#9656;</span><span>Areas (' + areas.length + ")</span>";
+      ah.onclick = function () { opened.Area = !opened.Area; buildList(document.getElementById("q").value); };
+      listEl.appendChild(ah);
+      if (ashow) areas.forEach(function (k) {
+        var a = D.areas[k], b = document.createElement("button");
+        b.type = "button"; b.className = "item area"; b.title = a.name + " (" + a.items.length + " objects)";
+        b.innerHTML = '<span class="swatch" style="background:' + a.color + '"></span><span class="name">' + esc(a.name) + "</span>";
+        b.onclick = function () { selectArea(k); };
+        if (k === selArea) b.setAttribute("aria-current", "true");
+        listEl.appendChild(b); areaEl[k] = b;
+      });
+    }
     [["Hub", "Hubs"], ["Link", "Links"], ["Satellite", "Satellites"]].forEach(function (g) {
       var rows = D.items.map(function (it, i) { return i; }).filter(function (i) { return D.items[i].kind === g[0] && D.items[i].name.toLowerCase().indexOf(f) >= 0; });
       if (!rows.length) return;
@@ -382,6 +403,7 @@
   // ---- selection: fade all but the related objects
   function select(i) {
     if (i === sel) i = -1;
+    selArea = -1; areaEl.forEach(function (b) { if (b) b.removeAttribute("aria-current"); });
     if (sel >= 0 && itemEl[sel]) itemEl[sel].removeAttribute("aria-current");
     sel = i;
     var keep = null, hot = null, hotUse = {};
@@ -414,7 +436,49 @@
       try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignored */ }
     }
   }
-  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && sel >= 0) select(-1); });
+  // ---- selection of an area: fade all but its objects, and list them on the left
+  function selectArea(k) {
+    if (k === selArea) { select(-1); return; }
+    var a = D.areas[k];
+    if (sel >= 0 && itemEl[sel]) itemEl[sel].removeAttribute("aria-current");
+    sel = -1; selArea = k;
+    areaEl.forEach(function (b, j) { if (b) { if (j === k) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current"); } });
+    var keep = {}, hot = {};
+    a.items.forEach(function (j) { keep[j] = true; }); a.edges.forEach(function (j) { hot[j] = true; });
+    kept = keep;
+    D.items.forEach(function (it, j) {
+      nodeEl[j].classList.toggle("dim", !keep[j]); labelEl[j].classList.toggle("dim", !keep[j]); nodeEl[j].classList.remove("selected");
+    });
+    D.edges.forEach(function (e, j) { edgeEl[j].classList.toggle("dim", !hot[j]); edgeEl[j].classList.toggle("hot", !!hot[j]); });
+    useEl.forEach(function (u) { u.classList.add("dim"); u.classList.remove("hot"); });
+    var count = { Hub: 0, Link: 0, Satellite: 0 };
+    var members = a.items.slice().sort(function (x, y) {
+      var p = D.items[x], q = D.items[y], o = { Hub: 0, Link: 1, Satellite: 2 };
+      return o[p.kind] - o[q.kind] || (p.name < q.name ? -1 : p.name > q.name ? 1 : 0);
+    });
+    members.forEach(function (j) { count[D.items[j].kind]++; });
+    var tally = [["Hub", "Hubs"], ["Link", "Links"], ["Satellite", "Satellites"]].filter(function (t) { return count[t[0]]; })
+      .map(function (t) { return count[t[0]] + " " + (count[t[0]] === 1 ? t[0] : t[1]); }).join(", ");
+    var others = {}; D.areas.forEach(function (b, j) { if (j !== k) b.items.forEach(function (x) { (others[x] = others[x] || []).push(b.name); }); });
+    var nShared = members.filter(function (j) { return others[j]; }).length;
+    var shared = nShared ? ". " + nShared + " of them also belong to another area (" +
+      D.areas.filter(function (b, j) { return j !== k && b.items.some(function (x) { return a.items.indexOf(x) >= 0; }); }).map(function (b) { return b.name; }).join(", ") + ")." : "";
+    var pages = {}; members.forEach(function (j) { pages[D.items[j].page] = true; });
+    infoBody.innerHTML = '<button class="close" type="button" aria-label="Close" id="closeInfo">&times;</button><h1>' + esc(a.name) + "</h1>" +
+      '<div class="chips"><span class="chip">Area</span>' + Object.keys(pages).map(function (n) { return '<span class="chip">Page: ' + esc(n) + "</span>"; }).join("") + "</div>" +
+      "<h3>Objects (" + members.length + ")</h3><p class=\"tally\">" + tally + shared + "</p><div class=\"rel\">" + members.map(function (j) {
+        var o = D.items[j];
+        return '<button type="button" class="' + o.kind + (o.inPlace ? " inplace" : "") + '" data-i="' + j + '"' +
+          (others[j] ? ' title="Also in: ' + esc(others[j].join(", ")) + '"' : "") + ">" + esc(o.name) + "</button>";
+      }).join("") + "</div>";
+    infoBody.scrollTop = 0;
+    document.getElementById("closeInfo").onclick = function () { select(-1); };
+    Array.prototype.forEach.call(infoBody.querySelectorAll(".rel button"), function (b) { b.onclick = function () { select(+b.getAttribute("data-i")); }; });
+    info.classList.add("open");
+    requestAnimationFrame(function () { go(fitted(boxOf(a.items))); });
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) { /* ignored */ }
+  }
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && (sel >= 0 || selArea >= 0)) select(-1); });
 
   buildList("");
   vb = fitted(vb); apply();

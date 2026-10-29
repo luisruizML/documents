@@ -37,9 +37,13 @@ AREAS = [
     ("Assets", "#F2C94C", "#7A5F00", 470, ["Base Parcel", "Built Structure", "Base Asset", "Swappable Component", "Model Catalog"]),
     ("Immovable Assets", "#F2994A", "#8A4A0F", 290, ["Base Parcel", "Built Structure"]),
     ("Movable Assets", "#6FCF97", "#1F6B40", 290, ["Base Asset", "Swappable Component", "Model Catalog"]),
-    ("Parties", "#4F9DDE", "#1B4F80", 290, ["Party", "Natural Person", "Legal Entity"]),
+    ("Parties", "#4F9DDE", "#1B4F80", 380, ["Party", "Natural Person", "Legal Entity"]),
+    ("Natural Persons", "#6C63E0", "#2F2A8C", 240, ["Natural Person"]),
+    ("Legal Entities", "#C75FB4", "#7A1F68", 240, ["Legal Entity"]),
     ("Legal", "#EB5757", "#8F1F1F", 290, ["Entitlement", "Credential", "RRR"]),
     ("Contact Point", "#A67C52", "#5E4126", 290, ["Contact Point"]),
+    ("Location", "#2BB5A8", "#145F58", 290, ["Location"]),
+    ("Platform", "#9AA5B1", "#44505C", 290, ["Code List", "Load Configuration"]),
 ]
 
 
@@ -48,10 +52,15 @@ def areas_of(items: list[dict], edges: list[list[int]]) -> list[dict]:
     as a circle around each object and a thick line along each of these lines, so it follows the objects and does not cover the gaps."""
     out = []
     for name, color, ink, radius, pages in AREAS:
-        members = [i for i, it in enumerate(items) if it["page"] in pages]
-        if not members:
+        inside = {i for i, it in enumerate(items) if it["page"] in pages}
+        if not inside:
             continue
-        inside = set(members)
+        # a Link that reaches a Hub of the area belongs to it too, whatever its page, and so do the Satellites of that Link:
+        # this is how the area of the Parties holds the Link and the Satellite that tie an Entitlement or an RRR to a Party
+        hubs = {i for i in inside if items[i]["kind"] == "Hub"}
+        inside |= {c for c, p in edges if items[c]["kind"] == "Link" and p in hubs}
+        inside |= {c for c, p in edges if items[c]["kind"] == "Satellite" and p in inside}
+        members = sorted(inside)
         out.append({"name": name, "color": color, "ink": ink, "radius": radius, "items": members,
                     "edges": [k for k, (a, b) in enumerate(edges) if a in inside and b in inside]})
     return out
